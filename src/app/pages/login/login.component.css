@@ -1,0 +1,212 @@
+/* Layout principal */
+.login-container {
+  display: flex;
+  height: 100vh;
+  background: var(--bg-0);
+  font-family: var(--font-sans);
+  color: var(--text-1);
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+  }
+}
+
+/* Lado esquerdo */
+.login-left {
+  flex: 1;
+  background-color: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-xl);
+
+  @media (max-width: 900px) {
+    padding: var(--space-lg);
+    height: 35vh;
+  }
+}
+
+.login-left-content {
+  max-width: 420px;
+}
+
+.login-image {
+  width: 100%;
+  max-width: 360px; 
+  height: auto;     
+  object-fit: contain; 
+  margin-bottom: var(--space-md);
+  transition: transform var(--transition-medium), opacity var(--transition-medium);
+}
+
+.login-image:hover {
+  transform: scale(1.02);
+  opacity: 0.95;
+}
+
+.system-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: var(--fw-semibold);
+  margin-bottom: var(--space-sm);
+}
+
+.system-subtitle {
+  font-size: var(--fs-md);
+  opacity: 0.85;
+}
+
+/* Lado direito */
+.login-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-xl);
+
+  @media (max-width: 900px) {
+    background-color: var(--bg-1);
+    height: 65vh;
+    padding: var(--space-lg);
+  }
+}
+
+/* Card do login */
+.login-card {
+  background: var(--bg-1);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-card h2 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  color: var(--text-2);
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+
+/* Formulário */
+.form-group {
+  margin-bottom: var(--space-md);
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper .input {
+  width: 100%;
+  padding-right: 40px; /* espaço pro botão */
+}
+
+.toggle-password-btn {
+  margin-top: 0 !important;
+  width: auto !important;
+  padding: 0;
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.toggle-password-btn mat-icon {
+  font-size: 22px;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.toggle-password-btn:hover mat-icon {
+  color: #1976d2; /* azul do Material */
+  transform: scale(1.1);
+}
+
+/* Container geral das mensagens de erro */
+.error-message {
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm);
+  border-left: 4px solid var(--color-error, #e63946);
+  background-color: rgba(230, 57, 70, 0.08);
+  border-radius: var(--radius-md, 8px);
+}
+
+/* Cada mensagem individual de erro */
+.error {
+  color: var(--color-error, #e63946);
+  font-size: var(--fs-sm, 0.875rem);
+  margin-top: var(--space-xs, 4px);
+  line-height: 1.4;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Mensagem de sucesso */
+.success {
+  color: var(--color-success, #2ecc71);
+  background-color: rgba(46, 204, 113, 0.1);
+  border-left: 4px solid var(--color-success, #2ecc71);
+  padding: var(--space-sm);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--fs-sm, 0.875rem);
+  margin-bottom: var(--space-md);
+  font-weight: 500;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Pequena animação de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+button {
+  width: 100%;
+  margin-top: var(--space-sm);
+}
+
+/* Link "esqueceu senha" */
+.forgot-link {
+  display: block;
+  text-align: center;
+  margin-top: var(--space-md);
+  font-size: var(--fs-sm);
+  color: var(--color-cta);
+  text-decoration: none;
+  transition: color var(--transition-medium);
+}
+
+.forgot-link:hover {
+  color: var(--color-cta-hover);
+}
+
+/* Responsividade extra (mobile pequeno) */
+@media (max-width: 500px) {
+  .system-title {
+    font-size: 1.6rem;
+  }
+
+  .system-subtitle {
+    font-size: var(--fs-sm);
+  }
+
+  .login-card {
+    padding: var(--space-md);
+  }
+}
