@@ -1,1 +1,148 @@
 /* You can add global styles to this file, and also import other style files */
+/* Google Fonts: Poppins (títulos) + Inter (UI) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap');
+
+:root {
+  /* ====== CORE COLORS ====== */
+  --color-primary: #333A56;
+  --color-secondary: #5C6B8A;     
+  --color-cta: #3F72AF;
+  --color-cta-hover: #2F5A92;
+  --color-success: #4CAF50;
+  --color-warning: #FFB300;
+  --color-danger: #E53935;
+
+  /* Neutros */
+  --bg-0: #F5F7FA;                /* fundo das telas */
+  --bg-1: #ffffff;                /* cards / surfaces */
+  --border: #E0E3E8;              /* bordas / divisores */
+  --text-1: #0F1724;              /* texto principal (usar sobre bg claro) */
+  --text-2: var(--color-primary); /* textos secundários / títulos */
+
+  /* ====== TYPOGRAPHY ====== */
+  --font-sans: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --font-display: 'Poppins', var(--font-sans);
+
+  --fs-xs: 0.75rem;   /* 12px */
+  --fs-sm: 0.875rem;  /* 14px */
+  --fs-md: 1rem;      /* 16px */
+  --fs-lg: 1.125rem;  /* 18px */
+  --fs-xl: 1.25rem;   /* 20px */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+
+  /* ====== SPACING SCALE ====== (usar nomes semânticos) */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* ====== ROUNDED / SHADOWS / TRANSITIONS ====== */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 2px 6px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 6px 18px rgba(16, 24, 40, 0.08);
+
+  --transition-fast: 150ms;
+  --transition-medium: 250ms;
+}
+
+* { box-sizing: border-box; }
+html { font-size: 16px; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-md);
+  color: var(--text-1);
+  background: var(--bg-0);
+  -webkit-font-smoothing: antialiased;
+}
+h1,h2,h3,h4,h5 {
+  font-family: var(--font-display);
+  color: var(--text-2);
+  margin: 0;
+}
+
+
+/* Container (centrar layout de login por ex.) */
+.app-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-lg);
+  background: var(--bg-0);
+}
+
+/* Card */
+.card {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Botões */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-md);
+  cursor: pointer;
+  transition: background-color var(--transition-medium), transform var(--transition-fast);
+  border: none;
+  text-decoration: none;
+}
+
+/* Primary CTA */
+.btn-primary {
+  background: var(--color-cta);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--color-cta-hover); transform: translateY(-1px); }
+
+/* Ghost / Outline */
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-1);
+}
+
+/* Inputs */
+.input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  font-size: var(--fs-md);
+  color: var(--text-1);
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+.input:focus {
+  outline: none;
+  border-color: var(--color-cta);
+  box-shadow: 0 0 0 4px rgba(63,114,175,0.08); /* foco acessível */
+}
+
+/* Labels */
+.label {
+  display:block;
+  margin-bottom: 6px;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+/* Small helpers */
+.text-muted { color: var(--text-2); font-size: var(--fs-sm); }
+.row { display:flex; gap: var(--space-md); align-items:center; }
