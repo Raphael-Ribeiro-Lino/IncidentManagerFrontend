@@ -1,0 +1,52 @@
+<div class="recover-container">
+  <div class="recover-card">
+
+    <h2>Recuperar Senha</h2>
+    <p class="subtitle">
+      Digite seu e-mail e enviaremos um link para redefinir sua senha.
+    </p>
+
+    <!-- Mensagens -->
+    <div *ngIf="errorMessages.length > 0" class="error-message">
+      <div class="error" *ngFor="let msg of errorMessages">{{ msg }}</div>
+    </div>
+
+    <div *ngIf="successMessage" class="success">
+      {{ successMessage }}
+    </div>
+
+    <!-- Formulário -->
+    <form [formGroup]="formRecover" (ngSubmit)="submitForm()">
+
+      <div class="form-group">
+        <label class="label" for="email">E-mail</label>
+        <input
+          id="email"
+          class="input"
+          type="email"
+          formControlName="email"
+          placeholder="Digite seu e-mail"
+        />
+
+        <div *ngIf="formRecover.get('email')?.touched && formRecover.get('email')?.invalid">
+          <div class="error" *ngIf="formRecover.get('email')?.hasError('required')">
+            O e-mail é obrigatório.
+          </div>
+          <div class="error" *ngIf="formRecover.get('email')?.hasError('pattern')">
+            Endereço de e-mail inválido.
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!formRecover.valid"
+      >
+        Enviar link de recuperação
+      </button>
+    </form>
+
+    <a routerLink="/login" class="back-link">Voltar ao login</a>
+  </div>
+</div>
