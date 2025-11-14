@@ -5,6 +5,7 @@ import { RecuperarSenhaComponent } from './pages/recuperar-senha/recuperar-senha
 import { RedefinirSenhaComponent } from './pages/redefinir-senha/redefinir-senha.component';
 import { DefinirSenhaComponent } from './pages/definir-senha/definir-senha.component';
 import { authGuard } from './guards/auth.guard';
+import { CadastrarEmpresaComponent } from './pages/cadastrar-empresa/cadastrar-empresa.component';
 
 export const routes: Routes = [
     {
@@ -27,5 +28,10 @@ export const routes: Routes = [
     {
         path: "definir-senha/:hash",
         component: DefinirSenhaComponent
+    },
+    {
+        path: "cadastrar-empresa",
+        component: CadastrarEmpresaComponent,
+        canActivate: [authGuard]
     }
 ];
