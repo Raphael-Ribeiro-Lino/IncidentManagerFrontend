@@ -43,7 +43,6 @@ export class RecuperarSenhaComponent implements OnInit {
   submitForm(): void {
     this.errorMessages = [];
     this.successMessage = null;
-    console.log(this.formRecover.get('email')?.value);
 
     if (this.formRecover.invalid) {
       this.errorMessages.push('Por favor, preencha o e-mail corretamente.');
