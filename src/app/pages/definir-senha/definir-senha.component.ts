@@ -9,24 +9,19 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import {
-  ActivatedRoute,
-  NavigationExtras,
-  Router,
-  RouterModule,
-} from '@angular/router';
-import { RedefinirSenhaService } from '../../services/redefinir-senha/redefinir-senha.service';
+import { ActivatedRoute, NavigationExtras, Router, RouterModule } from '@angular/router';
+import { DefinirSenhaService } from '../../services/definir-senha/definir-senha.service';
 import { RedefinirSenhaInput } from '../../models/redefinir-senha/redefinirSenhaInput';
 
 @Component({
-  selector: 'app-redefinir-senha',
+  selector: 'app-definir-senha',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, MatIconModule],
-  templateUrl: './redefinir-senha.component.html',
-  styleUrl: './redefinir-senha.component.css',
+  templateUrl: './definir-senha.component.html',
+  styleUrl: './definir-senha.component.css',
 })
-export class RedefinirSenhaComponent implements OnInit {
-  formRedefinePassword: FormGroup;
+export class DefinirSenhaComponent implements OnInit {
+  formDefinePassword: FormGroup;
   showErrorMessages: boolean = false;
   errorMessages: string[] = [];
   successMessage: string = '';
@@ -35,10 +30,10 @@ export class RedefinirSenhaComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private activatedRoute: ActivatedRoute,
-    private redefinirSenhaService: RedefinirSenhaService,
+    private definirSenhaService: DefinirSenhaService,
     private route: Router
   ) {
-    this.formRedefinePassword = this.formBuilder.group(
+    this.formDefinePassword = this.formBuilder.group(
       {
         newPassword: [
           '',
@@ -94,52 +89,52 @@ export class RedefinirSenhaComponent implements OnInit {
 
   ngOnInit(): void {
     const hash = this.activatedRoute.snapshot.paramMap.get('hash');
-    this.redefinirSenhaService.verificaHash(hash).subscribe({
-      error: (erro) => {
-        if (erro.error && erro.error.message) {
-          this.errorMessages.push(erro.error.message);
-          this.formRedefinePassword.get('newPassword')?.disable();
-          this.formRedefinePassword.get('confirmPassword')?.disable();
-          setTimeout(() => {
-            const navigationExtras: NavigationExtras = {
-              state: {
-                successData: this.errorMessages.join(', '),
-              },
-            };
-            this.route.navigate(['recuperar-senha'], navigationExtras);
-          }, 2000);
-        } else {
-          this.errorMessages.push(
-            'Ocorreu um erro inesperado. Tente mais tarde, por favor!'
-          );
-        }
-      },
-    });
+        this.definirSenhaService.verificaHash(hash).subscribe({
+          error: (erro) => {
+            if (erro.error && erro.error.message) {
+              this.errorMessages.push(erro.error.message);
+              this.formDefinePassword.get('newPassword')?.disable();
+              this.formDefinePassword.get('confirmPassword')?.disable();
+              setTimeout(() => {
+                const navigationExtras: NavigationExtras = {
+                  state: {
+                    errorData: erro.error.message,
+                  },
+                };
+                this.route.navigate(['login'], navigationExtras);
+              }, 2000);
+            } else {
+              this.errorMessages.push(
+                'Ocorreu um erro inesperado. Tente mais tarde, por favor!'
+              );
+            }
+          },
+        });
   }
 
-  submitForm(): void {
-    if (this.formRedefinePassword.invalid) return;
-
-    const hash = this.activatedRoute.snapshot.paramMap.get('hash');
-    this.errorMessages = [];
-
-    const redefinirSenhaInput: RedefinirSenhaInput = {
-      senha: this.formRedefinePassword.value.newPassword,
-      repetirSenha: this.formRedefinePassword.value.confirmPassword
-    }
-
-    this.redefinirSenhaService.redefinirSenha(redefinirSenhaInput, hash).subscribe({
-      next: () => {
-        const navigationExtras: NavigationExtras = { state: { successData: `Senha alterada com sucesso!` } }
-        this.route.navigate(['login'], navigationExtras)
-      },
-      error: (erro) => {
-        if (erro.error && erro.error.message) {
-          this.errorMessages.push(erro.error.message);
-        } else {
-          this.errorMessages.push('Ocorreu um erro inesperado. Tente mais tarde, por favor!');
-        }
+    submitForm(): void {
+      if (this.formDefinePassword.invalid) return;
+  
+      const hash = this.activatedRoute.snapshot.paramMap.get('hash');
+      this.errorMessages = [];
+  
+      const definirSenhaInput: RedefinirSenhaInput = {
+        senha: this.formDefinePassword.value.newPassword,
+        repetirSenha: this.formDefinePassword.value.confirmPassword
       }
-    });
-  }
+  
+      this.definirSenhaService.definirSenha(definirSenhaInput, hash).subscribe({
+        next: () => {
+          const navigationExtras: NavigationExtras = { state: { successData: `Senha definida com sucesso!` } }
+          this.route.navigate(['login'], navigationExtras)
+        },
+        error: (erro) => {
+          if (erro.error && erro.error.message) {
+            this.errorMessages.push(erro.error.message);
+          } else {
+            this.errorMessages.push('Ocorreu um erro inesperado. Tente mais tarde, por favor!');
+          }
+        }
+      });
+    }
 }
