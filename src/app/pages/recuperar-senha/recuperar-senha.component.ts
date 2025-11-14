@@ -21,7 +21,7 @@ export class RecuperarSenhaComponent implements OnInit {
   formRecover!: FormGroup;
   errorMessages: string[] = [];
   successMessage: string | null = null;
-  isLoading = false;
+  loading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -43,6 +43,7 @@ export class RecuperarSenhaComponent implements OnInit {
   submitForm(): void {
     this.errorMessages = [];
     this.successMessage = null;
+    this.loading = true;
 
     if (this.formRecover.invalid) {
       this.errorMessages.push('Por favor, preencha o e-mail corretamente.');
@@ -70,10 +71,14 @@ export class RecuperarSenhaComponent implements OnInit {
             'Não foi possível enviar o link. Tente novamente mais tarde.'
           );
         }
+        this.loading = false;
         setTimeout(() => {
           this.errorMessages = [];
         }, 3000);
       },
+      complete: () => {
+        this.loading = false;
+      }
     });
   }
 
