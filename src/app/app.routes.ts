@@ -7,6 +7,7 @@ import { DefinirSenhaComponent } from './pages/definir-senha/definir-senha.compo
 import { authGuard } from './guards/auth.guard';
 import { CadastrarEmpresaComponent } from './pages/cadastrar-empresa/cadastrar-empresa.component';
 import { LandingPageComponent } from './pages/landing-page/landing-page.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 export const routes: Routes = [
     {
@@ -41,5 +42,9 @@ export const routes: Routes = [
         data: {
             roles: ['ADMIN']
         }
+    },
+    {
+        path: "**",
+        component: NotFoundComponent
     }
 ];
