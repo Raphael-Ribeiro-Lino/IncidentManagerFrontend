@@ -6,8 +6,13 @@ import { RedefinirSenhaComponent } from './pages/redefinir-senha/redefinir-senha
 import { DefinirSenhaComponent } from './pages/definir-senha/definir-senha.component';
 import { authGuard } from './guards/auth.guard';
 import { CadastrarEmpresaComponent } from './pages/cadastrar-empresa/cadastrar-empresa.component';
+import { LandingPageComponent } from './pages/landing-page/landing-page.component';
 
 export const routes: Routes = [
+    {
+        path: "",
+        component: LandingPageComponent
+    },
     {
         path: "login",
         component: LoginComponent
@@ -34,7 +39,7 @@ export const routes: Routes = [
         component: CadastrarEmpresaComponent,
         canActivate: [authGuard],
         data: {
-            roles: ['ADMIN', 'ADMIN_EMPRESA']
+            roles: ['ADMIN']
         }
     }
 ];
