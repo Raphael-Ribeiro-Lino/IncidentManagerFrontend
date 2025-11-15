@@ -20,7 +20,7 @@ export class CadastrarEmpresaComponent implements OnInit {
   formEmpresa: FormGroup;
   showErrorMessages: boolean = false;
   errorMessages: string[] = [];
-  successMessage: string = '';
+  successfullyRegisteredEmpresa: string = '';
   token = localStorage.getItem('token') as String; 
 
   constructor(
@@ -146,7 +146,7 @@ export class CadastrarEmpresaComponent implements OnInit {
     let empresaInput = this.formEmpresa.getRawValue() as EmpresaInput;
     this.empresaService.cadastrar(this.token, empresaInput).subscribe({
       next: (data) => {
-        const navigationExtras: NavigationExtras = { state: { successData: `Empresa cadastrada com sucesso!` } }
+        const navigationExtras: NavigationExtras = { state: { successfullyRegisteredEmpresa: `Empresa cadastrada com sucesso!` } }
         this.route.navigate(['home'], navigationExtras)
       },
       error: (erro) =>{
@@ -155,6 +155,7 @@ export class CadastrarEmpresaComponent implements OnInit {
         } else {
           this.errorMessages.push('Ocorreu um erro inesperado. Tente mais tarde, por favor!');
         }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     })
 

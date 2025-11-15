@@ -2,6 +2,14 @@
     <div class="empresa-card">
         <h1 class="empresa-title">Cadastro de Empresas</h1>
 
+        <!-- Mensagens de erro e sucesso -->
+        <div *ngIf="errorMessages.length > 0" class="error-message">
+            <div class="error" *ngFor="let errorMessage of errorMessages">{{ errorMessage }}</div>
+        </div>
+        <div *ngIf="successfullyRegisteredEmpresa != ''" class="success">
+            {{ successfullyRegisteredEmpresa }}
+        </div>
+
         <form [formGroup]="formEmpresa" class="empresa-form" (ngSubmit)="submitForm()">
 
             <!-- Nome -->
