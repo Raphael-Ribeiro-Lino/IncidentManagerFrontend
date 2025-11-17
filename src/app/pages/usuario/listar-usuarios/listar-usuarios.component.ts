@@ -17,17 +17,19 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-listar-usuario',
   standalone: true,
-  imports: [   RouterModule,
-      CommonModule,
-      PaginationComponent,
-      FormsModule,
-      MatFormFieldModule,
-      MatInputModule,
-      MatButtonModule,
-      MatIconModule,
-      MatCardModule,
-      MatProgressSpinnerModule,
-      MatChipsModule],
+  imports: [
+    RouterModule,
+    CommonModule,
+    PaginationComponent,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    MatProgressSpinnerModule,
+    MatChipsModule,
+  ],
   templateUrl: './listar-usuarios.component.html',
   styleUrls: ['./listar-usuarios.component.css'],
 })
@@ -40,6 +42,11 @@ export class ListarUsuariosComponent implements OnInit {
   token = localStorage.getItem('token') as string;
   currentPage = 0;
   totalPages = 0;
+  perfilLabels: Record<string, string> = {
+    ADMIN_EMPRESA: 'Administrador da Empresa',
+    USUARIO: 'Usuário Comum',
+    TECNICO_TI: 'Técnico de TI',
+  };
 
   constructor(
     private usuarioService: UsuarioService,

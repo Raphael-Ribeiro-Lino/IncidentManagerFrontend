@@ -13,7 +13,10 @@
       </div>
     </mat-card>
 
-    <mat-card *ngIf="successfullyRegisteredUsuario" class="message-card success">
+    <mat-card
+      *ngIf="successfullyRegisteredUsuario"
+      class="message-card success"
+    >
       <mat-icon>check_circle</mat-icon>
       <div class="text">{{ successfullyRegisteredUsuario }}</div>
     </mat-card>
@@ -54,7 +57,7 @@
   <!-- SKELETON LOADING -->
   <ng-container *ngIf="isLoading">
     <div class="empresa-list">
-      <mat-card class="empresa-card-skeleton" *ngFor="let i of [1,2,3,4]">
+      <mat-card class="empresa-card-skeleton" *ngFor="let i of [1, 2, 3, 4]">
         <div class="skeleton-line full-width"></div>
         <div class="skeleton-line medium-width"></div>
         <div class="skeleton-line short-width"></div>
@@ -63,7 +66,10 @@
   </ng-container>
 
   <!-- LISTA DE USUÁRIOS -->
-  <div *ngIf="!isLoading && usuarios.length > 0" class="empresa-list better-layout">
+  <div
+    *ngIf="!isLoading && usuarios.length > 0"
+    class="empresa-list better-layout"
+  >
     <mat-card class="empresa-row" *ngFor="let usuario of usuarios" matRipple>
       <div class="row-left">
         <div
@@ -79,41 +85,52 @@
           <p><mat-icon class="icon">email</mat-icon> {{ usuario.email }}</p>
           <p><mat-icon class="icon">phone</mat-icon> {{ usuario.telefone }}</p>
           <p>
+            <mat-icon class="icon">badge</mat-icon>
+            {{ perfilLabels[usuario.perfil] }}
+          </p>
+          <p>
             <mat-icon class="icon">business</mat-icon>
-            {{ usuario.empresa.nome }} - {{ usuario.empresa.cidade }}/{{ usuario.empresa.estado }}
+            {{ usuario.empresa.nome }} - {{ usuario.empresa.cidade }}/{{
+              usuario.empresa.estado
+            }}
           </p>
         </div>
-              <div class="row-right">
-        <button
-          mat-raised-button
-          color="accent"
-          class="btn-editar"
-          [routerLink]="'/usuario/' + usuario.id + '/editar'"
-        >
-          <mat-icon>edit</mat-icon> Alterar Dados
-        </button>
+        <div class="row-right">
+          <button
+            mat-raised-button
+            color="accent"
+            class="btn-editar"
+            [routerLink]="'/usuario/' + usuario.id + '/editar'"
+          >
+            <mat-icon>edit</mat-icon> Alterar Dados
+          </button>
+        </div>
       </div>
-      </div>
-
     </mat-card>
   </div>
 
   <!-- EMPTY STATE / SEM RESULTADOS -->
   <div *ngIf="!isLoading && usuarios.length === 0" class="empty-state">
     <mat-icon class="empty-icon">
-      {{ searchTerm ? 'person_off' : 'person' }}
+      {{ searchTerm ? "person_off" : "person" }}
     </mat-icon>
-    
+
     <h2>
-      {{ searchTerm ? 'Nenhum resultado encontrado' : 'Nenhum usuário cadastrado' }}
+      {{
+        searchTerm ? "Nenhum resultado encontrado" : "Nenhum usuário cadastrado"
+      }}
     </h2>
-    
+
     <p>
-      {{ searchTerm 
-          ? 'Não encontramos nenhum usuário com "' + searchTerm + '". Tente outro termo de pesquisa.' 
-          : 'Comece adicionando o primeiro usuário para gerenciar o sistema.' }}
+      {{
+        searchTerm
+          ? 'Não encontramos nenhum usuário com "' +
+            searchTerm +
+            '". Tente outro termo de pesquisa.'
+          : "Comece adicionando o primeiro usuário para gerenciar o sistema."
+      }}
     </p>
-    
+
     <button
       *ngIf="!searchTerm"
       mat-raised-button
