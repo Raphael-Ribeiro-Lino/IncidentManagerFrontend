@@ -30,7 +30,7 @@ export class UsuarioService {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
-    });
+    });usuarioInput
     return this.httpClient.post<UsuarioOutput>(API_URL, usuarioInput, {
       headers,
     });
@@ -52,9 +52,30 @@ export class UsuarioService {
       params = params.set('search', searchTerm);
     }
 
-    return this.httpClient.get<PaginationOutput<UsuarioOutput>>(API_URL + "/lista", {
+    return this.httpClient.get<PaginationOutput<UsuarioOutput>>(
+      API_URL + '/lista',
+      {
+        headers,
+        params,
+      }
+    );
+  }
+
+  buscarPorId(token: string, id: number): Observable<UsuarioOutput> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+    return this.httpClient.get<UsuarioOutput>(API_URL + '/' + id, { headers });
+  }
+
+  alterarDados(token: string, id: number, usuarioInput: UsuarioInput){
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+    return this.httpClient.put<UsuarioOutput>(API_URL + `/${id}/altera-dados`, usuarioInput, {
       headers,
-      params,
     });
   }
 }

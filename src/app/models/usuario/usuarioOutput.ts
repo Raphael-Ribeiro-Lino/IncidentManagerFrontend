@@ -1,4 +1,5 @@
 import { EmpresaOutput } from "../empresa/empresaOutput";
+import { PerfilEnum } from "./PerfilEnum";
 
 export interface UsuarioOutput{
     id: number,
@@ -6,5 +7,6 @@ export interface UsuarioOutput{
     email: string,
     telefone: string,
     ativo: boolean,
-    empresa: EmpresaOutput
+    empresa: EmpresaOutput,
+    perfil: PerfilEnum
 }

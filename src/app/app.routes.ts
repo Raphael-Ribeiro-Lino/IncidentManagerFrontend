@@ -11,6 +11,7 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { authGuard } from './guards/auth.guard';
 import { CadastrarUsuarioComponent } from './pages/usuario/cadastrar-usuario/cadastrar-usuario.component';
 import { ListarUsuariosComponent } from './pages/usuario/listar-usuarios/listar-usuarios.component';
+import { AlterarDadosUsuarioComponent } from './pages/usuario/alterar-dados-usuario/alterar-dados-usuario.component';
 
 export const routes: Routes = [
     // Public routes
@@ -45,6 +46,7 @@ export const routes: Routes = [
             { path: '', redirectTo: 'listar', pathMatch: 'full' },
             { path: 'cadastrar', component: CadastrarUsuarioComponent },
             { path: 'listar', component: ListarUsuariosComponent },
+            { path: ':id/editar', component: AlterarDadosUsuarioComponent }
         ]
     },
 
