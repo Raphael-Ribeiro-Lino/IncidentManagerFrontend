@@ -147,7 +147,7 @@ export class CadastrarEmpresaComponent implements OnInit {
     this.empresaService.cadastrar(this.token, empresaInput).subscribe({
       next: (data) => {
         const navigationExtras: NavigationExtras = { state: { successfullyRegisteredEmpresa: `Empresa cadastrada com sucesso!` } }
-        this.route.navigate(['home'], navigationExtras)
+        this.route.navigate(['/empresa/listar']);
       },
       error: (erro) =>{
         if (erro.error && erro.error.message) {
