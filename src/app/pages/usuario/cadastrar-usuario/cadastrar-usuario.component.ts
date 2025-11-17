@@ -211,6 +211,7 @@ export class CadastrarUsuarioComponent implements OnInit {
         this.successfullyRegisteredUsuario = 'Usuário cadastrado com sucesso!';
         this.formUsuario.reset({ ativo: true });
         this.empresaSelecionada = null;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => {
           this.router.navigate(['/usuario/listar']);
         }, 2000);

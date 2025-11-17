@@ -137,20 +137,14 @@ export class AlterarDadosUsuarioComponent implements OnInit {
 
   cancelar() {
     this.router.navigate(['/usuario/listar']);
-  }
-
-  private scrollToTop() {
-    setTimeout(() => {
-      const el = document.querySelector('.usuario-card');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   submitForm() {
     this.errorMessages = [];
     if (this.formUsuario.invalid) {
       this.errorMessages.push('Corrija os erros do formulário antes de salvar.');
-      this.scrollToTop();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -177,12 +171,12 @@ export class AlterarDadosUsuarioComponent implements OnInit {
     this.usuarioService.alterarDados(this.token, this.usuarioId, payload).subscribe({
       next: () => {
         this.successfullyUpdatedUsuario = 'Dados atualizados com sucesso!';
-        this.scrollToTop();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => this.router.navigate(['/usuario/listar']), 2000);
       },
       error: (erro) => {
         this.errorMessages.push(erro.error?.message || 'Ocorreu um erro inesperado.');
-        this.scrollToTop();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
     });
   }
