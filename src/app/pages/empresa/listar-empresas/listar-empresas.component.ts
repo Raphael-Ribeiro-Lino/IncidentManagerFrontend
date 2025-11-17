@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { PaginationComponent } from '../../components/pagination/pagination.component';
 import { FormsModule } from '@angular/forms';
-import { EmpresaOutput } from '../../models/empresa/empresaOutput';
-import { EmpresaService } from '../../services/empresa/empresa.service';
 import { debounceTime, Subject } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -13,6 +10,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
+import { PaginationComponent } from '../../../components/pagination/pagination.component';
+import { EmpresaOutput } from '../../../models/empresa/empresaOutput';
+import { EmpresaService } from '../../../services/empresa/empresa.service';
 
 @Component({
   selector: 'app-listar-empresas',

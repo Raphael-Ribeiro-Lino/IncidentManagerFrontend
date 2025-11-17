@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, NavigationExtras, Router, RouterModule } from '@angular/router';
-import { EmpresaService } from '../../services/empresa/empresa.service';
 import { HttpClient } from '@angular/common/http';
 import { MaskDirective } from './directives/mask.directive';
-import { UsuarioService } from '../../services/usuario/usuario.service';
-import { EmpresaInput } from '../../models/empresa/empresaInput';
+import { EmpresaService } from '../../../services/empresa/empresa.service';
+import { EmpresaInput } from '../../../models/empresa/empresaInput';
+
 
 @Component({
   selector: 'app-cadastrar-empresa',
