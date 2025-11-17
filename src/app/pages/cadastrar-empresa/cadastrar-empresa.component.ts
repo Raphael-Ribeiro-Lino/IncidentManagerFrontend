@@ -133,7 +133,7 @@ export class CadastrarEmpresaComponent implements OnInit {
 
 
   cancelar() {
-    this.route.navigate(['home']);
+    this.route.navigate(['listar-empresas']);
   }
 
   ngOnInit(): void {

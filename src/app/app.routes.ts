@@ -8,6 +8,7 @@ import { authGuard } from './guards/auth.guard';
 import { CadastrarEmpresaComponent } from './pages/cadastrar-empresa/cadastrar-empresa.component';
 import { LandingPageComponent } from './pages/landing-page/landing-page.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { ListarEmpresasComponent } from './pages/listar-empresas/listar-empresas.component';
 
 export const routes: Routes = [
     {
@@ -38,6 +39,14 @@ export const routes: Routes = [
     {
         path: "cadastrar-empresa",
         component: CadastrarEmpresaComponent,
+        canActivate: [authGuard],
+        data: {
+            roles: ['ADMIN']
+        }
+    },
+    {
+        path: "listar-empresas",
+        component: ListarEmpresasComponent,
         canActivate: [authGuard],
         data: {
             roles: ['ADMIN']

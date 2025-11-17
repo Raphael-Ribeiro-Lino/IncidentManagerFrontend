@@ -1,0 +1,143 @@
+<main class="empresa-container">
+  <h1 class="page-title">Empresas Cadastradas</h1>
+  <h2 class="page-subtitle">
+    Visualize e gerencie todas as empresas cadastradas
+  </h2>
+
+  <!-- MENSAGENS -->
+  <ng-container *ngIf="errorMessages.length || successfullyRegisteredEmpresa">
+    <mat-card *ngIf="errorMessages.length" class="message-card error">
+      <mat-icon>error</mat-icon>
+      <div class="text">
+        <div *ngFor="let error of errorMessages">{{ error }}</div>
+      </div>
+    </mat-card>
+
+    <mat-card
+      *ngIf="successfullyRegisteredEmpresa"
+      class="message-card success"
+    >
+      <mat-icon>check_circle</mat-icon>
+      <div class="text">{{ successfullyRegisteredEmpresa }}</div>
+    </mat-card>
+  </ng-container>
+
+  <!-- HEADER AÇÕES -->
+  <div class="header-actions">
+    <!-- Input de busca -->
+    <mat-form-field appearance="outline" class="material-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        placeholder="Buscar por nome ou CNPJ..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="searchEmpresas($event)"
+      />
+      <button
+        mat-icon-button
+        *ngIf="searchTerm"
+        matSuffix
+        (click)="searchTerm = ''; searchEmpresas('')"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <!-- Botão cadastrar (aparece somente se houver empresas) -->
+    <button
+      *ngIf="empresas.length > 0"
+      mat-raised-button
+      color="primary"
+      class="btn-cadastrar"
+      routerLink="/cadastrar-empresa"
+    >
+      <mat-icon>add_business</mat-icon>
+      Registrar Nova Empresa
+    </button>
+  </div>
+
+  <!-- CARREGANDO SKELETON -->
+  <ng-container *ngIf="isLoading">
+    <div class="empresa-list">
+      <mat-card class="empresa-card-skeleton" *ngFor="let i of [1, 2, 3, 4]">
+        <div class="skeleton-line full-width"></div>
+        <div class="skeleton-line medium-width"></div>
+        <div class="skeleton-line short-width"></div>
+      </mat-card>
+    </div>
+  </ng-container>
+
+  <!-- LISTA DE EMPRESAS -->
+  <div
+    *ngIf="!isLoading && empresas.length > 0"
+    class="empresa-list better-layout"
+  >
+    <mat-card class="empresa-row" *ngFor="let empresa of empresas" matRipple>
+      <!-- Lado esquerdo -->
+      <div class="row-left">
+        <!-- Status -->
+        <div
+          class="status-block"
+          [class.active]="empresa.ativo"
+          [class.inactive]="!empresa.ativo"
+        >
+          <mat-icon>{{ empresa.ativo ? "check_circle" : "cancel" }}</mat-icon>
+          <span>{{ empresa.ativo ? "Ativa" : "Inativa" }}</span>
+        </div>
+        <!-- Dados Empresa -->
+        <div class="info-block">
+          <h3>{{ empresa.nome }}</h3>
+          <p>
+            <mat-icon class="icon">badge</mat-icon> <strong>CNPJ:</strong>
+            {{ empresa.cnpj }}
+          </p>
+          <p>
+            <mat-icon class="icon">location_on</mat-icon>
+            <strong>Local:</strong> {{ empresa.cidade }} - {{ empresa.estado }}
+          </p>
+        </div>
+        <!-- Lado direito -->
+        <div class="row-right">
+          <button
+            mat-raised-button
+            color="accent"
+            class="btn-editar"
+            [routerLink]="'/empresa/' + empresa.id + '/editar'"
+          >
+            <mat-icon>edit</mat-icon> Alterar Dados
+          </button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div *ngIf="!isLoading && empresas.length === 0" class="empty-state">
+    <mat-icon class="empty-icon">business</mat-icon>
+
+    <h2>Nenhuma empresa cadastrada ainda</h2>
+    <p>
+      Comece adicionando a primeira empresa ao sistema para gerenciar seus
+      dados.
+    </p>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="empty-btn"
+      routerLink="/cadastrar-empresa"
+    >
+      <mat-icon>add</mat-icon>
+      Cadastrar Empresa
+    </button>
+  </div>
+
+  <!-- PAGINAÇÃO -->
+  <app-pagination
+    *ngIf="!isLoading && empresas.length > 0"
+    [pageNumber]="currentPage"
+    [totalPages]="totalPages"
+    (pageChange)="carregarPagina($event)"
+  >
+  </app-pagination>
+</main>

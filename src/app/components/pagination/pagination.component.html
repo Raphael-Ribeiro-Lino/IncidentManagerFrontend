@@ -1,0 +1,53 @@
+<div class="pagination-container">
+
+  <!-- Botão anterior -->
+  <button
+    mat-button
+    class="nav-btn"
+    [disabled]="pageNumber === 0"
+    (click)="previousPage()">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+
+  <!-- Primeira página -->
+  <button 
+    mat-button
+    class="page-btn"
+    *ngIf="pages[0] > 0"
+    (click)="goToPage(0)">
+    1
+  </button>
+
+  <span *ngIf="pages[0] > 1" class="dots">…</span>
+
+  <!-- Páginas centrais -->
+  <button
+    mat-button
+    class="page-btn"
+    *ngFor="let p of pages"
+    [class.active]="p === pageNumber"
+    (click)="goToPage(p)">
+    {{ p + 1 }}
+  </button>
+
+  <span *ngIf="pages[pages.length - 1] < totalPages - 2" class="dots">…</span>
+
+  <!-- Última página -->
+  <button 
+    mat-button
+    class="page-btn"
+    *ngIf="pages[pages.length - 1] < totalPages - 1"
+    (click)="goToPage(totalPages - 1)">
+    {{ totalPages }}
+  </button>
+
+  <!-- Botão próxima -->
+  <button
+    mat-button
+    class="nav-btn"
+    [disabled]="pageNumber === totalPages - 1"
+    (click)="nextPage()">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+
+</div>
