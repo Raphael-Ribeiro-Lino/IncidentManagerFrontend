@@ -1,4 +1,4 @@
-import { PerfilEnum } from "./PerfilEnum";
+import { PerfilEnum } from "./perfilEnum";
 
 
 export interface UsuarioInput {

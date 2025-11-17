@@ -9,7 +9,7 @@ import {
 import { Router, RouterModule } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { EmpresaService } from '../../../services/empresa/empresa.service';
-import { PerfilEnum } from '../../../models/usuario/PerfilEnum';
+import { PerfilEnum } from '../../../models/usuario/perfilEnum';
 import { AuthService } from '../../../services/auth/auth.service';
 import { EmpresaOutput } from '../../../models/empresa/empresaOutput';
 import { UsuarioTokenOutput } from '../../../models/usuario/usuarioTokenOutput';

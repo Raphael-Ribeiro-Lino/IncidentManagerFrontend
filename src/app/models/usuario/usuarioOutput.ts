@@ -1,5 +1,5 @@
 import { EmpresaOutput } from "../empresa/empresaOutput";
-import { PerfilEnum } from "./PerfilEnum";
+import { PerfilEnum } from "./perfilEnum";
 
 export interface UsuarioOutput{
     id: number,
