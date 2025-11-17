@@ -21,7 +21,7 @@ export class CadastrarEmpresaComponent implements OnInit {
   showErrorMessages: boolean = false;
   errorMessages: string[] = [];
   successfullyRegisteredEmpresa: string = '';
-  token = localStorage.getItem('token') as String; 
+  token = localStorage.getItem('token') as string; 
 
   constructor(
     private formBuilder: FormBuilder,

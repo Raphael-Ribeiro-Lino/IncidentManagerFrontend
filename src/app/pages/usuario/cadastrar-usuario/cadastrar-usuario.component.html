@@ -1,0 +1,105 @@
+<div class="usuario-page">
+  <div class="usuario-card">
+    <h1 class="usuario-title">Cadastro de Usuário</h1>
+
+    <div *ngIf="errorMessages.length" class="error-message">
+      <div class="error" *ngFor="let msg of errorMessages">{{ msg }}</div>
+    </div>
+    <div *ngIf="successfullyRegisteredUsuario" class="success">
+      {{ successfullyRegisteredUsuario }}
+    </div>
+
+    <form [formGroup]="formUsuario" class="usuario-form" (ngSubmit)="submitForm()">
+
+      <div class="form-row">
+        <div class="form-field full">
+          <label class="label">Nome Completo *</label>
+          <input class="input" formControlName="nome" />
+          <div *ngIf="formUsuario.get('nome')?.touched && formUsuario.get('nome')?.invalid" class="error">
+            <div *ngIf="formUsuario.get('nome')?.hasError('required')">O nome é obrigatório.</div>
+            <div *ngIf="formUsuario.get('nome')?.hasError('maxlength')">O nome deve ter no máximo 100 caracteres.</div>
+            <div *ngIf="formUsuario.get('nome')?.hasError('pattern')">Nome inválido. Use apenas letras, espaços ou hífen.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field full">
+          <label class="label">E-mail *</label>
+          <input class="input" formControlName="email" />
+          <div *ngIf="formUsuario.get('email')?.touched && formUsuario.get('email')?.invalid" class="error">
+            <div *ngIf="formUsuario.get('email')?.hasError('required')">O e-mail é obrigatório.</div>
+            <div *ngIf="formUsuario.get('email')?.hasError('maxlength')">O e-mail deve ter no máximo 320 caracteres.</div>
+            <div *ngIf="formUsuario.get('email')?.hasError('pattern')">E-mail inválido.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field small">
+          <label class="label">Telefone *</label>
+          <input class="input" formControlName="telefone" appMask="telefone" placeholder="(11) 98765-4321" />
+          <div *ngIf="formUsuario.get('telefone')?.touched && formUsuario.get('telefone')?.invalid" class="error">
+            <div *ngIf="formUsuario.get('telefone')?.hasError('required')">O telefone é obrigatório.</div>
+            <div *ngIf="formUsuario.get('telefone')?.hasError('minlength') || formUsuario.get('telefone')?.hasError('maxlength')">
+              O telefone deve ter entre 10 e 15 caracteres.
+            </div>
+            <div *ngIf="formUsuario.get('telefone')?.hasError('pattern')">Telefone inválido. Use um formato válido.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field small">
+          <label class="label">Perfil *</label>
+          <select class="input" formControlName="perfil">
+            <option value="">Selecione</option>
+            <option *ngFor="let p of perfis" [value]="p">{{ perfilLabels[p] }}</option>
+          </select>
+          <div *ngIf="formUsuario.get('perfil')?.touched && formUsuario.get('perfil')?.invalid" class="error">
+            <div *ngIf="formUsuario.get('perfil')?.hasError('required')">O perfil é obrigatório.</div>
+          </div>
+        </div>
+
+        <div class="form-field small" *ngIf="usuarioLogado.perfil !== 'ADMIN_EMPRESA'">
+          <label class="label">Empresa *</label>
+          <input type="text" class="input"
+                 formControlName="empresa"
+                 [value]="empresaSelecionada?.nome || ''"
+                 (input)="filtrarEmpresas($event)"
+                 (focus)="mostrarDropdown = true"
+                 (blur)="fecharDropdown()"
+                 placeholder="Digite o nome da empresa" />
+
+          <ul *ngIf="mostrarDropdown && empresasFiltradas.length" class="dropdown">
+            <li *ngFor="let e of empresasFiltradas" (mousedown)="selecionarEmpresa(e)">
+              {{ e.nome }}
+            </li>
+          </ul>
+
+          <div *ngIf="mostrarDropdown && mensagemNenhumaEmpresa" class="error">
+            {{ mensagemNenhumaEmpresa }}
+          </div>
+
+          <div *ngIf="formUsuario.get('empresa')?.touched && formUsuario.get('empresa')?.invalid" class="error">
+            <div *ngIf="formUsuario.get('empresa')?.hasError('required')">A empresa é obrigatória.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="checkbox">
+          <input type="checkbox" formControlName="ativo" checked /> Ativo
+        </label>
+      </div>
+
+      <p style="margin-top: var(--space-md)" class="text-muted">* Campos obrigatórios</p>
+
+      <div class="actions">
+        <button class="btn btn-ghost" type="button" (click)="cancelar()">Cancelar</button>
+        <button class="btn btn-primary" type="submit" [disabled]="formUsuario.invalid">Salvar</button>
+      </div>
+
+    </form>
+  </div>
+</div>

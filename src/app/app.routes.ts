@@ -9,6 +9,8 @@ import { ListarEmpresasComponent } from './pages/listar-empresas/listar-empresas
 import { LandingPageComponent } from './pages/landing-page/landing-page.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { authGuard } from './guards/auth.guard';
+import { CadastrarUsuarioComponent } from './pages/usuario/cadastrar-usuario/cadastrar-usuario.component';
+import { ListarUsuariosComponent } from './pages/usuario/listar-usuarios/listar-usuarios.component';
 
 export const routes: Routes = [
     // Public routes
@@ -32,6 +34,17 @@ export const routes: Routes = [
             { path: '', redirectTo: 'listar', pathMatch: 'full' },
             { path: 'cadastrar', component: CadastrarEmpresaComponent },
             { path: 'listar', component: ListarEmpresasComponent },
+        ]
+    },
+
+    {
+        path: 'usuario',
+        canActivate: [authGuard],
+        data: { roles: ['ADMIN', 'ADMIN_EMPRESA'] },
+        children: [
+            { path: '', redirectTo: 'listar', pathMatch: 'full' },
+            { path: 'cadastrar', component: CadastrarUsuarioComponent },
+            { path: 'listar', component: ListarUsuariosComponent },
         ]
     },
 

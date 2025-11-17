@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { EmpresaInput } from '../../models/empresa/empresaInput';
@@ -15,12 +15,13 @@ export class EmpresaService {
   constructor(private httpClient: HttpClient) {}
 
   cadastrar(
-    token: String,
+    token: string,
     empresaInput: EmpresaInput
   ): Observable<EmpresaOutput> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
+
     return this.httpClient.post<EmpresaOutput>(API_URL, empresaInput, {
       headers,
     });
@@ -34,15 +35,15 @@ export class EmpresaService {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
-
-    let url = `${API_URL}?page=${numPage}`;
+    let params = new HttpParams().set('page', numPage.toString());
 
     if (search) {
-      url += `&search=${encodeURIComponent(search)}`;
+      params = params.set('search', search);
     }
 
-    return this.httpClient.get<PaginationOutput<EmpresaOutput>>(url, {
+    return this.httpClient.get<PaginationOutput<EmpresaOutput>>(API_URL, {
       headers,
+      params,
     });
   }
 }

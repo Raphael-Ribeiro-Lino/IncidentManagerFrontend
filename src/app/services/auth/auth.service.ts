@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
+import { UsuarioTokenOutput } from '../../models/usuario/usuarioTokenOutput';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -37,4 +38,26 @@ export class AuthService {
       return null;
     }
   }
+
+getUsuarioLogado(): UsuarioTokenOutput | null {
+  const token = this.getToken();
+  if (!token) return null;
+
+  try {
+    const decoded: any = jwtDecode(token);
+    return {
+      id: decoded.id,
+      nome: decoded.nome,
+      email: decoded.email,
+      perfil: decoded.role || decoded.perfil,
+      ativo: decoded.ativo,
+      empresa_id: decoded.empresa_id,
+      iss: decoded.iss,
+      iat: decoded.iat,
+      exp: decoded.exp
+    };
+  } catch {
+    return null;
+  }
+}
 }
