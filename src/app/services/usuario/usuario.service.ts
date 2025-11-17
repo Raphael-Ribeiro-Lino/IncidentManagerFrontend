@@ -17,7 +17,7 @@ export class UsuarioService {
   buscarPorToken(token: string): Observable<UsuarioOutput> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     });
 
     return this.httpClient.get<UsuarioOutput>(API_URL, { headers });
@@ -31,16 +31,30 @@ export class UsuarioService {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     });
-    return this.httpClient.post<UsuarioOutput>(API_URL, usuarioInput, { headers });
+    return this.httpClient.post<UsuarioOutput>(API_URL, usuarioInput, {
+      headers,
+    });
   }
 
-listar(token: string, numPage: number): Observable<PaginationOutput<UsuarioOutput>> {
+  listar(
+    token: string,
+    numPage: number,
+    searchTerm: string = ''
+  ): Observable<PaginationOutput<UsuarioOutput>> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     });
-    const params = new HttpParams().set('page', numPage.toString());
 
-    return this.httpClient.get<PaginationOutput<UsuarioOutput>>(API_URL, { headers, params });
+    let params = new HttpParams().set('page', numPage.toString());
+
+    if (searchTerm) {
+      params = params.set('search', searchTerm);
+    }
+
+    return this.httpClient.get<PaginationOutput<UsuarioOutput>>(API_URL + "/lista", {
+      headers,
+      params,
+    });
   }
 }

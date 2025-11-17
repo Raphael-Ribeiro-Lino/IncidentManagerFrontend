@@ -1,1 +1,137 @@
-<p>listar-usuarios works!</p>
+<main class="empresa-container">
+  <h1 class="page-title">Usuários Cadastrados</h1>
+  <h2 class="page-subtitle">
+    Visualize e gerencie todos os usuários cadastrados
+  </h2>
+
+  <!-- MENSAGENS DE SUCESSO / ERRO -->
+  <ng-container *ngIf="errorMessages.length || successfullyRegisteredUsuario">
+    <mat-card *ngIf="errorMessages.length" class="message-card error">
+      <mat-icon>error</mat-icon>
+      <div class="text">
+        <div *ngFor="let error of errorMessages">{{ error }}</div>
+      </div>
+    </mat-card>
+
+    <mat-card *ngIf="successfullyRegisteredUsuario" class="message-card success">
+      <mat-icon>check_circle</mat-icon>
+      <div class="text">{{ successfullyRegisteredUsuario }}</div>
+    </mat-card>
+  </ng-container>
+
+  <!-- HEADER: BUSCA + BOTÃO CADASTRAR -->
+  <div class="header-actions">
+    <mat-form-field appearance="outline" class="material-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        placeholder="Buscar por nome ou e-mail..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="searchUsuarios($event)"
+      />
+      <button
+        mat-icon-button
+        *ngIf="searchTerm"
+        matSuffix
+        (click)="limparBusca()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <button
+      *ngIf="usuarios.length > 0"
+      mat-raised-button
+      color="primary"
+      class="btn-cadastrar"
+      routerLink="/usuario/cadastrar"
+    >
+      <mat-icon>person_add</mat-icon>
+      Registrar Novo Usuário
+    </button>
+  </div>
+
+  <!-- SKELETON LOADING -->
+  <ng-container *ngIf="isLoading">
+    <div class="empresa-list">
+      <mat-card class="empresa-card-skeleton" *ngFor="let i of [1,2,3,4]">
+        <div class="skeleton-line full-width"></div>
+        <div class="skeleton-line medium-width"></div>
+        <div class="skeleton-line short-width"></div>
+      </mat-card>
+    </div>
+  </ng-container>
+
+  <!-- LISTA DE USUÁRIOS -->
+  <div *ngIf="!isLoading && usuarios.length > 0" class="empresa-list better-layout">
+    <mat-card class="empresa-row" *ngFor="let usuario of usuarios" matRipple>
+      <div class="row-left">
+        <div
+          class="status-block"
+          [class.active]="usuario.ativo"
+          [class.inactive]="!usuario.ativo"
+        >
+          <mat-icon>{{ usuario.ativo ? "check_circle" : "cancel" }}</mat-icon>
+          <span>{{ usuario.ativo ? "Ativo" : "Inativo" }}</span>
+        </div>
+        <div class="info-block">
+          <h3>{{ usuario.nome }}</h3>
+          <p><mat-icon class="icon">email</mat-icon> {{ usuario.email }}</p>
+          <p><mat-icon class="icon">phone</mat-icon> {{ usuario.telefone }}</p>
+          <p>
+            <mat-icon class="icon">business</mat-icon>
+            {{ usuario.empresa.nome }} - {{ usuario.empresa.cidade }}/{{ usuario.empresa.estado }}
+          </p>
+        </div>
+              <div class="row-right">
+        <button
+          mat-raised-button
+          color="accent"
+          class="btn-editar"
+          [routerLink]="'/usuario/' + usuario.id + '/editar'"
+        >
+          <mat-icon>edit</mat-icon> Alterar Dados
+        </button>
+      </div>
+      </div>
+
+    </mat-card>
+  </div>
+
+  <!-- EMPTY STATE / SEM RESULTADOS -->
+  <div *ngIf="!isLoading && usuarios.length === 0" class="empty-state">
+    <mat-icon class="empty-icon">
+      {{ searchTerm ? 'person_off' : 'person' }}
+    </mat-icon>
+    
+    <h2>
+      {{ searchTerm ? 'Nenhum resultado encontrado' : 'Nenhum usuário cadastrado' }}
+    </h2>
+    
+    <p>
+      {{ searchTerm 
+          ? 'Não encontramos nenhum usuário com "' + searchTerm + '". Tente outro termo de pesquisa.' 
+          : 'Comece adicionando o primeiro usuário para gerenciar o sistema.' }}
+    </p>
+    
+    <button
+      *ngIf="!searchTerm"
+      mat-raised-button
+      color="primary"
+      class="empty-btn"
+      routerLink="/usuario/cadastrar"
+    >
+      <mat-icon>person_add</mat-icon>
+      Cadastrar Usuário
+    </button>
+  </div>
+
+  <!-- PAGINAÇÃO -->
+  <app-pagination
+    *ngIf="!isLoading && usuarios.length > 0"
+    [pageNumber]="currentPage"
+    [totalPages]="totalPages"
+    (pageChange)="carregarPagina($event)"
+  >
+  </app-pagination>
+</main>
