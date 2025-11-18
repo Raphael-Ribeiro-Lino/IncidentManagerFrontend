@@ -1,6 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, Subject } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -28,36 +28,34 @@ import { EmpresaService } from '../../../services/empresa/empresa.service';
     MatIconModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    MatChipsModule
+    MatChipsModule,
   ],
   templateUrl: './listar-empresas.component.html',
   styleUrls: ['./listar-empresas.component.css'],
 })
 export class ListarEmpresasComponent implements OnInit {
   empresas: EmpresaOutput[] = [];
-  messageWithoutRegisteredEmpresas: string = '';
-  successfullyRegisteredEmpresa: string = '';
+  isLoading = false;
+  searchTerm = '';
   errorMessages: string[] = [];
+  successfullyRegisteredEmpresa = '';
+  currentPage = 0;
+  totalPages = 1;
 
-  isLoading: boolean = true;
-  searchTerm: string = '';
   private searchSubject = new Subject<string>();
-
-  currentPage: number = 0;
-  totalPages: number = 1;
 
   constructor(private empresaService: EmpresaService, private router: Router) {
     const currentNavigation = router.getCurrentNavigation();
     if (currentNavigation?.extras?.state?.['successData']) {
       this.successfullyRegisteredEmpresa =
-        currentNavigation?.extras?.state?.['successData'];
+        currentNavigation.extras.state['successData'];
       setTimeout(() => {
         this.successfullyRegisteredEmpresa = '';
       }, 3000);
     }
 
-    this.searchSubject.pipe(debounceTime(300)).subscribe((searchValue) => {
-      this.carregarPagina(0, searchValue);
+    this.searchSubject.pipe(debounceTime(300)).subscribe((term) => {
+      this.carregarPagina(0, term);
     });
   }
 
@@ -65,15 +63,18 @@ export class ListarEmpresasComponent implements OnInit {
     this.carregarPagina(0);
   }
 
-  searchEmpresas(term: string): void {
+  searchEmpresas(term: string) {
     this.searchTerm = term.trim();
     this.searchSubject.next(this.searchTerm);
   }
 
-  carregarPagina(page: number, search: string = this.searchTerm) {
-    const token = localStorage.getItem('token') as String;
-    this.currentPage = page;
+  limparBusca() {
+    this.searchTerm = '';
+    this.carregarPagina(0);
+  }
 
+  carregarPagina(page: number, search: string = this.searchTerm) {
+    const token = localStorage.getItem('token') as string;
     this.isLoading = true;
     this.empresas = [];
 
@@ -81,24 +82,16 @@ export class ListarEmpresasComponent implements OnInit {
       next: (res) => {
         this.isLoading = false;
         this.errorMessages = [];
-
         if (res?.content?.length > 0) {
           this.empresas = res.content;
           this.currentPage = res.page?.number ?? 0;
           this.totalPages = res.page?.totalPages ?? 1;
-
-          this.messageWithoutRegisteredEmpresas = '';
         } else {
           this.empresas = [];
           this.currentPage = 0;
           this.totalPages = 1;
-
-          this.messageWithoutRegisteredEmpresas = search
-            ? `Nenhuma empresa encontrada para "${search}".`
-            : 'Não há empresas cadastradas.';
         }
       },
-
       error: (err) => {
         this.isLoading = false;
         console.error(err);
