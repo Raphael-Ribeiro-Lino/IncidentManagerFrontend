@@ -1,27 +1,28 @@
 <div class="usuario-page">
   <div class="usuario-card">
-    <h1 class="usuario-title">Alterar Usuário</h1>
+    <h1 class="usuario-title">Alterar Dados do Usuário</h1>
 
-    <!-- Mensagens de erro -->
+    <!-- Erros -->
     <div *ngIf="errorMessages.length" class="error-message">
       <div class="error" *ngFor="let msg of errorMessages">{{ msg }}</div>
     </div>
 
-    <!-- Mensagem de sucesso -->
+    <!-- Sucesso -->
     <div *ngIf="successfullyUpdatedUsuario" class="success">
       {{ successfullyUpdatedUsuario }}
     </div>
 
-    <form *ngIf="formUsuario" [formGroup]="formUsuario" class="usuario-form" (ngSubmit)="submitForm()">
+    <form *ngIf="formUsuario" [formGroup]="formUsuario" (ngSubmit)="submitForm()" class="usuario-form">
 
       <!-- Nome -->
       <div class="form-row">
         <div class="form-field full">
           <label class="label">Nome Completo *</label>
           <input class="input" formControlName="nome" />
+
           <div *ngIf="formUsuario.get('nome')?.touched && formUsuario.get('nome')?.invalid" class="error">
             <div *ngIf="formUsuario.get('nome')?.hasError('required')">O nome é obrigatório.</div>
-            <div *ngIf="formUsuario.get('nome')?.hasError('maxlength')">O nome deve ter no máximo 100 caracteres.</div>
+            <div *ngIf="formUsuario.get('nome')?.hasError('maxlength')">Máximo de 100 caracteres.</div>
             <div *ngIf="formUsuario.get('nome')?.hasError('pattern')">Nome inválido. Use apenas letras, espaços ou hífen.</div>
           </div>
         </div>
@@ -32,9 +33,10 @@
         <div class="form-field full">
           <label class="label">E-mail *</label>
           <input class="input" formControlName="email" />
+
           <div *ngIf="formUsuario.get('email')?.touched && formUsuario.get('email')?.invalid" class="error">
             <div *ngIf="formUsuario.get('email')?.hasError('required')">O e-mail é obrigatório.</div>
-            <div *ngIf="formUsuario.get('email')?.hasError('maxlength')">O e-mail deve ter no máximo 320 caracteres.</div>
+            <div *ngIf="formUsuario.get('email')?.hasError('maxlength')">Máximo de 320 caracteres.</div>
             <div *ngIf="formUsuario.get('email')?.hasError('pattern')">E-mail inválido.</div>
           </div>
         </div>
@@ -42,15 +44,19 @@
 
       <!-- Telefone e Perfil -->
       <div class="form-row">
+
         <div class="form-field small">
           <label class="label">Telefone *</label>
-          <input class="input" formControlName="telefone" appMask="telefone" placeholder="(11) 98765-4321" />
+          <input class="input" formControlName="telefone" placeholder="(11) 98765-4321" appMask="telefone" />
+
           <div *ngIf="formUsuario.get('telefone')?.touched && formUsuario.get('telefone')?.invalid" class="error">
-            <div *ngIf="formUsuario.get('telefone')?.hasError('required')">O telefone é obrigatório.</div>
+            <div *ngIf="formUsuario.get('telefone')?.hasError('required')">Telefone obrigatório.</div>
             <div *ngIf="formUsuario.get('telefone')?.hasError('minlength') || formUsuario.get('telefone')?.hasError('maxlength')">
-              O telefone deve ter entre 10 e 15 caracteres.
+              Deve ter entre 10 e 15 caracteres.
             </div>
-            <div *ngIf="formUsuario.get('telefone')?.hasError('pattern')">Telefone inválido. Use um formato válido.</div>
+            <div *ngIf="formUsuario.get('telefone')?.hasError('pattern')">
+              Telefone inválido!<br>Use um formato válido, como (11) 98765-4321 ou 11 98765-4321.
+            </div>
           </div>
         </div>
 
@@ -58,34 +64,38 @@
           <label class="label">Perfil *</label>
           <select class="input" formControlName="perfil">
             <option value="">Selecione</option>
-            <option *ngFor="let p of perfis" [value]="p">{{ perfilLabels[p] }}</option>
+            <option *ngFor="let p of perfilLabels | keyvalue" [value]="p.key">
+              {{ p.value }}
+            </option>
           </select>
+
           <div *ngIf="formUsuario.get('perfil')?.touched && formUsuario.get('perfil')?.invalid" class="error">
             <div *ngIf="formUsuario.get('perfil')?.hasError('required')">O perfil é obrigatório.</div>
           </div>
         </div>
       </div>
 
-      <!-- Empresa (somente leitura) -->
+      <!-- Empresa -->
       <div class="form-row">
         <div class="form-field full">
           <label class="label">Empresa</label>
-          <input type="text" class="input input-readonly" [value]="empresaSelecionada?.nome || ''" readonly />
+          <input class="input input-readonly" [value]="empresaSelecionada?.nome" readonly />
         </div>
       </div>
 
       <!-- Ativo -->
       <div class="form-row">
         <label class="checkbox">
-          <input type="checkbox" formControlName="ativo" /> Ativo
+          <input type="checkbox" formControlName="ativo" />
+          Ativo
         </label>
       </div>
 
       <p class="text-muted">* Campos obrigatórios</p>
 
       <div class="actions">
-        <button class="btn btn-ghost" type="button" (click)="cancelar()">Cancelar</button>
-        <button class="btn btn-primary" type="submit" [disabled]="formUsuario.invalid">Salvar</button>
+        <button type="button" class="btn btn-ghost" (click)="cancelar()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="formUsuario.invalid">Salvar</button>
       </div>
     </form>
   </div>

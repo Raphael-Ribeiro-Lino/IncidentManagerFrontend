@@ -18,7 +18,8 @@
           <div *ngIf="formUsuario.get('nome')?.touched && formUsuario.get('nome')?.invalid" class="error">
             <div *ngIf="formUsuario.get('nome')?.hasError('required')">O nome é obrigatório.</div>
             <div *ngIf="formUsuario.get('nome')?.hasError('maxlength')">O nome deve ter no máximo 100 caracteres.</div>
-            <div *ngIf="formUsuario.get('nome')?.hasError('pattern')">Nome inválido. Use apenas letras, espaços ou hífen.</div>
+            <div *ngIf="formUsuario.get('nome')?.hasError('pattern')">Nome inválido. Use apenas letras, espaços ou
+              hífen.</div>
           </div>
         </div>
       </div>
@@ -29,7 +30,8 @@
           <input class="input" formControlName="email" />
           <div *ngIf="formUsuario.get('email')?.touched && formUsuario.get('email')?.invalid" class="error">
             <div *ngIf="formUsuario.get('email')?.hasError('required')">O e-mail é obrigatório.</div>
-            <div *ngIf="formUsuario.get('email')?.hasError('maxlength')">O e-mail deve ter no máximo 320 caracteres.</div>
+            <div *ngIf="formUsuario.get('email')?.hasError('maxlength')">O e-mail deve ter no máximo 320 caracteres.
+            </div>
             <div *ngIf="formUsuario.get('email')?.hasError('pattern')">E-mail inválido.</div>
           </div>
         </div>
@@ -41,10 +43,13 @@
           <input class="input" formControlName="telefone" appMask="telefone" placeholder="(11) 98765-4321" />
           <div *ngIf="formUsuario.get('telefone')?.touched && formUsuario.get('telefone')?.invalid" class="error">
             <div *ngIf="formUsuario.get('telefone')?.hasError('required')">O telefone é obrigatório.</div>
-            <div *ngIf="formUsuario.get('telefone')?.hasError('minlength') || formUsuario.get('telefone')?.hasError('maxlength')">
+            <div
+              *ngIf="formUsuario.get('telefone')?.hasError('minlength') || formUsuario.get('telefone')?.hasError('maxlength')">
               O telefone deve ter entre 10 e 15 caracteres.
             </div>
-            <div *ngIf="formUsuario.get('telefone')?.hasError('pattern')">Telefone inválido. Use um formato válido.</div>
+            <div *ngIf="formUsuario.get('telefone')?.hasError('pattern')">
+              Telefone inválido!<br>Use um formato válido, como (11) 98765-4321 ou 11 98765-4321.
+            </div>
           </div>
         </div>
       </div>
@@ -63,13 +68,9 @@
 
         <div class="form-field small" *ngIf="usuarioLogado.perfil !== 'ADMIN_EMPRESA'">
           <label class="label">Empresa *</label>
-          <input type="text" class="input"
-                 formControlName="empresa"
-                 [value]="empresaSelecionada?.nome || ''"
-                 (input)="filtrarEmpresas($event)"
-                 (focus)="mostrarDropdown = true"
-                 (blur)="fecharDropdown()"
-                 placeholder="Digite o nome da empresa" />
+          <input type="text" class="input" formControlName="empresa" [value]="empresaSelecionada?.nome || ''"
+            (input)="filtrarEmpresas($event)" (focus)="mostrarDropdown = true" (blur)="fecharDropdown()"
+            placeholder="Digite o nome da empresa" />
 
           <ul *ngIf="mostrarDropdown && empresasFiltradas.length" class="dropdown">
             <li *ngFor="let e of empresasFiltradas" (mousedown)="selecionarEmpresa(e)">
