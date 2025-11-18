@@ -1,0 +1,155 @@
+<div class="chamado-page">
+    <div class="chamado-card">
+        <h1 class="chamado-title">Abrir Novo Chamado</h1>
+
+        <div *ngIf="errorMessages.length" class="error-message">
+            <div class="error" *ngFor="let msg of errorMessages">{{ msg }}</div>
+        </div>
+        <div *ngIf="successfullyRegisteredChamado" class="success">
+            {{ successfullyRegisteredChamado }}
+        </div>
+        <form [formGroup]="formChamado" class="chamado-form" (ngSubmit)="submitForm()">
+
+            <div class="form-row">
+                <div class="form-field full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Título do Chamado</mat-label>
+                        <input matInput formControlName="titulo" placeholder="Ex: Problema com o sistema X ou Meu PC não liga" />
+                        <mat-error *ngIf="f['titulo'].hasError('required')">O título é obrigatório.</mat-error>
+                        <mat-error *ngIf="f['titulo'].hasError('minlength')">O título deve ter no mínimo 5 caracteres.</mat-error>
+                        <mat-error *ngIf="f['titulo'].hasError('maxlength')">O título deve ter no máximo 100 caracteres.</mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field small">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Prioridade</mat-label>
+                        <mat-select formControlName="prioridade">
+                            <mat-option value="">Selecione a Prioridade</mat-option>
+                            <mat-option
+                                *ngFor="let p of prioridades"
+                                [value]="p"
+                                [ngClass]="'prioridade-chip-' + p.toLowerCase()"
+                            >
+                                <span class="prioridade-option-label">
+                                    <span [ngClass]="'prioridade-dot-' + p.toLowerCase()"></span>
+                                    {{ p | lowercase | titlecase }}
+                                </span>
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="f['prioridade'].hasError('required')">
+                            O nível de prioridade é obrigatório.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="form-field small"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Descrição Detalhada</mat-label>
+                        <textarea
+                            matInput
+                            formControlName="descricao"
+                            rows="5"
+                            placeholder="Descreva o problema em detalhes: o que aconteceu, quando, e qual a consequência."
+                        ></textarea>
+                        <mat-error *ngIf="f['descricao'].hasError('required')">A descrição é obrigatória.</mat-error>
+                        <mat-error *ngIf="f['descricao'].hasError('minlength')">A descrição deve ter no mínimo 10 caracteres.</mat-error>
+                        <mat-error *ngIf="f['descricao'].hasError('maxlength')">A descrição deve ter no máximo 2000 caracteres.</mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div 
+                    class="form-field full drop-zone" 
+                    [class.dragging]="isDragging"
+                    (drop)="onDrop($event)" 
+                    (dragover)="onDragOver($event)"
+                    (dragleave)="onDragLeave($event)"
+                >
+                    <label class="label">Anexar Arquivos (Opcional)</label>
+
+                    <div class="file-input-wrapper">
+                        <input
+                            type="file"
+                            multiple
+                            class="hidden-file-input"
+                            (change)="onFileSelected($event)"
+                            #fileInput
+                        />
+                        <button
+                            type="button"
+                            class="btn btn-ghost file-upload-btn"
+                            (click)="fileInput.click()"
+                        >
+                            <mat-icon>attachment</mat-icon> Selecionar Arquivos
+                        </button>
+                        <span
+                            class="file-input-info"
+                            *ngIf="anexosSelecionados.length === 0"
+                        >Nenhum arquivo selecionado</span>
+                    </div>
+
+                    <p class="text-muted small-text">
+                        Formatos permitidos: PDF, DOCX, PNG, JPG, ZIP (Máx 5MB por arquivo)
+                    </p>
+
+                    <div
+                        *ngIf="anexosSelecionados.length > 0"
+                        class="anexos-chips-container"
+                    >
+                        <div
+                            *ngFor="let anexo of anexosSelecionados; let i = index"
+                            class="anexo-chip"
+                        >
+                            <mat-icon class="anexo-icon">
+                                {{ getFileIcon(anexo.tipo) }}
+                            </mat-icon>
+                            <span class="anexo-info">
+                                <span class="anexo-name" title="{{ anexo.nomeArquivo }}">
+                                    {{ anexo.nomeArquivo | slice : 0 : 20 }}{{ anexo.nomeArquivo.length > 20 ? "..." : "" }}
+                                </span>
+                                <span class="anexo-size">
+                                    ({{ anexo.tamanhoBytes / 1024 / 1024 | number : "1.2-2" }} MB)
+                                </span>
+                            </span>
+                            <button
+                                type="button"
+                                class="btn-remove-chip"
+                                (click)="removeAnexo(i)"
+                                title="Remover anexo"
+                            >
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p style="margin-top: var(--space-md)" class="text-muted">
+                * Campos obrigatórios
+            </p>
+
+            <div class="actions">
+                <button class="btn btn-ghost" type="button" (click)="cancelar()">
+                    Cancelar
+                </button>
+                <button
+                    class="btn btn-primary"
+                    type="submit"
+                    [disabled]="formChamado.invalid || isLoading"
+                >
+                    <span *ngIf="!isLoading">Abrir Chamado</span>
+                    <span *ngIf="isLoading" class="spinner-container">
+                        <span class="spinner"></span> Enviando...
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

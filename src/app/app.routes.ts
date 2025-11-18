@@ -14,6 +14,8 @@ import { ListarUsuariosComponent } from './pages/usuario/listar-usuarios/listar-
 import { AlterarDadosUsuarioComponent } from './pages/usuario/alterar-dados-usuario/alterar-dados-usuario.component';
 import { AlterarMeusDadosComponent } from './pages/usuario/alterar-meus-dados/alterar-meus-dados.component';
 import { AlterarSenhaComponent } from './pages/usuario/alterar-senha/alterar-senha.component';
+import { ListarChamadosComponent } from './pages/chamado/listar-chamados/listar-chamados.component';
+import { CadastrarChamadoComponent } from './pages/chamado/cadastrar-chamado/cadastrar-chamado.component';
 
 export const routes: Routes = [
   // Public routes
@@ -44,7 +46,7 @@ export const routes: Routes = [
     component: AlterarMeusDadosComponent,
     canActivate: [authGuard],
   },
-    {
+  {
     path: 'usuario/alterar-senha',
     component: AlterarSenhaComponent,
     canActivate: [authGuard],
@@ -58,6 +60,16 @@ export const routes: Routes = [
       { path: 'cadastrar', component: CadastrarUsuarioComponent },
       { path: 'listar', component: ListarUsuariosComponent },
       { path: ':id/editar', component: AlterarDadosUsuarioComponent },
+    ],
+  },
+
+  {
+    path: 'chamado',
+    canActivate: [authGuard],
+    children: [
+      { path: '', redirectTo: 'listar', pathMatch: 'full' },
+      { path: 'listar', component:  ListarChamadosComponent},
+      { path: 'cadastrar', component: CadastrarChamadoComponent}
     ],
   },
 

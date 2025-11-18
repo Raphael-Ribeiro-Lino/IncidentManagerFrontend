@@ -1,0 +1,1 @@
+export type TipoAnexoEnum = 'PDF' | 'DOC' | 'DOCX' | 'PNG' | 'JPG' | 'ZIP';
