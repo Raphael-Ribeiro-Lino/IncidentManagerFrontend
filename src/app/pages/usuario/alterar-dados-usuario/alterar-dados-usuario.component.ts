@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { EmpresaService } from '../../../services/empresa/empresa.service';
@@ -71,11 +76,21 @@ export class AlterarDadosUsuarioComponent implements OnInit {
     this.empresaSelecionada = usuario.empresa || null;
 
     const formConfig: any = {
-      nome: [usuario.nome || '', [Validators.required, Validators.maxLength(100)]],
-      email: [usuario.email || '', [Validators.required, Validators.maxLength(320)]],
+      nome: [
+        usuario.nome || '',
+        [Validators.required, Validators.maxLength(100)],
+      ],
+      email: [
+        usuario.email || '',
+        [Validators.required, Validators.maxLength(320)],
+      ],
       telefone: [
         usuario.telefone || '',
-        [Validators.required, Validators.minLength(10), Validators.maxLength(15)],
+        [
+          Validators.required,
+          Validators.minLength(10),
+          Validators.maxLength(15),
+        ],
       ],
       ativo: [usuario.ativo, Validators.required],
       perfil: [usuario.perfil, Validators.required],
@@ -101,7 +116,9 @@ export class AlterarDadosUsuarioComponent implements OnInit {
         this.empresasFiltradas = data.content;
         this.mostrarDropdown = true;
         this.mensagemNenhumaEmpresa =
-          this.empresasFiltradas.length === 0 ? 'Nenhuma empresa encontrada.' : '';
+          this.empresasFiltradas.length === 0
+            ? 'Nenhuma empresa encontrada.'
+            : '';
       },
       error: () => {
         this.empresasFiltradas = [];
@@ -113,9 +130,14 @@ export class AlterarDadosUsuarioComponent implements OnInit {
   buscarEmpresas(search: string = '', page: number = 0) {
     this.empresaService.listar(this.token, page, search).subscribe({
       next: (data) => {
-        this.empresasFiltradas = page === 0 ? data.content : [...this.empresasFiltradas, ...data.content];
+        this.empresasFiltradas =
+          page === 0
+            ? data.content
+            : [...this.empresasFiltradas, ...data.content];
         this.mensagemNenhumaEmpresa =
-          this.empresasFiltradas.length === 0 ? 'Nenhuma empresa encontrada.' : '';
+          this.empresasFiltradas.length === 0
+            ? 'Nenhuma empresa encontrada.'
+            : '';
       },
       error: () => {
         this.empresasFiltradas = [];
@@ -143,7 +165,9 @@ export class AlterarDadosUsuarioComponent implements OnInit {
   submitForm() {
     this.errorMessages = [];
     if (this.formUsuario.invalid) {
-      this.errorMessages.push('Corrija os erros do formulário antes de salvar.');
+      this.errorMessages.push(
+        'Corrija os erros do formulário antes de salvar.'
+      );
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -155,29 +179,42 @@ export class AlterarDadosUsuarioComponent implements OnInit {
         .trim()
         .replace(/\s+/g, ' ')
         .split(' ')
-        .map((p: string) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
+        .map(
+          (p: string) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()
+        )
         .join(' ');
     }
 
     if (payload.telefone) {
       const numeros = payload.telefone.replace(/\D/g, '');
       if (numeros.length === 11)
-        payload.telefone = `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+        payload.telefone = `(${numeros.slice(0, 2)}) ${numeros.slice(
+          2,
+          7
+        )}-${numeros.slice(7)}`;
       else if (numeros.length === 10)
-        payload.telefone = `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(6)}`;
+        payload.telefone = `(${numeros.slice(0, 2)}) ${numeros.slice(
+          2,
+          6
+        )}-${numeros.slice(6)}`;
       else payload.telefone = numeros;
     }
 
-    this.usuarioService.alterarDados(this.token, this.usuarioId, payload).subscribe({
-      next: () => {
-        this.successfullyUpdatedUsuario = 'Dados atualizados com sucesso!';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => this.router.navigate(['/usuario/listar']), 2000);
-      },
-      error: (erro) => {
-        this.errorMessages.push(erro.error?.message || 'Ocorreu um erro inesperado.');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      },
-    });
+    this.usuarioService
+      .alterarDados(this.token, this.usuarioId, payload)
+      .subscribe({
+        next: () => {
+          this.successfullyUpdatedUsuario = 'Dados atualizados com sucesso!';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(() => this.router.navigate(['/usuario/listar']), 2000);
+        },
+        error: (erro) => {
+          this.errorMessages.push(
+            erro.error?.message ||
+              'Ocorreu um erro inesperado. Tente mais tarde.'
+          );
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+      });
   }
 }

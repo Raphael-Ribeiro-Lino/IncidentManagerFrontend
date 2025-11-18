@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { UsuarioOutput } from '../../models/usuario/usuarioOutput';
 import { UsuarioInput } from '../../models/usuario/usuarioInput';
 import { PaginationOutput } from '../../models/pagination/paginationOutput';
+import { AlteraMeusDadosInput } from '../../models/usuario/alteraMeusDadosInput';
 
 const API_URL = environment.URL_API + '/usuario';
 
@@ -75,6 +76,16 @@ export class UsuarioService {
       'Content-Type': 'application/json',
     });
     return this.httpClient.put<UsuarioOutput>(API_URL + `/${id}/altera-dados`, usuarioInput, {
+      headers,
+    });
+  }
+
+  alterarMeusDados(token: string, alteraMeusDadosInput: AlteraMeusDadosInput): Observable<UsuarioOutput>{
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+    return this.httpClient.put<UsuarioOutput>(API_URL + '/altera-meus-dados', alteraMeusDadosInput, {
       headers,
     });
   }
