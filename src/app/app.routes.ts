@@ -13,6 +13,7 @@ import { CadastrarUsuarioComponent } from './pages/usuario/cadastrar-usuario/cad
 import { ListarUsuariosComponent } from './pages/usuario/listar-usuarios/listar-usuarios.component';
 import { AlterarDadosUsuarioComponent } from './pages/usuario/alterar-dados-usuario/alterar-dados-usuario.component';
 import { AlterarMeusDadosComponent } from './pages/usuario/alterar-meus-dados/alterar-meus-dados.component';
+import { AlterarSenhaComponent } from './pages/usuario/alterar-senha/alterar-senha.component';
 
 export const routes: Routes = [
   // Public routes
@@ -41,6 +42,11 @@ export const routes: Routes = [
   {
     path: 'usuario/alterar-meus-dados',
     component: AlterarMeusDadosComponent,
+    canActivate: [authGuard],
+  },
+    {
+    path: 'usuario/alterar-senha',
+    component: AlterarSenhaComponent,
     canActivate: [authGuard],
   },
   {

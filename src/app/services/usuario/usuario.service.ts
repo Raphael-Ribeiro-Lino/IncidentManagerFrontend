@@ -6,6 +6,7 @@ import { UsuarioOutput } from '../../models/usuario/usuarioOutput';
 import { UsuarioInput } from '../../models/usuario/usuarioInput';
 import { PaginationOutput } from '../../models/pagination/paginationOutput';
 import { AlteraMeusDadosInput } from '../../models/usuario/alteraMeusDadosInput';
+import { AlteraSenhaInput } from '../../models/usuario/alteraSenhaInput';
 
 const API_URL = environment.URL_API + '/usuario';
 
@@ -31,7 +32,8 @@ export class UsuarioService {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
-    });usuarioInput
+    });
+    usuarioInput;
     return this.httpClient.post<UsuarioOutput>(API_URL, usuarioInput, {
       headers,
     });
@@ -70,23 +72,47 @@ export class UsuarioService {
     return this.httpClient.get<UsuarioOutput>(API_URL + '/' + id, { headers });
   }
 
-  alterarDados(token: string, id: number, usuarioInput: UsuarioInput){
+  alterarDados(token: string, id: number, usuarioInput: UsuarioInput) {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     });
-    return this.httpClient.put<UsuarioOutput>(API_URL + `/${id}/altera-dados`, usuarioInput, {
-      headers,
-    });
+    return this.httpClient.put<UsuarioOutput>(
+      API_URL + `/${id}/altera-dados`,
+      usuarioInput,
+      {
+        headers,
+      }
+    );
   }
 
-  alterarMeusDados(token: string, alteraMeusDadosInput: AlteraMeusDadosInput): Observable<UsuarioOutput>{
+  alterarMeusDados(
+    token: string,
+    alteraMeusDadosInput: AlteraMeusDadosInput
+  ): Observable<UsuarioOutput> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     });
-    return this.httpClient.put<UsuarioOutput>(API_URL + '/altera-meus-dados', alteraMeusDadosInput, {
-      headers,
+    return this.httpClient.put<UsuarioOutput>(
+      API_URL + '/altera-meus-dados',
+      alteraMeusDadosInput,
+      {
+        headers,
+      }
+    );
+  }
+
+  alterarSenha(token: string, alteraSenhaInput: AlteraSenhaInput) {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     });
+
+    return this.httpClient.put<void>(
+      API_URL + '/altera-senha',
+      alteraSenhaInput,
+      { headers }
+    );
   }
 }
