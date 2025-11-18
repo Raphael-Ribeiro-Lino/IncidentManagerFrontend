@@ -110,7 +110,7 @@
   </div>
 
   <!-- EMPTY STATE / SEM RESULTADOS -->
-  <div *ngIf="!isLoading && usuarios.length === 0" class="empty-state">
+  <div *ngIf="!isLoading && usuarios.length === 0 && !loadingFailed" class="empty-state">
     <mat-icon class="empty-icon">
       {{ searchTerm ? "person_off" : "person" }}
     </mat-icon>
