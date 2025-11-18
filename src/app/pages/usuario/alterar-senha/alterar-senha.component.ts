@@ -6,7 +6,7 @@ import {
   Validators,
   AbstractControl,
   ValidationErrors,
-  ReactiveFormsModule
+  ReactiveFormsModule,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,10 +18,9 @@ import { AlteraSenhaInput } from '../../../models/usuario/alteraSenhaInput';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, MatIconModule],
   templateUrl: './alterar-senha.component.html',
-  styleUrls: ['./alterar-senha.component.css']
+  styleUrls: ['./alterar-senha.component.css'],
 })
 export class AlterarSenhaComponent implements OnInit {
-
   formAlteraSenha!: FormGroup;
   errorMessages: string[] = [];
   successMessage = '';
@@ -29,7 +28,7 @@ export class AlterarSenhaComponent implements OnInit {
   showPassword = {
     senhaAtual: false,
     novaSenha: false,
-    repetirNovaSenha: false
+    repetirNovaSenha: false,
   };
 
   constructor(
@@ -41,7 +40,15 @@ export class AlterarSenhaComponent implements OnInit {
   ngOnInit(): void {
     this.formAlteraSenha = this.formBuilder.group(
       {
-        senhaAtual: ['', [Validators.required]],
+        senhaAtual: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(
+              '^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$'
+            ),
+          ],
+        ],
 
         novaSenha: [
           '',
@@ -51,8 +58,8 @@ export class AlterarSenhaComponent implements OnInit {
             Validators.maxLength(255),
             Validators.pattern(
               '^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$'
-            )
-          ]
+            ),
+          ],
         ],
 
         repetirNovaSenha: [
@@ -63,9 +70,9 @@ export class AlterarSenhaComponent implements OnInit {
             Validators.maxLength(255),
             Validators.pattern(
               '^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$'
-            )
-          ]
-        ]
+            ),
+          ],
+        ],
       },
       { validators: this.passwordsMatchValidator }
     );
@@ -82,6 +89,11 @@ export class AlterarSenhaComponent implements OnInit {
     if (nova && repetir && nova !== repetir) {
       group.get('repetirNovaSenha')?.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
+    }
+
+    const repetirControl = group.get('repetirNovaSenha');
+    if (repetirControl?.hasError('passwordMismatch')) {
+      repetirControl.setErrors(null);
     }
 
     return null;
@@ -101,15 +113,20 @@ export class AlterarSenhaComponent implements OnInit {
 
     this.usuarioService.alterarSenha(token, input).subscribe({
       next: () => {
-        this.successMessage = 'Senha alterada com sucesso!';
+        this.successMessage =
+          'Senha alterada com sucesso! Faça login novamente.';
         this.formAlteraSenha.reset();
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+          localStorage.removeItem('token');
+          this.router.navigate(['/login']);
+        }, 2000);
       },
       error: (erro) => {
         this.errorMessages.push(
           erro.error?.message || 'Ocorreu um erro inesperado. Tente novamente.'
         );
-      }
+      },
     });
   }
 }

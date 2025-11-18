@@ -1,6 +1,5 @@
 <div class="senha-page">
   <div class="senha-card">
-
     <h1 class="senha-title">Alterar Senha</h1>
 
     <!-- ERROS -->
@@ -13,8 +12,11 @@
       {{ successMessage }}
     </div>
 
-    <form [formGroup]="formAlteraSenha" class="senha-form" (ngSubmit)="submitForm()">
-
+    <form
+      [formGroup]="formAlteraSenha"
+      class="senha-form"
+      (ngSubmit)="submitForm()"
+    >
       <div class="form-row">
         <div class="form-field full">
           <label class="label">Senha Atual *</label>
@@ -23,14 +25,28 @@
               [type]="showPassword.senhaAtual ? 'text' : 'password'"
               class="input"
               formControlName="senhaAtual"
+              maxlength="255"
+              minlength="8"
             />
             <mat-icon class="eye" (click)="togglePassword('senhaAtual')">
-              {{ showPassword.senhaAtual ? 'visibility_off' : 'visibility' }}
+              {{ showPassword.senhaAtual ? "visibility_off" : "visibility" }}
             </mat-icon>
           </div>
 
-          <div *ngIf="formAlteraSenha.get('senhaAtual')?.touched && formAlteraSenha.get('senhaAtual')?.invalid" class="error">
+          <div
+            *ngIf="
+              formAlteraSenha.get('senhaAtual')?.touched &&
+              formAlteraSenha.get('senhaAtual')?.invalid
+            "
+            class="error"
+          >
             A senha atual é obrigatória.
+          </div>
+          <div
+            *ngIf="formAlteraSenha.get('senhaAtual')?.hasError('pattern')"
+            class="error"
+          >
+            A senha deve conter letras, números e um caractere especial.
           </div>
         </div>
       </div>
@@ -45,13 +61,25 @@
               formControlName="novaSenha"
             />
             <mat-icon class="eye" (click)="togglePassword('novaSenha')">
-              {{ showPassword.novaSenha ? 'visibility_off' : 'visibility' }}
+              {{ showPassword.novaSenha ? "visibility_off" : "visibility" }}
             </mat-icon>
           </div>
 
-          <div *ngIf="formAlteraSenha.get('novaSenha')?.touched && formAlteraSenha.get('novaSenha')?.invalid" class="error">
-            <div *ngIf="formAlteraSenha.get('novaSenha')?.hasError('required')">A nova senha é obrigatória.</div>
-            <div *ngIf="formAlteraSenha.get('novaSenha')?.hasError('minlength')">A senha deve ter no mínimo 8 caracteres.</div>
+          <div
+            *ngIf="
+              formAlteraSenha.get('novaSenha')?.touched &&
+              formAlteraSenha.get('novaSenha')?.invalid
+            "
+            class="error"
+          >
+            <div *ngIf="formAlteraSenha.get('novaSenha')?.hasError('required')">
+              A nova senha é obrigatória.
+            </div>
+            <div
+              *ngIf="formAlteraSenha.get('novaSenha')?.hasError('minlength')"
+            >
+              A senha deve ter no mínimo 8 caracteres.
+            </div>
             <div *ngIf="formAlteraSenha.get('novaSenha')?.hasError('pattern')">
               A senha deve conter letras, números e um caractere especial.
             </div>
@@ -70,15 +98,40 @@
               formControlName="repetirNovaSenha"
             />
             <mat-icon class="eye" (click)="togglePassword('repetirNovaSenha')">
-              {{ showPassword.repetirNovaSenha ? 'visibility_off' : 'visibility' }}
+              {{
+                showPassword.repetirNovaSenha ? "visibility_off" : "visibility"
+              }}
             </mat-icon>
           </div>
 
-          <div *ngIf="formAlteraSenha.get('repetirNovaSenha')?.touched && formAlteraSenha.get('repetirNovaSenha')?.errors" class="error">
-            <div *ngIf="formAlteraSenha.get('repetirNovaSenha')?.hasError('passwordMismatch')">
+          <div
+            *ngIf="
+              formAlteraSenha.get('repetirNovaSenha')?.touched &&
+              formAlteraSenha.get('repetirNovaSenha')?.errors
+            "
+            class="error"
+          >
+            <div
+              *ngIf="
+                formAlteraSenha.get('repetirNovaSenha')?.hasError('required')
+              "
+            >
+              Repetir a nova senha é obrigatório.
+            </div>
+            <div
+              *ngIf="
+                formAlteraSenha
+                  .get('repetirNovaSenha')
+                  ?.hasError('passwordMismatch')
+              "
+            >
               As senhas não coincidem.
             </div>
-            <div *ngIf="formAlteraSenha.get('repetirNovaSenha')?.hasError('pattern')">
+            <div
+              *ngIf="
+                formAlteraSenha.get('repetirNovaSenha')?.hasError('pattern')
+              "
+            >
               A senha deve conter letras, números e um caractere especial.
             </div>
           </div>
@@ -88,10 +141,17 @@
       <p class="text-muted">* Campos obrigatórios</p>
 
       <div class="actions">
-        <button class="btn btn-ghost" type="button" (click)="cancelar()">Cancelar</button>
-        <button class="btn btn-primary" type="submit" [disabled]="formAlteraSenha.invalid">Salvar</button>
+        <button class="btn btn-ghost" type="button" (click)="cancelar()">
+          Cancelar
+        </button>
+        <button
+          class="btn btn-primary"
+          type="submit"
+          [disabled]="formAlteraSenha.invalid"
+        >
+          Salvar
+        </button>
       </div>
-
     </form>
   </div>
 </div>
