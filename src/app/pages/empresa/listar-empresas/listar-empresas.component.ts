@@ -41,7 +41,7 @@ export class ListarEmpresasComponent implements OnInit {
   successfullyRegisteredEmpresa = '';
   currentPage = 0;
   totalPages = 1;
-
+  loadingFailed: boolean = false;
   private searchSubject = new Subject<string>();
 
   constructor(private empresaService: EmpresaService, private router: Router) {
@@ -99,6 +99,7 @@ export class ListarEmpresasComponent implements OnInit {
           err.error?.message ||
             'Ocorreu um erro inesperado. Tente novamente mais tarde.',
         ];
+        this.loadingFailed = true;
       },
     });
   }

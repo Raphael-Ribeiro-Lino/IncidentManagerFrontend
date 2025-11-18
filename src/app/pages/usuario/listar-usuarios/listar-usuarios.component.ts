@@ -42,7 +42,7 @@ export class ListarUsuariosComponent implements OnInit {
   token = localStorage.getItem('token') as string;
   currentPage = 0;
   totalPages = 0;
-  public loadingFailed: boolean = false;
+  loadingFailed: boolean = false;
   perfilLabels: Record<string, string> = {
     ADMIN_EMPRESA: 'Administrador da Empresa',
     USUARIO: 'Usuário Comum',
