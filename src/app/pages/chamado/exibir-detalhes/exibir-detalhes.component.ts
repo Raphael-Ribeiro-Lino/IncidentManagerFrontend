@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChamadoService } from '../../../services/chamado/chamado.service';
 import { ChamadoOutput } from '../../../models/chamado/chamadoOutput';
-import { CommonModule, DatePipe, Location } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-exibir-detalhes',
@@ -12,13 +13,16 @@ import { MatIconModule } from '@angular/material/icon';
     CommonModule,
     DatePipe,
     MatIconModule,
+    MatButtonModule
   ],
   templateUrl: './exibir-detalhes.component.html',
   styleUrl: './exibir-detalhes.component.css',
 })
 export class ExibirDetalhesComponent implements OnInit {
   chamado!: ChamadoOutput;
+  
   chamadoCarregado = false;
+  isLoading = false;
   errorMessages: string[] = [];
 
   chamadoId!: number;
@@ -42,7 +46,6 @@ export class ExibirDetalhesComponent implements OnInit {
     private chamadoService: ChamadoService,
     private router: Router,
     private route: ActivatedRoute,
-    private location: Location,
   ) {}
 
   ngOnInit(): void {
@@ -54,23 +57,31 @@ export class ExibirDetalhesComponent implements OnInit {
       return;
     }
 
-    this.carregarChamado();
-
     this.paginaDeRetorno = this.route.snapshot.queryParamMap.get('page');
     this.termoBuscaDeRetorno = this.route.snapshot.queryParamMap.get('search');
     this.prioridadeDeRetorno = this.route.snapshot.queryParamMap.get('priority');
+
+    this.carregarChamado();
   }
 
   carregarChamado(): void {
+    this.isLoading = true;
+    this.chamadoCarregado = false;
+    this.errorMessages = [];
+
     this.chamadoService.buscarPorId(this.token, this.chamadoId).subscribe({
       next: (chamado) => {
         this.chamado = chamado;
         this.chamadoCarregado = true;
+        this.isLoading = false;
         this.errorMessages = [];
       },
-      error: () => {
-        this.errorMessages.push('Erro ao carregar dados do chamado.');
-        this.chamadoCarregado = true;
+      error: (err) => {
+        console.error(err);
+        this.errorMessages.push('Não foi possível carregar os dados do chamado.');
+        this.errorMessages.push('Verifique sua conexão ou tente novamente.');
+        this.isLoading = false;
+        this.chamadoCarregado = false;
       },
     });
   }
@@ -84,19 +95,14 @@ export class ExibirDetalhesComponent implements OnInit {
   getFileIcon(tipo: string): string {
     const ext = tipo.toLowerCase();
     switch (ext) {
-      case 'pdf':
-        return 'picture_as_pdf';
+      case 'pdf': return 'picture_as_pdf';
       case 'doc':
-      case 'docx':
-        return 'description';
+      case 'docx': return 'description';
       case 'png':
       case 'jpg':
-      case 'jpeg':
-        return 'image';
-      case 'zip':
-        return 'folder_zip';
-      default:
-        return 'attach_file';
+      case 'jpeg': return 'image';
+      case 'zip': return 'folder_zip';
+      default: return 'attach_file';
     }
   }
 
