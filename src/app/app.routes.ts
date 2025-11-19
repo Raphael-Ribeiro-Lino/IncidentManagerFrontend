@@ -17,6 +17,7 @@ import { AlterarSenhaComponent } from './pages/usuario/alterar-senha/alterar-sen
 import { ListarChamadosComponent } from './pages/chamado/listar-chamados/listar-chamados.component';
 import { CadastrarChamadoComponent } from './pages/chamado/cadastrar-chamado/cadastrar-chamado.component';
 import { ExibirDetalhesComponent } from './pages/chamado/exibir-detalhes/exibir-detalhes.component';
+import { AlterarChamadoComponent } from './pages/chamado/alterar-chamado/alterar-chamado.component';
 
 export const routes: Routes = [
   // Public routes
@@ -69,9 +70,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'listar', pathMatch: 'full' },
-      { path: 'listar', component:  ListarChamadosComponent},
-      { path: 'cadastrar', component: CadastrarChamadoComponent},
-      { path: ':id/detalhes', component: ExibirDetalhesComponent}
+      { path: 'listar', component: ListarChamadosComponent },
+      { path: 'cadastrar', component: CadastrarChamadoComponent },
+      { path: ':id/detalhes', component: ExibirDetalhesComponent },
+      { path: ':id/editar', component: AlterarChamadoComponent },
     ],
   },
 

@@ -90,4 +90,18 @@ export class ChamadoService {
       headers,
     });
   }
+
+    alterar(
+    token: string,
+    id: number,
+    chamadoInput: ChamadoInput
+  ): Observable<ChamadoOutput> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+    const formData = this.buildFormData(chamadoInput);
+    return this.httpClient.put<ChamadoOutput>(API_URL + `/${id}`, formData, {
+      headers,
+    });
+  }
 }

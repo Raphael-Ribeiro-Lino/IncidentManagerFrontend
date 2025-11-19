@@ -5,6 +5,7 @@ export interface AnexoOutput {
     nomeArquivo: string;
     storagePath: string; 
     tipo: TipoAnexoEnum;
-    uploadedAt: string; 
+    uploadedAt: string;
+    tamanhoBytes: number,
     enviadoPor: UsuarioOutput;
 }
