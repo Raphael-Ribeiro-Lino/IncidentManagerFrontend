@@ -79,4 +79,15 @@ export class ChamadoService {
       }
     );
   }
+
+  buscarPorId(token: string, id: number): Observable<ChamadoOutput> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+
+    return this.httpClient.get<ChamadoOutput>(API_URL + `/${id}`, {
+      headers,
+    });
+  }
 }

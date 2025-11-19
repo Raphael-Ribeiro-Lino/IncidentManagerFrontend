@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -43,7 +43,6 @@ export class ListarChamadosComponent implements OnInit {
   };
 
   chamadosExibidos: ChamadoOutput[] = [];
-
   currentPage: number = 0;
   itemsPerPage: number = 6;
   totalPages: number = 0;
@@ -58,10 +57,32 @@ export class ListarChamadosComponent implements OnInit {
   searchTerm: string = '';
   selectedPriority: string = '';
 
-  constructor(private chamadoService: ChamadoService, private router: Router) {}
+  constructor(
+    private chamadoService: ChamadoService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
-    this.buscarChamados();
+    this.route.queryParamMap.subscribe(params => {
+      const page = params.get('page');
+      const search = params.get('search');
+      const priority = params.get('priority');
+
+      if (page !== null && !isNaN(Number(page))) {
+        this.currentPage = Number(page);
+      }
+
+      if (search !== null) {
+        this.searchTerm = search;
+      }
+
+      if (priority !== null) {
+        this.selectedPriority = priority;
+      }
+
+      this.buscarChamados();
+    });
   }
 
   buscarChamados(): void {
@@ -86,7 +107,6 @@ export class ListarChamadosComponent implements OnInit {
           this.isLoading = false;
           this.chamadosExibidos = [];
           this.errorMessages = ['Não foi possível carregar os chamados.'];
-          this.isLoading = false;
           this.loadingFailed = true;
         },
       });
@@ -108,7 +128,17 @@ export class ListarChamadosComponent implements OnInit {
   }
 
   visualizar(id: number): void {
-    this.router.navigate([`/chamado/${id}/detalhes`]);
+    this.router.navigate(
+      [`/chamado/${id}/detalhes`],
+      {
+        queryParams: {
+          page: this.currentPage,
+          search: this.searchTerm || null,
+          priority: this.selectedPriority || null,
+        },
+        queryParamsHandling: 'merge'
+      }
+    );
   }
 
   editar(id: number): void {

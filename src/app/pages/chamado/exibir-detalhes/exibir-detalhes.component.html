@@ -1,0 +1,145 @@
+<div class="chamado-detalhes-page" *ngIf="chamadoCarregado && chamado">
+
+  <div class="page-header-row">
+    <div class="page-header-content">
+      <h1 class="page-title">Detalhes da Solicitação</h1>
+      <p class="page-subtitle">Visualize todas as informações, anexos e interações deste chamado</p>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn-action btn-back" (click)="voltarParaLista()" matTooltip="Voltar para a listagem">
+        <mat-icon>arrow_back</mat-icon>
+        Voltar
+      </button>
+      
+      <button class="btn-action btn-chat" (click)="acessarChat()" matTooltip="Falar com o técnico">
+        <mat-icon>forum</mat-icon>
+        Acessar Chat
+      </button>
+    </div>
+  </div>
+
+  <div class="cards-stack">
+
+    <div class="card-detalhes unified-card status-border-{{ chamado.status | lowercase }}">
+      
+      <div class="card-header-line">
+        <h2 class="card-title">
+            <mat-icon class="title-icon">info</mat-icon> 
+            Resumo do Chamado
+        </h2>
+        
+        <div class="protocolo-badge">
+            <mat-icon class="icon-small">tag</mat-icon>
+            <strong>{{ chamado.protocolo }}</strong>
+        </div>
+      </div>
+
+      <div class="unified-content-wrapper">
+        
+        <div class="info-section">
+            <h3 class="chamado-titulo-principal">{{ chamado.titulo }}</h3>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="label">Status</span>
+                    <div class="status-badge-inline status-{{ chamado.status | lowercase }}">
+                        {{ statusLabels[chamado.status] || chamado.status }}
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">Prioridade</span>
+                    <div class="mini-priority priority-text-{{ chamado.prioridade | lowercase }}">
+                        {{ chamado.prioridade | titlecase }}
+                    </div>
+                </div>
+
+                <div class="info-item date-item">
+                    <span class="label">Abertura</span>
+                    <div class="date-display">
+                        <mat-icon class="icon-tiny">calendar_today</mat-icon>
+                        <span>{{ getLocalDateTimeString(chamado.dataCriacao) | date : "dd/MM/yyyy" }}</span>
+                        <span class="time">{{ getLocalDateTimeString(chamado.dataCriacao) | date : "HH:mm" }}</span>
+                    </div>
+                </div>
+
+                <div class="info-item date-item">
+                    <span class="label">Atualização</span>
+                    <div class="date-display">
+                        <mat-icon class="icon-tiny">update</mat-icon>
+                        <span>{{ getLocalDateTimeString(chamado.dataUltimaAtualizacao) | date : "dd/MM/yyyy" }}</span>
+                        <span class="time">{{ getLocalDateTimeString(chamado.dataUltimaAtualizacao) | date : "HH:mm" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="vertical-divider"></div>
+
+        <div class="tech-section">
+            <h3 class="card-internal-title">
+                <mat-icon class="title-icon">support_agent</mat-icon> 
+                Responsável Técnico
+            </h3>
+            
+            <div *ngIf="chamado.tecnicoResponsavel; else noTech" class="tech-profile">
+                <div class="tech-avatar">
+                    {{ chamado.tecnicoResponsavel.nome | slice : 0 : 1 }}
+                </div>
+                <div class="tech-info">
+                    <strong class="tech-name">{{ chamado.tecnicoResponsavel.nome }}</strong>
+                    <span class="tech-email">{{ chamado.tecnicoResponsavel.email }}</span>
+                </div>
+            </div>
+
+            <ng-template #noTech>
+                <div class="waiting-tech-box">
+                    <mat-icon>hourglass_empty</mat-icon>
+                    <span>Aguardando atribuição...</span>
+                </div>
+            </ng-template>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card-detalhes description-card status-border-{{ chamado.status | lowercase }}">
+      <h2 class="card-title">
+        <mat-icon class="title-icon">subject</mat-icon> 
+        Descrição do Problema
+      </h2>
+      
+      <div class="description-content">
+        <p>{{ chamado.descricao }}</p>
+      </div>
+
+      <div class="attachments-container">
+        <h3 class="attachments-header card-internal-title">
+          <mat-icon class="title-icon">attach_file</mat-icon> 
+          Anexos ({{ chamado.anexos.length }})
+        </h3>
+
+        <div class="anexos-grid" *ngIf="chamado.anexos.length > 0; else noAnexos">
+            <div *ngFor="let anexo of chamado.anexos" class="anexo-item-card">
+              <mat-icon class="anexo-icon">{{ getFileIcon(anexo.tipo) }}</mat-icon>
+              <div class="anexo-meta">
+                <span class="file-name" title="{{ anexo.nomeArquivo }}">{{ anexo.nomeArquivo }}</span>
+                <span class="file-date">
+                  {{ getLocalDateTimeString(anexo.uploadedAt) | date : "dd/MM/yyyy HH:mm" }}
+                </span>
+              </div>
+              <button class="btn-download-icon" (click)="baixarAnexo(anexo.storagePath)" matTooltip="Baixar">
+                <mat-icon>download</mat-icon>
+              </button>
+            </div>
+        </div>
+
+        <ng-template #noAnexos>
+          <p class="text-muted">Nenhum anexo disponível.</p>
+        </ng-template>
+      </div>
+    </div>
+
+  </div>
+</div>

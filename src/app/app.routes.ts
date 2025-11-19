@@ -16,6 +16,7 @@ import { AlterarMeusDadosComponent } from './pages/usuario/alterar-meus-dados/al
 import { AlterarSenhaComponent } from './pages/usuario/alterar-senha/alterar-senha.component';
 import { ListarChamadosComponent } from './pages/chamado/listar-chamados/listar-chamados.component';
 import { CadastrarChamadoComponent } from './pages/chamado/cadastrar-chamado/cadastrar-chamado.component';
+import { ExibirDetalhesComponent } from './pages/chamado/exibir-detalhes/exibir-detalhes.component';
 
 export const routes: Routes = [
   // Public routes
@@ -69,7 +70,8 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'listar', pathMatch: 'full' },
       { path: 'listar', component:  ListarChamadosComponent},
-      { path: 'cadastrar', component: CadastrarChamadoComponent}
+      { path: 'cadastrar', component: CadastrarChamadoComponent},
+      { path: ':id/detalhes', component: ExibirDetalhesComponent}
     ],
   },
 

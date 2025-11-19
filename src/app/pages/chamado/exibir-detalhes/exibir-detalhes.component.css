@@ -1,0 +1,571 @@
+:host {
+  display: block;
+  /* --- Variáveis Globais --- */
+  --primary-color: #007bff;
+  --primary-dark: #0056b3;
+  --bg-page: #f0f2f5;
+  --bg-card: #ffffff;
+  --border-color: #e0e0e0;
+
+  --text-main: #333;
+  --text-secondary: #555; /* Cor padrão para subtítulos */
+  --text-muted: #666;
+  --text-light: #999;
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.08);
+
+  /* Cores de Status (Definição explícita para uso nas classes) */
+  --s-aberto-bg: #e3f2fd;
+  --s-aberto-color: #1565c0;
+  --s-triagem-bg: #ede7f6;
+  --s-triagem-color: #5e35b1;
+  --s-em_atendimento-bg: #fff3e0;
+  --s-em_atendimento-color: #ef6c00;
+  --s-aguardando_cliente-bg: #fce4ec;
+  --s-aguardando_cliente-color: #c2185b;
+  --s-aguardando_peca-bg: #eceff1;
+  --s-aguardando_peca-color: #455a64;
+  --s-concluido-bg: #e8f5e9;
+  --s-concluido-color: #2e7d32;
+  --s-reaberto-bg: #ffebee;
+  --s-reaberto-color: #c62828;
+
+  /* Cores de Prioridade */
+  --p-baixa-bg: #eaf7ed;
+  --p-baixa-color: #27ae60;
+  --p-media-bg: #fff4e6;
+  --p-media-color: #d35400;
+  --p-alta-bg: #fdf2e9;
+  --p-alta-color: #e67e22;
+  --p-critica-bg: #fbeced;
+  --p-critica-color: #c0392b;
+}
+
+.chamado-detalhes-page {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* --- Cabeçalho --- */
+.page-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.page-header-content {
+  flex: 1;
+  min-width: 280px;
+}
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 10px 0; /* Espaço extra para a linha */
+  position: relative; /* Necessário para o ::after funcionar */
+  display: inline-block;
+  word-wrap: break-word;
+}
+
+/* Correção da Linha abaixo do H1 */
+.page-title::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 80%;
+  height: 4px;
+  background-color: var(--primary-color);
+  border-radius: 2px;
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease-in-out;
+}
+.btn-chat {
+  background: var(--primary-color);
+  color: white;
+}
+.btn-chat:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+.btn-back {
+  background: white;
+  border: 1px solid #ddd;
+  color: var(--text-muted);
+}
+.btn-back:hover {
+  background: #f5f5f5;
+  color: var(--text-main);
+  border-color: #ccc;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- Estrutura de Cards --- */
+.cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.card-detalhes {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  border-left: 6px solid transparent;
+  transition: transform 0.2s ease;
+}
+.card-detalhes:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* --- Cores de Borda do Card (Baseado no Status) --- */
+.status-border-aberto {
+  border-left-color: var(--s-aberto-color);
+}
+.status-border-triagem {
+  border-left-color: var(--s-triagem-color);
+}
+.status-border-em_atendimento {
+  border-left-color: var(--s-em_atendimento-color);
+}
+.status-border-aguardando_cliente {
+  border-left-color: var(--s-aguardando_cliente-color);
+}
+.status-border-aguardando_peca {
+  border-left-color: var(--s-aguardando_peca-color);
+}
+.status-border-concluido {
+  border-left-color: var(--s-concluido-color);
+}
+.status-border-reaberto {
+  border-left-color: var(--s-reaberto-color);
+}
+
+/* --- Tipografia Interna Padronizada --- */
+
+/* Títulos Principais do Card (H2) */
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Títulos Secundários (H3) - Padronizados */
+.card-internal-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-secondary); /* Cor padronizada pedida */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title-icon {
+  color: var(--primary-color);
+}
+
+/* --- Card Unificado --- */
+.card-header-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.protocolo-badge {
+  background: #e6f0ff;
+  color: var(--primary-color);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.protocolo-badge strong {
+  font-family: "Roboto Mono", monospace;
+}
+
+.unified-content-wrapper {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+/* --- Seção Esquerda (Dados) --- */
+.info-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.chamado-titulo-principal {
+  font-size: 1.5rem;
+  color: var(--text-main);
+  margin: 0 0 25px 0;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.info-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 40px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.info-item .label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* --- Badges de Status (CORRIGIDOS) --- */
+.status-badge-inline {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  width: fit-content;
+  /* Garante contraste e cor */
+  border: 1px solid transparent;
+}
+/* Aplicação Explícita das Cores */
+.status-aberto {
+  background-color: var(--s-aberto-bg);
+  color: var(--s-aberto-color);
+  border-color: #bbdefb;
+}
+.status-triagem {
+  background-color: var(--s-triagem-bg);
+  color: var(--s-triagem-color);
+  border-color: #d1c4e9;
+}
+.status-em_atendimento {
+  background-color: var(--s-em_atendimento-bg);
+  color: var(--s-em_atendimento-color);
+  border-color: #ffe0b2;
+}
+.status-aguardando_cliente {
+  background-color: var(--s-aguardando_cliente-bg);
+  color: var(--s-aguardando_cliente-color);
+  border-color: #f8bbd0;
+}
+.status-aguardando_peca {
+  background-color: var(--s-aguardando_peca-bg);
+  color: var(--s-aguardando_peca-color);
+  border-color: #cfd8dc;
+}
+.status-concluido {
+  background-color: var(--s-concluido-bg);
+  color: var(--s-concluido-color);
+  border-color: #c8e6c9;
+}
+.status-reaberto {
+  background-color: var(--s-reaberto-bg);
+  color: var(--s-reaberto-color);
+  border-color: #ffcdd2;
+}
+
+/* --- Badges de Prioridade (CORRIGIDOS) --- */
+.mini-priority {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 6px;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Aplicação Explícita de Fundo e Cor */
+.priority-text-baixa {
+  background-color: var(--p-baixa-bg);
+  color: var(--p-baixa-color);
+}
+
+.priority-text-media {
+  background-color: var(--p-media-bg);
+  color: var(--p-media-color);
+}
+
+.priority-text-alta {
+  background-color: var(--p-alta-bg);
+  color: var(--p-alta-color);
+}
+
+.priority-text-critica {
+  background-color: var(--p-critica-bg);
+  color: var(--p-critica-color);
+}
+
+.date-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--text-main);
+  font-size: 0.95rem;
+  flex-wrap: wrap;
+}
+.date-display .time {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.icon-tiny {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+  color: var(--text-light);
+}
+
+/* --- Seção Direita (Técnico) --- */
+.vertical-divider {
+  width: 1px;
+  background-color: #eee;
+  align-self: stretch;
+  min-height: 100px;
+}
+
+.tech-section {
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tech-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.tech-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.tech-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.tech-name {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tech-email {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.waiting-tech-box {
+  background: #fff8e1;
+  color: #f57c00;
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  border: 1px dashed #ffe0b2;
+}
+
+/* --- Descrição e Anexos --- */
+.description-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #444;
+  margin-bottom: 30px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.attachments-container {
+  background: #fafafa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px dashed #ddd;
+}
+
+.anexos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.anexo-item-card {
+  background: white;
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.anexo-meta {
+  flex: 1;
+  min-width: 0;
+}
+.file-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+.file-date {
+  font-size: 0.75rem;
+  color: #999;
+}
+.btn-download-icon {
+  border: none;
+  background: none;
+  color: #666;
+  cursor: pointer;
+  width: 36px; 
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+.btn-download-icon:hover {
+  color: var(--primary-color);
+  border-color: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- Responsividade --- */
+@media (max-width: 900px) {
+  .unified-content-wrapper {
+    flex-direction: column;
+    gap: 25px;
+  }
+  .vertical-divider {
+    display: none;
+  }
+
+  .tech-section {
+    width: 100%;
+    border-top: 1px dashed #eee;
+    padding-top: 20px;
+  }
+  .info-grid {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 600px) {
+  .chamado-detalhes-page {
+    padding: 16px;
+  }
+  .card-detalhes {
+    padding: 16px;
+  }
+
+  .card-header-line {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .info-grid {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .anexos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tech-name,
+  .tech-email,
+  .file-name {
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+  .btn-action {
+    flex: 1;
+    justify-content: center;
+  }
+}

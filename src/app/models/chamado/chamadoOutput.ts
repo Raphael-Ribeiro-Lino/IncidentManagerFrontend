@@ -10,7 +10,6 @@ export interface ChamadoOutput {
     descricao: string;
     prioridade: PrioridadeEnum;
     status: StatusEnum;
-    categoria: string;
     dataCriacao: string; 
     dataUltimaAtualizacao: string; 
     solicitante: UsuarioOutput;
