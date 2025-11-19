@@ -1,142 +1,200 @@
 <div class="chamado-list-page">
+  <div class="page-header">
+    <h1 class="page-title">Meus Chamados</h1>
+    <p class="page-subtitle">
+      Acompanhe, gerencie e verifique o andamento das suas solicitações
+    </p>
+  </div>
 
-    <div class="page-header">
-        <h1 class="page-title">Meus Chamados</h1>
-        <p class="page-subtitle">Acompanhe, gerencie e verifique o andamento das suas solicitações</p>
+  <div class="action-bar-container">
+    <div class="filters-container">
+      <div class="filter-inputs">
+        <mat-form-field
+          appearance="outline"
+          class="search-field"
+          subscriptSizing="dynamic"
+        >
+          <mat-label>Buscar Protocolo ou Título</mat-label>
+          <input
+            matInput
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onFilterChange()"
+            placeholder="Ex: INC-979c..."
+            matTooltip="Digite o protocolo ou título para filtrar"
+          />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- FILTRO DE STATUS (Substituiu Prioridade) -->
+        <mat-form-field
+          appearance="outline"
+          class="priority-field"
+          subscriptSizing="dynamic"
+        >
+          <mat-label>Status</mat-label>
+          <mat-select
+            [(ngModel)]="selectedStatus"
+            (selectionChange)="onFilterChange()"
+            matTooltip="Filtrar pelo status atual"
+          >
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let status of statusKeys" [value]="status">
+              {{ statusLabels[status] }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
     </div>
 
-    <div class="action-bar-container">
-        <div class="filters-container">
-            <div class="filter-inputs">
+    <div class="action-button">
+      <button
+        class="btn-primary-action"
+        (click)="novoChamado()"
+        matTooltip="Abrir novo chamado"
+      >
+        <mat-icon>add_circle_outline</mat-icon>
+        <span>Novo Chamado</span>
+      </button>
+    </div>
+  </div>
 
-                <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
-                    <mat-label>Buscar Protocolo ou Título</mat-label>
-                    <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onFilterChange()"
-                        placeholder="Ex: INC-979c..." matTooltip="Digite o protocolo ou título para filtrar">
-                    <mat-icon matSuffix>search</mat-icon>
-                </mat-form-field>
+  <div class="error-card" *ngIf="loadingFailed">
+    <mat-icon class="error-icon">sentiment_dissatisfied</mat-icon>
+    <div class="error-content">
+      <h3>Ops! Algo deu errado.</h3>
+      <p>
+        Não foi possível carregar a lista de chamados. Verifique sua conexão ou
+        tente novamente mais tarde.
+      </p>
+      <button class="btn-error-retry" (click)="buscarChamados()">
+        <mat-icon>refresh</mat-icon> Tentar Novamente
+      </button>
+    </div>
+  </div>
 
-                <mat-form-field appearance="outline" class="priority-field" subscriptSizing="dynamic">
-                    <mat-label>Prioridade</mat-label>
-                    <mat-select [(ngModel)]="selectedPriority" (selectionChange)="onFilterChange()"
-                        matTooltip="Filtrar por nível de urgência">
-                        <mat-option value="">Todas</mat-option>
-                        <mat-option *ngFor="let p of prioridades" [value]="p">
-                            {{ p | lowercase | titlecase }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
+  <div class="chamado-list-container" *ngIf="!isLoading && !loadingFailed">
+    <!-- BORDA BASEADA NO STATUS -->
+    <div
+      class="chamado-row status-border-{{ chamado.status | lowercase }}"
+      *ngFor="let chamado of chamadosExibidos"
+    >
+      <div class="row-main-content">
+        <div class="row-header-meta">
+          <div class="protocolo-display" matTooltip="{{ chamado.protocolo }}">
+            <mat-icon class="icon-small">tag</mat-icon>
+            <strong>{{ chamado.protocolo }}</strong>
+          </div>
 
-            </div>
+          <div class="date-time-display" matTooltip="Data de Criação">
+            <mat-icon class="icon-small">calendar_today</mat-icon>
+            <span>{{ chamado.dataCriacao | date : "dd/MM/yyyy" : "UTC" }}</span>
+            <span class="time-part"
+              >às {{ chamado.dataCriacao | date : "HH:mm" : "UTC" }}</span
+            >
+          </div>
+
+          <div
+            class="mini-priority priority-text-{{
+              chamado.prioridade | lowercase
+            }}"
+            matTooltip="Prioridade definida"
+          >
+            {{ chamado.prioridade | titlecase }}
+          </div>
+
+          <div
+            class="status-badge-inline status-{{ chamado.status | lowercase }}"
+            [matTooltip]="
+              'Status: ' + (statusLabels[chamado.status] || chamado.status)
+            "
+          >
+            {{ statusLabels[chamado.status] || chamado.status }}
+          </div>
         </div>
 
-        <div class="action-button">
-            <button class="btn-primary-action" (click)="novoChamado()" matTooltip="Abrir novo chamado">
-                <mat-icon>add_circle_outline</mat-icon>
-                <span>Novo Chamado</span>
-            </button>
+        <h3 class="row-title" matTooltip="Título do chamado">
+          {{ chamado.titulo }}
+        </h3>
+        <p class="row-description">{{ chamado.descricao }}</p>
+
+        <div
+          class="row-tech-info"
+          *ngIf="chamado.tecnicoResponsavel"
+          matTooltip="Técnico responsável"
+        >
+          <mat-icon class="icon-small">support_agent</mat-icon>
+          <span
+            >Atendido por
+            <strong>{{ chamado.tecnicoResponsavel.nome }}</strong></span
+          >
         </div>
-    </div>
-
-    <div class="error-card" *ngIf="loadingFailed">
-        <mat-icon class="error-icon">sentiment_dissatisfied</mat-icon>
-        <div class="error-content">
-            <h3>Ops! Algo deu errado.</h3>
-            <p>Não foi possível carregar a lista de chamados. Verifique sua conexão ou tente novamente mais tarde.</p>
-            <button class="btn-error-retry" (click)="buscarChamados()">
-                <mat-icon>refresh</mat-icon> Tentar Novamente
-            </button>
+        <div
+          class="row-tech-info waiting"
+          *ngIf="!chamado.tecnicoResponsavel"
+          matTooltip="Aguardando técnico"
+        >
+          <mat-icon class="icon-small">hourglass_empty</mat-icon>
+          <span>Aguardando atribuição de técnico</span>
         </div>
-    </div>
+      </div>
 
-    <div class="chamado-list-container" *ngIf="!isLoading && !loadingFailed">
+      <div class="row-actions-side">
+        <div class="button-group">
+          <button
+            class="btn-custom btn-yellow"
+            (click)="editar(chamado.id); $event.stopPropagation()"
+            matTooltip="Editar informações"
+            *ngIf="chamado.status !== 'CONCLUIDO'"
+          >
+            <mat-icon>edit</mat-icon>
+            Alterar
+          </button>
 
-        <div class="chamado-row priority-border-{{ chamado.prioridade | lowercase }}"
-            *ngFor="let chamado of chamadosExibidos">
+          <button
+            class="btn-custom btn-reopen"
+            matTooltip="Reabrir este chamado"
+            (click)="reabrir(chamado.id); $event.stopPropagation()"
+            *ngIf="chamado.status === 'CONCLUIDO'"
+          >
+            <mat-icon>replay</mat-icon>
+            Reabrir
+          </button>
 
-            <div class="row-main-content">
-
-                <div class="row-header-meta">
-
-                    <div class="protocolo-display" matTooltip="{{ chamado.protocolo }}">
-                        <mat-icon class="icon-small">tag</mat-icon>
-                        <strong>{{ chamado.protocolo }}</strong>
-                    </div>
-
-                    <div class="date-time-display" matTooltip="Data de Criação">
-                        <mat-icon class="icon-small">calendar_today</mat-icon>
-                        <span>{{ chamado.dataCriacao | date:'dd/MM/yyyy' : 'UTC'}}</span>
-                        <span class="time-part">às {{ chamado.dataCriacao | date:'HH:mm' : 'UTC'}}</span>
-                    </div>
-
-                    <div class="mini-priority priority-text-{{ chamado.prioridade | lowercase }}"
-                        matTooltip="Prioridade definida">
-                        {{ chamado.prioridade | titlecase }}
-                    </div>
-
-                    <div class="status-badge-inline status-{{ chamado.status | lowercase }}"
-                        [matTooltip]="'Status: ' + (statusLabels[chamado.status] || chamado.status)">
-                        {{ statusLabels[chamado.status] || chamado.status }}
-                    </div>
-
-                </div>
-
-                <h3 class="row-title" matTooltip="Título do chamado">{{ chamado.titulo }}</h3>
-                <p class="row-description">{{ chamado.descricao }}</p>
-
-                <div class="row-tech-info" *ngIf="chamado.tecnicoResponsavel" matTooltip="Técnico responsável">
-                    <mat-icon class="icon-small">support_agent</mat-icon>
-                    <span>Atendido por <strong>{{ chamado.tecnicoResponsavel.nome }}</strong></span>
-                </div>
-                <div class="row-tech-info waiting" *ngIf="!chamado.tecnicoResponsavel" matTooltip="Aguardando técnico">
-                    <mat-icon class="icon-small">hourglass_empty</mat-icon>
-                    <span>Aguardando atribuição de técnico</span>
-                </div>
-            </div>
-
-            <div class="row-actions-side">
-                <div class="button-group">
-
-                    <button class="btn-custom btn-yellow" (click)="editar(chamado.id); $event.stopPropagation()"
-                        matTooltip="Editar informações" *ngIf="chamado.status !== 'CONCLUIDO'">
-                        <mat-icon>edit</mat-icon>
-                        Alterar
-                    </button>
-
-                    <button class="btn-custom btn-reopen" matTooltip="Reabrir este chamado" (click)="reabrir(chamado.id); $event.stopPropagation()"
-                        *ngIf="chamado.status === 'CONCLUIDO'">
-                        <mat-icon>replay</mat-icon>
-                        Reabrir
-                    </button>
-
-                    <button class="btn-custom btn-details" (click)="visualizar(chamado.id); $event.stopPropagation()"
-                        matTooltip="Ver detalhes completos">
-                        <mat-icon>visibility</mat-icon>
-                        Detalhes
-                    </button>
-                </div>
-            </div>
-
+          <button
+            class="btn-custom btn-details"
+            (click)="visualizar(chamado.id); $event.stopPropagation()"
+            matTooltip="Ver detalhes completos"
+          >
+            <mat-icon>visibility</mat-icon>
+            Detalhes
+          </button>
         </div>
-
-        <div class="empty-state" *ngIf="chamadosExibidos.length === 0">
-            <mat-icon>search_off</mat-icon>
-            <h3>
-                Nenhum chamado encontrado
-                <span *ngIf="searchTerm">para "{{ searchTerm }}"</span>
-            </h3>
-            <p>Verifique os filtros ou crie um novo chamado.</p>
-        </div>
-
+      </div>
     </div>
 
-    <div class="loading-state" *ngIf="isLoading">
-        <p>Carregando lista de chamados...</p>
+    <div class="empty-state" *ngIf="chamadosExibidos.length === 0">
+      <mat-icon>search_off</mat-icon>
+      <h3>
+        Nenhum chamado encontrado
+        <span *ngIf="searchTerm">para "{{ searchTerm }}"</span>
+      </h3>
+      <p>Verifique os filtros ou crie um novo chamado.</p>
     </div>
+  </div>
 
-    <div class="pagination-container" *ngIf="chamadosExibidos.length > 0 && !isLoading">
-        <app-pagination [pageNumber]="currentPage" [totalPages]="totalPages" [maxPagesToShow]="maxPagesToShow"
-            (pageChange)="onPageChange($event)"></app-pagination>
-    </div>
+  <div class="loading-state" *ngIf="isLoading">
+    <p>Carregando lista de chamados...</p>
+  </div>
 
+  <div
+    class="pagination-container"
+    *ngIf="chamadosExibidos.length > 0 && !isLoading"
+  >
+    <app-pagination
+      [pageNumber]="currentPage"
+      [totalPages]="totalPages"
+      [maxPagesToShow]="maxPagesToShow"
+      (pageChange)="onPageChange($event)"
+    ></app-pagination>
+  </div>
 </div>

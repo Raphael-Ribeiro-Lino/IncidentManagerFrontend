@@ -42,7 +42,11 @@ export class ListarChamadosComponent implements OnInit {
     REABERTO: 'Reaberto',
   };
 
+  // Chaves para iterar no select (ABERTO, TRIAGEM, etc.)
+  statusKeys = Object.keys(this.statusLabels);
+
   chamadosExibidos: ChamadoOutput[] = [];
+
   currentPage: number = 0;
   itemsPerPage: number = 6;
   totalPages: number = 0;
@@ -53,9 +57,10 @@ export class ListarChamadosComponent implements OnInit {
   errorMessages: string[] = [];
   loadingFailed: boolean = false;
 
-  prioridades = ['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'];
   searchTerm: string = '';
-  selectedPriority: string = '';
+  selectedStatus: string = ''; // Substitui selectedPriority
+
+  private initialLoad: boolean = true;
 
   constructor(
     private chamadoService: ChamadoService,
@@ -64,32 +69,65 @@ export class ListarChamadosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe(params => {
-      const page = params.get('page');
-      const search = params.get('search');
-      const priority = params.get('priority');
+    this.route.queryParamMap.subscribe((params) => {
+      let shouldRedirect = false;
 
-      if (page !== null && !isNaN(Number(page))) {
-        this.currentPage = Number(page);
+      // 1. Validação da Página
+      const pageParam = params.get('page');
+      if (pageParam !== null) {
+        const pageNumber = Number(pageParam);
+        if (isNaN(pageNumber) || !Number.isInteger(pageNumber) || pageNumber < 0) {
+          shouldRedirect = true;
+        } else {
+          this.currentPage = pageNumber;
+        }
+      } else if (this.initialLoad) {
+        this.currentPage = 0;
       }
 
-      if (search !== null) {
-        this.searchTerm = search;
+      // 2. Validação do Termo de Busca
+      const searchParam = params.get('search');
+      if (searchParam !== null) {
+        this.searchTerm = searchParam;
+      } else if (this.initialLoad) {
+        this.searchTerm = '';
       }
 
-      if (priority !== null) {
-        this.selectedPriority = priority;
+      // 3. Validação do Status (Substitui Prioridade)
+      const statusParam = params.get('status');
+      if (statusParam !== null && statusParam !== '') {
+        // Verifica se o status passado existe na lista de chaves válidas
+        if (this.statusKeys.includes(statusParam.toUpperCase())) {
+          this.selectedStatus = statusParam;
+        } else {
+          // Se digitaram status=INVALIDO, redireciona para limpar
+          shouldRedirect = true;
+        }
+      } else if (this.initialLoad) {
+        this.selectedStatus = '';
+      }
+
+      // Se algum parâmetro foi inválido, limpa a URL
+      if (shouldRedirect) {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { page: 0, search: null, status: null },
+          replaceUrl: true,
+        });
+        return;
       }
 
       this.buscarChamados();
+      this.initialLoad = false;
     });
   }
 
   buscarChamados(): void {
     this.isLoading = true;
 
+    // Certifique-se de atualizar seu ChamadoService para aceitar 'status' em vez de 'prioridade'
     this.chamadoService
-      .listar(this.token, this.currentPage, this.searchTerm, this.selectedPriority)
+      .listar(this.token, this.currentPage, this.searchTerm, this.selectedStatus)
       .subscribe({
         next: (pageData) => {
           this.chamadosExibidos = pageData.content;
@@ -98,6 +136,7 @@ export class ListarChamadosComponent implements OnInit {
           this.errorMessages = [];
           this.loadingFailed = false;
 
+          // Se a página atual for maior que o total, volta para a primeira
           if (this.currentPage >= this.totalPages && this.totalPages > 0) {
             this.currentPage = 0;
             this.buscarChamados();
@@ -128,17 +167,14 @@ export class ListarChamadosComponent implements OnInit {
   }
 
   visualizar(id: number): void {
-    this.router.navigate(
-      [`/chamado/${id}/detalhes`],
-      {
-        queryParams: {
-          page: this.currentPage,
-          search: this.searchTerm || null,
-          priority: this.selectedPriority || null,
-        },
-        queryParamsHandling: 'merge'
-      }
-    );
+    this.router.navigate([`/chamado/${id}/detalhes`], {
+      queryParams: {
+        page: this.currentPage,
+        search: this.searchTerm || null,
+        status: this.selectedStatus || null,
+      },
+      queryParamsHandling: 'merge',
+    });
   }
 
   editar(id: number): void {
