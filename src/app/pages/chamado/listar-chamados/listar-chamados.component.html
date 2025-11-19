@@ -65,8 +65,8 @@
 
                     <div class="date-time-display" matTooltip="Data de Criação">
                         <mat-icon class="icon-small">calendar_today</mat-icon>
-                        <span>{{ chamado.dataCriacao | date:'dd/MM/yyyy' }}</span>
-                        <span class="time-part">às {{ chamado.dataCriacao | date:'HH:mm' }}</span>
+                        <span>{{ chamado.dataCriacao | date:'dd/MM/yyyy' : 'UTC'}}</span>
+                        <span class="time-part">às {{ chamado.dataCriacao | date:'HH:mm' : 'UTC'}}</span>
                     </div>
 
                     <div class="mini-priority priority-text-{{ chamado.prioridade | lowercase }}"
