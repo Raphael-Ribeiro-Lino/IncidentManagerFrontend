@@ -57,7 +57,8 @@ export class ChamadoService {
   listar(
     token: string,
     numPage: number,
-    searchTerm: string = ''
+    searchTerm: string = '',
+    selectedPriority: string = ''
   ): Observable<PaginationOutput<ChamadoOutput>> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
