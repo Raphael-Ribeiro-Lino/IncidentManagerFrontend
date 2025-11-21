@@ -12,6 +12,7 @@
   --color-success: #4caf50;
   --color-warning: #ffb300;
   --color-danger: #e53935;
+  --primary-color: #007bff;
 
   /* Neutros */
   --bg-0: #f5f7fa;
@@ -123,24 +124,23 @@ h5 {
 
 /* Títulos de Seção com sublinhado */
 .section-title {
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-weight: var(--fw-semibold);
-  color: var(--text-2);
-  margin-bottom: var(--space-lg);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 8px 0;
   position: relative;
-  padding-bottom: var(--space-xs);
+  display: inline-block;
 }
 
 .section-title::after {
   content: "";
   position: absolute;
+  bottom: -8px;
   left: 0;
-  bottom: 0;
-  width: 120px;
-  height: 4px;
-  background: var(--color-cta);
-  border-radius: var(--radius-sm);
+  width: 80%;
+  height: 5px;
+  background-color: var(--primary-color);
+  border-radius: 3px;
 }
 
 /* =========================================
