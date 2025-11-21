@@ -16,11 +16,27 @@ import { HttpClient } from '@angular/common/http';
 import { MaskDirective } from './directives/mask.directive';
 import { EmpresaService } from '../../../services/empresa/empresa.service';
 import { EmpresaInput } from '../../../models/empresa/empresaInput';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { CnpjValidator } from '../../../shared/validators/cnpj.validator';
 
 @Component({
   selector: 'app-cadastrar-empresa',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, MaskDirective],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MaskDirective,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCheckboxModule,
+  ],
   templateUrl: './cadastrar-empresa.component.html',
   styleUrl: './cadastrar-empresa.component.css',
 })
@@ -30,6 +46,7 @@ export class CadastrarEmpresaComponent implements OnInit {
   errorMessages: string[] = [];
   successfullyRegisteredEmpresa: string = '';
   token = localStorage.getItem('token') as string;
+  isLoading: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -51,7 +68,8 @@ export class CadastrarEmpresaComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.pattern(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/), // CNPJ formatado
+          Validators.pattern(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/),
+          CnpjValidator.validate,
         ],
       ],
 
@@ -82,36 +100,37 @@ export class CadastrarEmpresaComponent implements OnInit {
     });
   }
 
-  buscarCep() {
-    const cep = this.formEmpresa.get('cep')?.value;
-
-    const cepLimpo = cep.replace(/\D/g, '');
-
-    if (cepLimpo.length !== 8) {
-      alert('CEP inválido!');
-      return;
-    }
-
-    this.http.get(`https://viacep.com.br/ws/${cepLimpo}/json/`).subscribe({
+ buscarCep(cepString: string) {
+    this.isLoading = true; // Mostra spinner enquanto busca CEP também (opcional)
+    
+    this.http.get(`https://viacep.com.br/ws/${cepString}/json/`).subscribe({
       next: (dados: any) => {
+        this.isLoading = false;
         if (dados.erro) {
-          alert('CEP não encontrado!');
+          // CEP não existe na base
+          this.formEmpresa.get('cep')?.setErrors({ cepNaoEncontrado: true });
+          this.resetarEndereco(); 
           return;
         }
 
+        // Preenche e desabilita
         this.formEmpresa.patchValue({
           rua: dados.logradouro,
           bairro: dados.bairro,
           cidade: dados.localidade,
           estado: dados.uf,
         });
-        this.formEmpresa.get('rua')?.disable();
-        this.formEmpresa.get('bairro')?.disable();
-        this.formEmpresa.get('cidade')?.disable();
-        this.formEmpresa.get('estado')?.disable();
+
+        // Só desabilita se o dado veio preenchido (as vezes viaCEP retorna bairro vazio)
+        if(dados.logradouro) this.formEmpresa.get('rua')?.disable();
+        if(dados.bairro) this.formEmpresa.get('bairro')?.disable();
+        if(dados.localidade) this.formEmpresa.get('cidade')?.disable();
+        if(dados.uf) this.formEmpresa.get('estado')?.disable();
       },
       error: () => {
-        alert('Erro ao consultar CEP!');
+        this.isLoading = false;
+        this.resetarEndereco();
+        alert('Erro ao consultar CEP, preencha manualmente.');
       },
     });
   }
@@ -122,6 +141,29 @@ export class CadastrarEmpresaComponent implements OnInit {
 
   ngOnInit(): void {
     this.errorMessages = [];
+    this.formEmpresa.get('cep')?.valueChanges.subscribe((value) => {
+      const cepLimpo = value?.replace(/\D/g, '') || '';
+
+      if (cepLimpo.length === 0) {
+        this.resetarEndereco();
+      }
+      else if (cepLimpo.length === 8) {
+        this.buscarCep(cepLimpo);
+      }
+    });
+  }
+
+  resetarEndereco() {
+    this.formEmpresa.patchValue({
+      rua: '',
+      bairro: '',
+      cidade: '',
+      estado: ''
+    });
+    this.formEmpresa.get('rua')?.enable();
+    this.formEmpresa.get('bairro')?.enable();
+    this.formEmpresa.get('cidade')?.enable();
+    this.formEmpresa.get('estado')?.enable();
   }
 
   submitForm(): void {
@@ -131,6 +173,7 @@ export class CadastrarEmpresaComponent implements OnInit {
       next: (data) => {
         this.successfullyRegisteredEmpresa = 'Empresa cadastrada com sucesso!';
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        this.formEmpresa.disable();
         setTimeout(() => {
           this.router.navigate(['/empresa/listar']);
         }, 2000);

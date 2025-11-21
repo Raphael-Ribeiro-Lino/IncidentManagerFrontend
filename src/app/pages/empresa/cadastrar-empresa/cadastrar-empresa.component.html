@@ -1,184 +1,135 @@
-<div class="empresa-page">
-    <div class="empresa-card">
-        <h1 class="empresa-title">Cadastro de Empresas</h1>
+<div class="chamado-page">
+    <div class="chamado-card">
+        <h1 class="chamado-title">Cadastro de Empresa</h1>
 
-        <!-- Mensagens de erro e sucesso -->
         <div *ngIf="errorMessages.length > 0" class="error-message">
-            <div class="error" *ngFor="let errorMessage of errorMessages">{{ errorMessage }}</div>
+            <div class="error" *ngFor="let msg of errorMessages">{{ msg }}</div>
         </div>
-        <div *ngIf="successfullyRegisteredEmpresa != ''" class="success">
+        <div *ngIf="successfullyRegisteredEmpresa" class="success">
             {{ successfullyRegisteredEmpresa }}
         </div>
 
-        <form [formGroup]="formEmpresa" class="empresa-form" (ngSubmit)="submitForm()">
+        <form [formGroup]="formEmpresa" class="chamado-form" (ngSubmit)="submitForm()">
 
-            <!-- Nome -->
             <div class="form-row">
                 <div class="form-field full">
-                    <label class="label">Nome da Organização *</label>
-                    <input class="input" formControlName="nome" />
-
-                    <div *ngIf="formEmpresa.get('nome')?.touched && formEmpresa.get('nome')?.invalid">
-                        <div class="error" *ngIf="formEmpresa.get('nome')?.hasError('required')">
-                            O nome da empresa é obrigatório.
-                        </div>
-                        <div class="error" *ngIf="formEmpresa.get('nome')?.hasError('minlength')">
-                            O nome deve ter no mínimo 2 caracteres.
-                        </div>
-                        <div class="error" *ngIf="formEmpresa.get('nome')?.hasError('maxlength')">
-                            O nome deve ter no máximo 100 caracteres.
-                        </div>
-                    </div>
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Nome da Organização</mat-label>
+                        <input matInput formControlName="nome" />
+                        <mat-error *ngIf="formEmpresa.get('nome')?.hasError('required')">Obrigatório.</mat-error>
+                        <mat-error *ngIf="formEmpresa.get('nome')?.hasError('minlength')">O nome deve ter no mínimo 2
+                            caracteres.</mat-error>
+                        <mat-error *ngIf="formEmpresa.get('nome')?.hasError('maxlength')">O nome deve ter no máximo 100
+                            caracteres.</mat-error>
+                    </mat-form-field>
                 </div>
             </div>
 
-            <!-- CNPJ -->
             <div class="form-row">
                 <div class="form-field small">
-                    <label class="label">CNPJ *</label>
-                    <input class="input" formControlName="cnpj" appMask="cnpj" placeholder="00.000.000/0000-00" />
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>CNPJ</mat-label>
+                        <input matInput formControlName="cnpj" appMask="cnpj" placeholder="00.000.000/0000-00" />
+                        <mat-error *ngIf="formEmpresa.get('cnpj')?.hasError('required')">Obrigatório.</mat-error>
+                        <mat-error *ngIf="formEmpresa.get('cnpj')?.hasError('invalidCnpj')">CNPJ inválido.</mat-error>
+                    </mat-form-field>
+                </div>
 
-                    <div *ngIf="formEmpresa.get('cnpj')?.touched && formEmpresa.get('cnpj')?.invalid">
-                        <div class="error" *ngIf="formEmpresa.get('cnpj')?.hasError('required')">
-                            O CNPJ é obrigatório.
-                        </div>
-                        <div class="error" *ngIf="formEmpresa.get('cnpj')?.hasError('pattern')">
-                            O CNPJ informado é inválido.
-                        </div>
-                    </div>
+                <div class="form-field small checkbox-container">
+                    <mat-checkbox formControlName="ativo" color="primary">Empresa Ativa</mat-checkbox>
                 </div>
             </div>
 
-            <!-- CEP -->
+            <div class="section-divider">Endereço</div>
+
             <div class="form-row">
                 <div class="form-field small">
-                    <label class="label">CEP *</label>
-                    <div class="input-icon">
-                        <input class="input" formControlName="cep" appMask="cep" placeholder="00000-000"
-                            maxlength="9" />
-                        <button class="icon-btn" type="button"
-                            [disabled]="formEmpresa.get('cep')?.invalid || formEmpresa.get('cep')?.value?.length < 9"
-                            (click)="buscarCep()">🔍</button>
-                    </div>
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>CEP</mat-label>
+                        <input matInput formControlName="cep" appMask="cep" placeholder="00000-000" maxlength="9" />
+                        <mat-icon matSuffix *ngIf="!isLoading">location_on</mat-icon>
+                        <mat-spinner matSuffix
+                            *ngIf="isLoading && formEmpresa.get('cep')?.value?.length >= 8"></mat-spinner>
 
-                    <div *ngIf="formEmpresa.get('cep')?.touched && formEmpresa.get('cep')?.invalid">
-                        <div class="error" *ngIf="formEmpresa.get('cep')?.hasError('required')">
-                            O CEP é obrigatório.
-                        </div>
-                        <div class="error" *ngIf="formEmpresa.get('cep')?.hasError('pattern')">
-                            O CEP deve estar no formato 00000-000.
-                        </div>
-                    </div>
+                        <mat-error *ngIf="formEmpresa.get('cep')?.hasError('required')">Obrigatório.</mat-error>
+                        <mat-error *ngIf="formEmpresa.get('cep')?.hasError('cepNaoEncontrado')">CEP não
+                            encontrado.</mat-error>
+                    </mat-form-field>
                 </div>
             </div>
 
-            <!-- Rua + Número -->
             <div class="form-row">
-                <div class="form-field flex2">
-                    <label class="label">Rua *</label>
-                    <input class="input" formControlName="rua" />
-
-                    <div *ngIf="formEmpresa.get('rua')?.touched && formEmpresa.get('rua')?.invalid">
-                        <div class="error" *ngIf="formEmpresa.get('rua')?.hasError('required')">
-                            A rua é obrigatória.
-                        </div>
-                        <div class="error" *ngIf="formEmpresa.get('rua')?.hasError('maxlength')">
-                            A rua deve ter no máximo 120 caracteres.
-                        </div>
-                    </div>
+                <div class="form-field full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Rua / Logradouro</mat-label>
+                        <input matInput formControlName="rua" />
+                        <mat-error *ngIf="formEmpresa.get('rua')?.hasError('required')">Obrigatório.</mat-error>
+                        <mat-error *ngIf="formEmpresa.get('rua')?.hasError('maxlength')">Máximo 120 caracteres.</mat-error>
+                    </mat-form-field>
                 </div>
 
-                <div class="form-field small">
-                    <label class="label">Nº *</label>
-                    <input class="input" formControlName="numero" />
-
-                    <div *ngIf="formEmpresa.get('numero')?.touched && formEmpresa.get('numero')?.invalid">
-                        <div class="error" *ngIf="formEmpresa.get('numero')?.hasError('required')">
-                            O número é obrigatório.
-                        </div>
-                        <div class="error" *ngIf="formEmpresa.get('numero')?.hasError('maxlength')">
-                            O número deve ter no máximo 10 caracteres.
-                        </div>
-                    </div>
+                <div class="form-field x-small">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Nº</mat-label>
+                        <input matInput formControlName="numero" />
+                        <mat-error *ngIf="formEmpresa.get('numero')?.hasError('required')">Obrigatório.</mat-error>
+                        <mat-error *ngIf="formEmpresa.get('numero')?.hasError('maxlength')">Máximo 10 caracteres.</mat-error>
+                    </mat-form-field>
                 </div>
             </div>
 
-            <!-- Complemento + Bairro -->
             <div class="form-row">
-                <div class="form-field">
-                    <label class="label">Complemento</label>
-                    <input class="input" formControlName="complemento" />
-
-                    <div *ngIf="formEmpresa.get('complemento')?.touched && formEmpresa.get('complemento')?.invalid">
-                        <div class="error" *ngIf="formEmpresa.get('complemento')?.hasError('maxlength')">
-                            O complemento deve ter no máximo 50 caracteres.
-                        </div>
-                    </div>
+                <div class="form-field full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Complemento</mat-label>
+                        <input matInput formControlName="complemento" />
+                        <mat-error *ngIf="formEmpresa.get('complemento')?.hasError('maxlength')">Máximo 50 caracteres.</mat-error>
+                    </mat-form-field>
                 </div>
 
-                <div class="form-field">
-                    <label class="label">Bairro *</label>
-                    <input class="input" formControlName="bairro" />
-
-                    <div *ngIf="formEmpresa.get('bairro')?.touched && formEmpresa.get('bairro')?.invalid">
-                        <div class="error" *ngIf="formEmpresa.get('bairro')?.hasError('required')">
-                            O bairro é obrigatório.
-                        </div>
-                        <div class="error" *ngIf="formEmpresa.get('bairro')?.hasError('maxlength')">
-                            O bairro deve ter no máximo 80 caracteres.
-                        </div>
-                    </div>
+                <div class="form-field full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Bairro</mat-label>
+                        <input matInput formControlName="bairro" />
+                        <mat-error *ngIf="formEmpresa.get('bairro')?.hasError('required')">Obrigatório.</mat-error>
+                        <mat-error *ngIf="formEmpresa.get('bairro')?.hasError('maxlength')">Máximo 80 caracteres.</mat-error>
+                    </mat-form-field>
                 </div>
             </div>
 
-            <!-- Cidade + Estado -->
             <div class="form-row">
-                <div class="form-field flex2">
-                    <label class="label">Cidade *</label>
-                    <input class="input" formControlName="cidade" />
-
-                    <div *ngIf="formEmpresa.get('cidade')?.touched && formEmpresa.get('cidade')?.invalid">
-                        <div class="error" *ngIf="formEmpresa.get('cidade')?.hasError('required')">
-                            A cidade é obrigatória.
-                        </div>
-                        <div class="error" *ngIf="formEmpresa.get('cidade')?.hasError('maxlength')">
-                            A cidade deve ter no máximo 80 caracteres.
-                        </div>
-                    </div>
+                <div class="form-field full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Cidade</mat-label>
+                        <input matInput formControlName="cidade" />
+                        <mat-error *ngIf="formEmpresa.get('cidade')?.hasError('required')">Obrigatório.</mat-error>
+                        <mat-error *ngIf="formEmpresa.get('cidade')?.hasError('maxlength')">Máximo 80 caracteres.</mat-error>
+                    </mat-form-field>
                 </div>
 
                 <div class="form-field small">
-                    <label class="label">Estado *</label>
-                    <input class="input" formControlName="estado" maxlength="2" appMask="uf" />
-
-                    <div *ngIf="formEmpresa.get('estado')?.touched && formEmpresa.get('estado')?.invalid">
-                        <div class="error" *ngIf="formEmpresa.get('estado')?.hasError('required')">
-                            O estado é obrigatório.
-                        </div>
-                        <div class="error" *ngIf="
-                formEmpresa.get('estado')?.hasError('minlength') ||
-                formEmpresa.get('estado')?.hasError('maxlength')
-              ">
-                            O estado deve conter a sigla (ex: SP, RJ, BA).
-                        </div>
-                    </div>
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>UF</mat-label>
+                        <input matInput formControlName="estado" maxlength="2" appMask="uf" />
+                        <mat-error *ngIf="formEmpresa.get('estado')?.hasError('required')">Obrigatório.</mat-error>
+                        <mat-error *ngIf="formEmpresa.get('estado')?.hasError('minlength')">Mínimo 2 caracteres.</mat-error>
+                    </mat-form-field>
                 </div>
             </div>
 
-            <!-- Ativo -->
-            <div class="form-row">
-                <label class="checkbox">
-                    <input type="checkbox" formControlName="ativo" checked />
-                    Empresa Ativa
-                </label>
-            </div>
+            <p class="text-muted small-text">* Campos obrigatórios</p>
 
-            <p style="margin-top: var(--space-md);" class="text-muted">* Campos obrigatórios</p>
-
-            <!-- Botões -->
             <div class="actions">
-                <button class="btn btn-ghost" type="button" (click)="cancelar()">Cancelar</button>
-                <button class="btn btn-primary" type="submit" [disabled]="formEmpresa.invalid">Salvar</button>
+                <button class="btn btn-ghost" type="button" (click)="cancelar()">
+                    Cancelar
+                </button>
+
+                <button class="btn btn-primary" type="submit" [disabled]="formEmpresa.invalid || isLoading">
+                    <span *ngIf="!isLoading">Salvar Empresa</span>
+                    <span *ngIf="isLoading" class="spinner-container">
+                        <span class="spinner"></span> Salvando...
+                    </span>
+                </button>
             </div>
 
         </form>

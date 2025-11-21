@@ -1,44 +1,46 @@
-/* ======= Página ======= */
-.empresa-page {
+/* Reutilizando o padrão visual da página de Chamado */
+.chamado-page {
   background: var(--bg-0);
   padding: var(--space-xl) 0;
   display: flex;
   justify-content: center;
+  min-height: 100vh; /* Garante que ocupa a tela toda */
 }
 
-/* ======= Card Principal ======= */
-.empresa-card {
-  width: 900px;
+.chamado-card {
+  width: 100%;
+  max-width: 800px; /* Largura confortável para formulário */
   background: var(--bg-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: var(--space-xl);
   box-shadow: var(--shadow-sm);
+  height: fit-content;
 }
 
-/* ======= Título ======= */
-.empresa-title {
+.chamado-title {
   font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-weight: var(--fw-semibold);
+  font-size: 1.7rem;
+  font-weight: var(--fw-bold, 700);
   color: var(--text-2);
   margin-bottom: var(--space-lg);
   position: relative;
+  padding-bottom: var(--space-xs);
 }
 
-.empresa-title::after {
+.chamado-title::after {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -6px;
-  width: 220px;
-  height: 4px;
+  bottom: 0;
+  width: 150px; /* Tamanho do sublinhado */
+  height: 3px;
   background: var(--color-cta);
   border-radius: var(--radius-sm);
 }
 
-/* ======= Form Layout ======= */
-.empresa-form {
+/* Layout do Formulário */
+.chamado-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
@@ -47,6 +49,7 @@
 .form-row {
   display: flex;
   gap: var(--space-md);
+  flex-wrap: wrap; /* Responsividade */
 }
 
 .form-field {
@@ -55,55 +58,37 @@
   flex: 1;
 }
 
+/* Classes auxiliares de tamanho flexível */
 .form-field.full { flex: 1 1 100%; }
-.form-field.flex2 { flex: 2; }
-.form-field.small { flex: 0.8; }
+.form-field.small { flex: 1 1 30%; min-width: 150px; }
+.form-field.x-small { flex: 0 0 100px; } /* Para o campo de Número */
 
-/* ======= Input com ícone ======= */
-.input-icon {
-  position: relative;
-  display: flex;
+.full-width-field {
+  width: 100%;
 }
 
-.icon-btn {
-  background: var(--color-cta);
-  color: white;
-  border: none;
-  padding: 0 12px;
-  border-radius: var(--radius-sm);
-  margin-left: 6px;
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-.icon-btn:not(:disabled):hover {
-  background: var(--color-cta-hover);
-}
-
-/* ======= Checkbox ======= */
-.checkbox {
-  font-size: var(--fs-md);
-  color: var(--text-1);
+/* Checkbox alinhado verticalmente com os inputs */
+.checkbox-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: flex-start;
+  padding-top: 4px; 
 }
 
-/* ======= Botões ======= */
-.actions {
-  margin-top: var(--space-lg);
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-md);
+/* Separador de seções */
+.section-divider {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: var(--space-sm);
+  margin-bottom: -8px; /* Aproxima do campo abaixo */
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
 }
 
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-
-/* Mensagens de erro e sucesso – mesma base do login */
+/* Mensagens de Erro e Sucesso (Padrão) */
 .error-message {
   margin-bottom: var(--space-md);
   padding: var(--space-sm);
@@ -115,10 +100,7 @@ button:disabled {
 .error {
   color: var(--color-error, #e63946);
   font-size: var(--fs-sm, 0.875rem);
-  margin-top: var(--space-xs, 4px);
-  line-height: 1.4;
   font-weight: 500;
-  animation: fadeIn 0.3s ease-in-out;
 }
 
 .success {
@@ -130,13 +112,78 @@ button:disabled {
   font-size: var(--fs-sm, 0.875rem);
   margin-bottom: var(--space-md);
   font-weight: 500;
-  animation: fadeIn 0.3s ease-in-out;
 }
 
-/* mudar fundo - inputs auto preenchidos*/
-input:disabled {
-  background-color: #f0f0f0 !important; 
-  -webkit-box-shadow: 0 0 0px 1000px #f0f0f0 inset !important;
-  box-shadow: 0 0 0px 1000px #f0f0f0 inset !important;
-  transition: background-color 5000s ease-in-out 0s; 
+/* Botões */
+.actions {
+  margin-top: var(--space-lg);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+}
+
+/* Botão Ghost (Cancelar) */
+.btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-1);
+}
+.btn-ghost:hover {
+    background: var(--bg-0);
+    border-color: var(--color-cta);
+}
+
+.btn-primary {
+  background-color: var(--color-cta, #007bff);
+  color: white;
+  border: none;
+  font-weight: var(--fw-semibold, 600);
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-cta-hover);
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0; /* Material form field já tem margem interna */
+  }
+  .form-field.small, .form-field.x-small {
+    flex: 1 1 100%;
+  }
+  .chamado-card {
+    padding: var(--space-lg);
+  }
 }
