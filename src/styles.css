@@ -1,39 +1,40 @@
 /* You can add global styles to this file, and also import other style files */
 /* Google Fonts: Poppins (títulos) + Inter (UI) */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap');
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap");
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
 
 :root {
   /* ====== CORE COLORS ====== */
-  --color-primary: #333A56;
-  --color-secondary: #5C6B8A;     
-  --color-cta: #3F72AF;
-  --color-cta-hover: #2F5A92;
-  --color-success: #4CAF50;
-  --color-warning: #FFB300;
-  --color-danger: #E53935;
+  --color-primary: #333a56;
+  --color-secondary: #5c6b8a;
+  --color-cta: #3f72af;
+  --color-cta-hover: #2f5a92;
+  --color-success: #4caf50;
+  --color-warning: #ffb300;
+  --color-danger: #e53935;
 
   /* Neutros */
-  --bg-0: #F5F7FA;               
-  --bg-1: #ffffff;             
-  --border: #E0E3E8;             
-  --text-1: #0F1724;
+  --bg-0: #f5f7fa;
+  --bg-1: #ffffff;
+  --border: #e0e3e8;
+  --text-1: #0f1724;
   --text-2: var(--color-primary);
 
   /* ====== TYPOGRAPHY ====== */
-  --font-sans: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  --font-display: 'Poppins', var(--font-sans);
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  --font-display: "Poppins", var(--font-sans);
 
-  --fs-xs: 0.75rem;   /* 12px */
-  --fs-sm: 0.875rem;  /* 14px */
-  --fs-md: 1rem;      /* 16px */
-  --fs-lg: 1.125rem;  /* 18px */
-  --fs-xl: 1.25rem;   /* 20px */
+  --fs-xs: 0.75rem; /* 12px */
+  --fs-sm: 0.875rem; /* 14px */
+  --fs-md: 1rem; /* 16px */
+  --fs-lg: 1.125rem; /* 18px */
+  --fs-xl: 1.25rem; /* 20px */
   --fw-regular: 400;
   --fw-medium: 500;
   --fw-semibold: 600;
 
-  /* ====== SPACING SCALE ====== (usar nomes semânticos) */
+  /* ====== SPACING SCALE ====== */
   --space-xxs: 4px;
   --space-xs: 8px;
   --space-sm: 12px;
@@ -53,101 +54,297 @@
   --transition-medium: 250ms;
 }
 
-* { box-sizing: border-box; }
-html { font-size: 16px; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+/* ====== BASE STYLES ====== */
+* {
+  box-sizing: border-box;
+}
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+html,
+body {
+  height: 100%;
+}
 body {
   margin: 0;
   font-family: var(--font-sans);
   font-size: var(--fs-md);
   color: var(--text-1);
   background: var(--bg-0);
-  -webkit-font-smoothing: antialiased;
 }
-h1,h2,h3,h4,h5 {
+
+h1,
+h2,
+h3,
+h4,
+h5 {
   font-family: var(--font-display);
   color: var(--text-2);
   margin: 0;
 }
 
+/* =========================================
+   1. LAYOUT SYSTEM (Páginas e Cards)
+   ========================================= */
 
-/* Container (centrar layout de login por ex.) */
-.app-center {
+/* Container principal da página (centraliza e dá padding) */
+.page-container {
+  background: var(--bg-0);
+  padding: var(--space-xl) var(--space-md);
   display: flex;
-  align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: var(--space-lg);
-  background: var(--bg-0);
+  width: 100%;
 }
 
-/* Card */
-.card {
+/* O Card Padrão (usado em Chamado e Empresa) */
+.content-card {
+  width: 100%;
+  max-width: 900px; /* Largura padrão confortável */
   background: var(--bg-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: var(--space-lg);
+  padding: var(--space-xl);
   box-shadow: var(--shadow-sm);
+  height: fit-content;
 }
 
-/* Botões */
+/* Variação para Login (Card mais estreito e centralizado verticalmente) */
+.page-container.login-layout {
+  align-items: center; /* Centraliza verticalmente */
+  padding: var(--space-lg);
+}
+
+.content-card.narrow {
+  max-width: 450px;
+}
+
+/* Títulos de Seção com sublinhado */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: var(--fw-semibold);
+  color: var(--text-2);
+  margin-bottom: var(--space-lg);
+  position: relative;
+  padding-bottom: var(--space-xs);
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 120px;
+  height: 4px;
+  background: var(--color-cta);
+  border-radius: var(--radius-sm);
+}
+
+/* =========================================
+   2. FORM SYSTEM (Grid Flexível)
+   ========================================= */
+
+.standard-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* Linha (Row) */
+.form-row {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+/* Colunas (Cols) */
+.form-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 200px; /* Evita quebra feia em telas pequenas */
+}
+
+/* Tamanhos específicos de colunas */
+.form-col.full {
+  flex: 1 1 100%;
+}
+.form-col.half {
+  flex: 1 1 48%;
+}
+.form-col.small {
+  flex: 1 1 30%;
+}
+.form-col.x-small {
+  flex: 0 0 100px;
+  min-width: auto;
+} /* Ex: para "Número" */
+
+/* Garante que o input do Material ocupe tudo */
+.full-width-field {
+  width: 100%;
+}
+
+/* Separador visual (Ex: "Endereço") */
+.form-section-divider {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: var(--space-sm);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+}
+
+/* Container dos Botões de Ação */
+.form-actions {
+  margin-top: var(--space-lg);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+}
+
+/* =========================================
+   3. COMPONENTES UI (Botões, Alerts, Loading)
+   ========================================= */
+
+/* --- Botões --- */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.65rem 1rem;
+  padding: 0.65rem 1.2rem;
   border-radius: 8px;
   font-weight: var(--fw-medium);
   font-size: var(--fs-md);
   cursor: pointer;
-  transition: background-color var(--transition-medium), transform var(--transition-fast);
+  transition: all var(--transition-medium);
   border: none;
   text-decoration: none;
 }
 
-/* Primary CTA */
 .btn-primary {
   background: var(--color-cta);
   color: #fff;
 }
-.btn-primary:hover { background: var(--color-cta-hover); transform: translateY(-1px); }
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-cta-hover);
+  transform: translateY(-1px);
+}
 
-/* Ghost / Outline */
 .btn-ghost {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text-1);
 }
-.btn-ghost:hover { background: var(--color-danger); transform: translateY(-1px); color: #fff;}
-
-/* Inputs */
-.input {
-  width: 100%;
-  padding: 0.6rem 0.75rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: transparent;
-  font-size: var(--fs-md);
-  color: var(--text-1);
-  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
-}
-.input:focus {
-  outline: none;
+.btn-ghost:hover {
+  background: var(--bg-0);
   border-color: var(--color-cta);
-  box-shadow: 0 0 0 4px rgba(63,114,175,0.08); /* foco acessível */
+  color: var(--color-cta);
 }
 
-/* Labels */
-.label {
-  display:block;
-  margin-bottom: 6px;
-  font-size: var(--fs-sm);
+/* Estado Desabilitado Global */
+.btn:disabled {
+  background-color: var(--border);
   color: var(--text-2);
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  pointer-events: none;
 }
 
-/* Small helpers */
-.text-muted { color: var(--text-2); font-size: var(--fs-sm); }
-.row { display:flex; gap: var(--space-md); align-items:center; }
+/* --- Mensagens de Feedback (Alerts) --- */
+.alert-box {
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-md);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  border-left-width: 4px;
+  border-left-style: solid;
+  animation: fadeIn 0.3s ease-in-out;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.alert-box.error {
+  background-color: rgba(230, 57, 70, 0.08);
+  border-left-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.alert-box.success {
+  background-color: rgba(46, 204, 113, 0.1);
+  border-left-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.alert-msg {
+  display: block;
+  margin-top: 4px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Spinner de Loading --- */
+.spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================
+   4. HELPERS & LEGACY
+   ========================================= */
+.text-muted {
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+}
+
+/* Responsividade Global */
+@media (max-width: 768px) {
+  .page-container {
+    padding: var(--space-md) var(--space-sm);
+  }
+  .content-card {
+    padding: var(--space-lg);
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+  .form-actions button {
+    width: 100%;
+  }
+}
