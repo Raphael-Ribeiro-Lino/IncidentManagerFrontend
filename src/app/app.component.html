@@ -1,2 +1,8 @@
 <app-loading></app-loading>
-<router-outlet></router-outlet>
+@if (mostrarMenu()) {
+  <app-header></app-header>
+}
+
+<div class="main-content">
+  <router-outlet></router-outlet>
+</div>
