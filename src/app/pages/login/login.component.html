@@ -12,63 +12,51 @@
         <div class="login-card">
             <h2>Login</h2>
 
-            <!-- Mensagens de erro e sucesso -->
-            <div *ngIf="errorMessages.length > 0" class="error-message">
-                <div class="error" *ngFor="let errorMessage of errorMessages">{{ errorMessage }}</div>
+            <div *ngIf="errorMessages.length > 0" class="error-message-box">
+                <div *ngFor="let errorMessage of errorMessages">{{ errorMessage }}</div>
             </div>
-            <div *ngIf="successfullyRegisteredUser != ''" class="success">
+
+            <div *ngIf="successfullyRegisteredUser" class="success-message-box">
                 {{ successfullyRegisteredUser }}
             </div>
 
-            <!-- Formulário com validações -->
-            <form [formGroup]="formLogin" (ngSubmit)="submitForm()">
-                <!-- E-mail -->
-                <div class="form-group">
-                    <label class="label" for="email">E-mail</label>
-                    <input id="email" class="input" type="email" formControlName="email"
-                        placeholder="Digite seu e-mail" />
+            <form [formGroup]="formLogin" (ngSubmit)="submitForm()" class="form-content">
 
-                    <div *ngIf="formLogin.get('email')?.invalid && formLogin.get('email')?.touched">
-                        <div class="error" *ngIf="formLogin.get('email')?.hasError('required')">O e-mail é obrigatório.
-                        </div>
-                        <div class="error" *ngIf="formLogin.get('email')?.hasError('maxlength')">O e-mail deve ter no
-                            máximo 320 caracteres.</div>
-                        <div class="error" *ngIf="formLogin.get('email')?.hasError('pattern')">Endereço de e-mail
-                            inválido.</div>
-                    </div>
-                </div>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>E-mail</mat-label>
+                    <input matInput type="email" formControlName="email" placeholder="Ex: usuario@email.com"
+                        autocomplete="username">
 
-                <!-- Senha -->
-                <div class="form-group password-group">
-                    <label class="label" for="password">Senha</label>
-                    <div class="password-wrapper">
-                        <input id="password" class="input" [type]="showPassword ? 'text' : 'password'"
-                            formControlName="password" placeholder="Digite sua senha" />
+                    <mat-error *ngIf="formLogin.get('email')?.hasError('required')">
+                        O e-mail é obrigatório
+                    </mat-error>
+                    <mat-error *ngIf="formLogin.get('email')?.hasError('pattern')">
+                        E-mail inválido
+                    </mat-error>
+                </mat-form-field>
 
-                        <button type="button" class="toggle-password-btn" (click)="togglePasswordVisibility()"
-                            [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'">
-                            <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-                        </button>
-                    </div>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Senha</mat-label>
+                    <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password"
+                        autocomplete="current-password">
 
-                    <div *ngIf="formLogin.get('password')?.invalid && formLogin.get('password')?.touched">
-                        <div class="error" *ngIf="formLogin.get('password')?.hasError('required')">A senha é
-                            obrigatória.</div>
-                        <div class="error" *ngIf="formLogin.get('password')?.hasError('maxlength')">A senha deve ter no
-                            máximo 255 caracteres.</div>
-                        <div class="error" *ngIf="formLogin.get('password')?.hasError('minlength')">A senha deve ter no
-                            mínimo 8 caracteres.</div>
-                        <div class="error" *ngIf="formLogin.get('password')?.hasError('pattern')">Senha inválida.</div>
-                    </div>
-                </div>
+                    <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()"
+                        [attr.aria-label]="'Ocultar senha'">
+                        <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
 
+                    <mat-error *ngIf="formLogin.get('password')?.hasError('required')">
+                        A senha é obrigatória
+                    </mat-error>
+                    <mat-error *ngIf="formLogin.get('password')?.hasError('minlength')">
+                        A senha deve ter no mínimo de 8 caracteres
+                    </mat-error>
+                    <mat-error *ngIf="formLogin.get('password')?.hasError('maxlength')">
+                        A senha deve ter no máximo 255 caracteres.
+                    </mat-error>
+                </mat-form-field>
 
-                <!-- Botão -->
-                <button type="submit" class="btn btn-primary" [disabled]="!formLogin.valid" [ngStyle]="{
-            'background-color': formLogin.valid ? '' : '#CCCCCC',
-            'margin-top': formLogin.valid ? '' : '5%',
-            'transition': 'background-color 0.3s, margin-top 0.3s'
-          }">
+                <button type="submit" class="btn btn-primary btn-submit" [disabled]="formLogin.invalid">
                     Entrar
                 </button>
             </form>
