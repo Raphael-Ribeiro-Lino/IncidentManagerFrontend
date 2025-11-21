@@ -1,104 +1,107 @@
-<div class="usuario-page">
-  <div class="usuario-card">
-    <h1 class="usuario-title">Cadastro de Usuário</h1>
+<div class="page-container">
+  <div class="content-card">
+    <h1 class="section-title">Cadastro de Usuário</h1>
 
-    <div *ngIf="errorMessages.length" class="error-message">
-      <div class="error" *ngFor="let msg of errorMessages">{{ msg }}</div>
+    <div *ngIf="errorMessages.length" class="alert-box error">
+      <span class="alert-msg" *ngFor="let msg of errorMessages">{{ msg }}</span>
     </div>
-    <div *ngIf="successfullyRegisteredUsuario" class="success">
+    <div *ngIf="successfullyRegisteredUsuario" class="alert-box success">
       {{ successfullyRegisteredUsuario }}
     </div>
 
-    <form [formGroup]="formUsuario" class="usuario-form" (ngSubmit)="submitForm()">
+    <form [formGroup]="formUsuario" class="standard-form" (ngSubmit)="submitForm()">
 
       <div class="form-row">
-        <div class="form-field full">
-          <label class="label">Nome Completo *</label>
-          <input class="input" formControlName="nome" />
-          <div *ngIf="formUsuario.get('nome')?.touched && formUsuario.get('nome')?.invalid" class="error">
-            <div *ngIf="formUsuario.get('nome')?.hasError('required')">O nome é obrigatório.</div>
-            <div *ngIf="formUsuario.get('nome')?.hasError('maxlength')">O nome deve ter no máximo 100 caracteres.</div>
-            <div *ngIf="formUsuario.get('nome')?.hasError('pattern')">Nome inválido. Use apenas letras, espaços ou
-              hífen.</div>
-          </div>
+        <div class="form-col full">
+          <mat-form-field appearance="outline" class="full-width-field">
+            <mat-label>Nome Completo</mat-label>
+            <input matInput formControlName="nome" />
+            <mat-error *ngIf="formUsuario.get('nome')?.hasError('required')">Obrigatório.</mat-error>
+            <mat-error *ngIf="formUsuario.get('nome')?.hasError('maxlength')">Máximo 100 caracteres.</mat-error>
+            <mat-error *ngIf="formUsuario.get('nome')?.hasError('pattern')">Nome inválido.</mat-error>
+          </mat-form-field>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="form-field full">
-          <label class="label">E-mail *</label>
-          <input class="input" formControlName="email" />
-          <div *ngIf="formUsuario.get('email')?.touched && formUsuario.get('email')?.invalid" class="error">
-            <div *ngIf="formUsuario.get('email')?.hasError('required')">O e-mail é obrigatório.</div>
-            <div *ngIf="formUsuario.get('email')?.hasError('maxlength')">O e-mail deve ter no máximo 320 caracteres.
-            </div>
-            <div *ngIf="formUsuario.get('email')?.hasError('pattern')">E-mail inválido.</div>
-          </div>
+        <div class="form-col full">
+          <mat-form-field appearance="outline" class="full-width-field">
+            <mat-label>E-mail</mat-label>
+            <input matInput formControlName="email" placeholder="exemplo@email.com" />
+            <mat-error *ngIf="formUsuario.get('email')?.hasError('required')">Obrigatório.</mat-error>
+            <mat-error *ngIf="formUsuario.get('email')?.hasError('pattern')">E-mail inválido.</mat-error>
+          </mat-form-field>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="form-field small">
-          <label class="label">Telefone *</label>
-          <input class="input" formControlName="telefone" appMask="telefone" placeholder="(11) 98765-4321" />
-          <div *ngIf="formUsuario.get('telefone')?.touched && formUsuario.get('telefone')?.invalid" class="error">
-            <div *ngIf="formUsuario.get('telefone')?.hasError('required')">O telefone é obrigatório.</div>
-            <div
-              *ngIf="formUsuario.get('telefone')?.hasError('minlength') || formUsuario.get('telefone')?.hasError('maxlength')">
-              O telefone deve ter entre 10 e 15 caracteres.
-            </div>
-            <div *ngIf="formUsuario.get('telefone')?.hasError('pattern')">
-              Telefone inválido!<br>Use um formato válido, como (11) 98765-4321 ou 11 98765-4321.
-            </div>
-          </div>
+        <div class="form-col small">
+          <mat-form-field appearance="outline" class="full-width-field">
+            <mat-label>Telefone</mat-label>
+            <input matInput formControlName="telefone" appMask="telefone" placeholder="(11) 90000-0000" maxlength="15"/>
+            <mat-error *ngIf="formUsuario.get('telefone')?.hasError('required')">Obrigatório.</mat-error>
+            <mat-error *ngIf="!formUsuario.get('telefone')?.hasError('required') && formUsuario.get('telefone')?.hasError('minlength')">Mínimo 10 dígitos.</mat-error>
+            <mat-error *ngIf="!formUsuario.get('telefone')?.hasError('required') && !formUsuario.get('telefone')?.hasError('minlength') && formUsuario.get('telefone')?.hasError('pattern')">Formato inválido.</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-col small">
+          <mat-form-field appearance="outline" class="full-width-field">
+            <mat-label>Perfil</mat-label>
+            <mat-select formControlName="perfil">
+              <mat-option value="">Selecione</mat-option>
+              <mat-option *ngFor="let p of perfis" [value]="p">{{ perfilLabels[p] }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="formUsuario.get('perfil')?.hasError('required')">Obrigatório.</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="form-row" *ngIf="usuarioLogado.perfil !== 'ADMIN_EMPRESA'">
+        <div class="form-col full">
+          <mat-form-field appearance="outline" class="full-width-field">
+            <mat-label>Empresa</mat-label>
+            
+            <input type="text" 
+                   matInput 
+                   formControlName="empresa"
+                   (input)="filtrarEmpresas($event)"
+                   (blur)="onEmpresaBlur()"
+                   [matAutocomplete]="auto" 
+                   placeholder="Digite para buscar a empresa">
+
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let e of empresasFiltradas" [value]="e"
+                (onSelectionChange)="selecionarEmpresa(e)">
+                {{ e.nome }}
+              </mat-option>
+
+              <mat-option *ngIf="empresasFiltradas.length === 0" disabled>
+                Nenhuma empresa encontrada
+              </mat-option>
+            </mat-autocomplete>
+
+            <mat-error *ngIf="formUsuario.get('empresa')?.hasError('required')">A empresa é obrigatória.</mat-error>
+          </mat-form-field>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="form-field small">
-          <label class="label">Perfil *</label>
-          <select class="input" formControlName="perfil">
-            <option value="">Selecione</option>
-            <option *ngFor="let p of perfis" [value]="p">{{ perfilLabels[p] }}</option>
-          </select>
-          <div *ngIf="formUsuario.get('perfil')?.touched && formUsuario.get('perfil')?.invalid" class="error">
-            <div *ngIf="formUsuario.get('perfil')?.hasError('required')">O perfil é obrigatório.</div>
-          </div>
-        </div>
-
-        <div class="form-field small" *ngIf="usuarioLogado.perfil !== 'ADMIN_EMPRESA'">
-          <label class="label">Empresa *</label>
-          <input type="text" class="input" formControlName="empresa" [value]="empresaSelecionada?.nome || ''"
-            (input)="filtrarEmpresas($event)" (focus)="mostrarDropdown = true" (blur)="fecharDropdown()"
-            placeholder="Digite o nome da empresa" />
-
-          <ul *ngIf="mostrarDropdown && empresasFiltradas.length" class="dropdown">
-            <li *ngFor="let e of empresasFiltradas" (mousedown)="selecionarEmpresa(e)">
-              {{ e.nome }}
-            </li>
-          </ul>
-
-          <div *ngIf="mostrarDropdown && mensagemNenhumaEmpresa" class="error">
-            {{ mensagemNenhumaEmpresa }}
-          </div>
-
-          <div *ngIf="formUsuario.get('empresa')?.touched && formUsuario.get('empresa')?.invalid" class="error">
-            <div *ngIf="formUsuario.get('empresa')?.hasError('required')">A empresa é obrigatória.</div>
-          </div>
+        <div class="form-col full">
+          <mat-checkbox formControlName="ativo" color="primary">Usuário Ativo</mat-checkbox>
         </div>
       </div>
 
-      <div class="form-row">
-        <label class="checkbox">
-          <input type="checkbox" formControlName="ativo" checked /> Ativo
-        </label>
-      </div>
+      <p class="text-muted small-text" style="margin-top: var(--space-sm);">* Campos obrigatórios</p>
 
-      <p style="margin-top: var(--space-md)" class="text-muted">* Campos obrigatórios</p>
-
-      <div class="actions">
+      <div class="form-actions">
         <button class="btn btn-ghost" type="button" (click)="cancelar()">Cancelar</button>
-        <button class="btn btn-primary" type="submit" [disabled]="formUsuario.invalid">Salvar</button>
+        <button class="btn btn-primary" type="submit" [disabled]="formUsuario.invalid || isLoading">
+          <span *ngIf="!isLoading">Salvar</span>
+          <span *ngIf="isLoading" class="spinner-container">
+            <span class="spinner"></span> Salvando...
+          </span>
+        </button>
       </div>
 
     </form>
