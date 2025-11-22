@@ -9,21 +9,36 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+// --- Imports Material ---
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+// ------------------------
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { AlteraSenhaInput } from '../../../models/usuario/alteraSenhaInput';
 
 @Component({
   selector: 'app-altera-senha',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatIconModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    RouterModule, 
+    MatFormFieldModule, // Adicionado
+    MatInputModule,     // Adicionado
+    MatButtonModule,    // Adicionado
+    MatIconModule       // Adicionado
+  ],
   templateUrl: './alterar-senha.component.html',
-  styleUrls: ['./alterar-senha.component.css'],
+  styleUrl: './alterar-senha.component.css', // Certifique-se de que este arquivo existe e está vazio
 })
 export class AlterarSenhaComponent implements OnInit {
   formAlteraSenha!: FormGroup;
   errorMessages: string[] = [];
   successMessage = '';
+  
+  isLoading = false; // Controle de Loading
 
   showPassword = {
     senhaAtual: false,
@@ -99,33 +114,47 @@ export class AlterarSenhaComponent implements OnInit {
     return null;
   }
 
+  // Remove erro individual da lista
+  removeErrorIndex(index: number) {
+    this.errorMessages.splice(index, 1);
+  }
+
   cancelar() {
-    this.router.navigate(['/usuario/meus-dados']);
+    // Ajustado para voltar para Home ou Meus Dados, conforme preferência
+    this.router.navigate(['/usuario/alterar-meus-dados']); 
   }
 
   submitForm(): void {
-    if (this.formAlteraSenha.invalid) return;
+    this.errorMessages = [];
+    
+    if (this.formAlteraSenha.invalid) {
+        this.formAlteraSenha.markAllAsTouched();
+        return;
+    }
 
     const token = localStorage.getItem('token')!;
-    this.errorMessages = [];
-
     const input: AlteraSenhaInput = this.formAlteraSenha.value;
+    
+    this.isLoading = true; // Inicia loading
 
     this.usuarioService.alterarSenha(token, input).subscribe({
       next: () => {
-        this.successMessage =
-          'Senha alterada com sucesso! Faça login novamente.';
-        this.formAlteraSenha.reset();
+        this.isLoading = false; // Para loading
+        this.successMessage = 'Senha alterada com sucesso! Faça login novamente.';
+        this.formAlteraSenha.disable();
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        
         setTimeout(() => {
           localStorage.removeItem('token');
           this.router.navigate(['/login']);
         }, 2000);
       },
       error: (erro) => {
+        this.isLoading = false; // Para loading
         this.errorMessages.push(
           erro.error?.message || 'Ocorreu um erro inesperado. Tente novamente.'
         );
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
     });
   }
