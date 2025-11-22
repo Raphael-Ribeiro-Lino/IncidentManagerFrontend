@@ -23,11 +23,9 @@
             </a>
             }
 
-            @if (perfilUsuario === HeaderPerfilEnum.USUARIO) {
             <a routerLink="/chamado/listar" routerLinkActive="active" class="nav-item">
                 <mat-icon>assignment</mat-icon> Meus Chamados
             </a>
-            }
 
             @if (perfilUsuario === HeaderPerfilEnum.TECNICO_TI) {
             <a routerLink="/atendimento/listar" routerLinkActive="active" class="nav-item">
