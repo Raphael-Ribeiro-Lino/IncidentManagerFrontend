@@ -1,87 +1,83 @@
-<div class="login-container">
-    <!-- Lado esquerdo: Logo e informações do sistema -->
-    <div class="login-left">
-        <div class="login-left-content">
-            <img src="assets/logo.png" alt="Logo Smartdesk" class="login-image">
-            <p class="system-subtitle">Gerencie chamados com eficiência e agilidade</p>
+<div class="auth-container">
+    <div class="auth-banner">
+        <div class="auth-banner-content">
+            <img src="assets/logo.png" alt="Logo Smartdesk" class="auth-logo">
+            <p class="auth-subtitle">Gerencie chamados com eficiência e agilidade</p>
         </div>
     </div>
 
-    <!-- Lado direito: Card de redefinição de senha -->
-    <div class="login-right">
-        <div class="login-card">
+    <div class="auth-content-wrapper">
+        <div class="auth-card">
             <h2>Redefinir Senha</h2>
-            <p>Digite sua nova senha abaixo para atualizar suas credenciais.</p>
+            <p class="auth-description">
+                Crie uma senha forte para proteger sua conta.
+            </p>
 
-            <!-- Mensagens de erro -->
-            <div *ngIf="errorMessages.length > 0" class="error-message">
-                <div class="error" *ngFor="let errorMessage of errorMessages">{{ errorMessage }}</div>
+            <div *ngIf="errorMessages.length > 0" class="alert-box error">
+                <div *ngFor="let msg of errorMessages">{{ msg }}</div>
             </div>
 
-            <!-- Mensagens de sucesso -->
-            <div *ngIf="successMessage" class="success">
+            <div *ngIf="successMessage" class="alert-box success">
                 {{ successMessage }}
             </div>
 
-            <!-- Formulário de redefinição -->
-            <form [formGroup]="formRedefinePassword" (ngSubmit)="submitForm()">
+            <form [formGroup]="formRedefinePassword" (ngSubmit)="submitForm()" class="auth-form">
 
-                <!-- Nova senha -->
-                <div class="form-group">
-                    <label for="newPassword" class="label">Nova Senha</label>
-                    <div class="password-wrapper">
-                        <input id="newPassword" class="input" [type]="showPassword.newPassword ? 'text' : 'password'"
-                            formControlName="newPassword" placeholder="Digite sua nova senha" />
-                        <button type="button" class="toggle-password-btn" (click)="togglePassword('newPassword')">
-                            <mat-icon>{{ showPassword.newPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-                        </button>
-                    </div>
-                    <div
-                        *ngIf="formRedefinePassword.get('newPassword')?.invalid && formRedefinePassword.get('newPassword')?.touched">
-                        <div class="error" *ngIf="formRedefinePassword.get('newPassword')?.hasError('required')">A nova
-                            senha é obrigatória.</div>
-                        <div class="error" *ngIf="formRedefinePassword.get('newPassword')?.hasError('maxlength')">A nova
-                            senha deve ter no máximo 255 caracteres.</div>
-                        <div class="error" *ngIf="formRedefinePassword.get('newPassword')?.hasError('minlength')">A nova
-                            senha deve ter no mínimo 8 caracteres.</div>
-                        <div class="error" *ngIf="formRedefinePassword.get('newPassword')?.hasError('pattern')">Nova
-                            Senha inválida.</div>
-                    </div>
-                </div>
+                <mat-form-field appearance="outline" class="full-width-field">
+                    <mat-label>Nova Senha</mat-label>
+                    <input matInput [type]="showPassword.newPassword ? 'text' : 'password'" 
+                           formControlName="newPassword" placeholder="Mínimo 8 caracteres">
+                    
+                    <button mat-icon-button matSuffix type="button" (click)="togglePassword('newPassword')">
+                        <mat-icon>{{ showPassword.newPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
 
-                <!-- Confirmar senha -->
-                <div class="form-group">
-                    <label for="confirmPassword" class="label">Confirmar Senha</label>
-                    <div class="password-wrapper">
-                        <input id="confirmPassword" class="input"
-                            [type]="showPassword.confirmPassword ? 'text' : 'password'"
-                            formControlName="confirmPassword" placeholder="Confirme sua nova senha" />
-                        <button type="button" class="toggle-password-btn" (click)="togglePassword('confirmPassword')">
-                            <mat-icon>{{ showPassword.confirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-                        </button>
-                    </div>
-                    <div
-                        *ngIf="formRedefinePassword.get('confirmPassword')?.invalid && formRedefinePassword.get('confirmPassword')?.touched">
-                        <div class="error" *ngIf="formRedefinePassword.get('confirmPassword')?.hasError('required')">A
-                            confirmação é obrigatória.</div>
-                        <div class="error"
-                            *ngIf="formRedefinePassword.get('confirmPassword')?.hasError('passwordMismatch')">As senhas
-                            não coincidem.</div>
-                        <div class="error" *ngIf="formRedefinePassword.get('confirmPassword')?.hasError('maxlength')">A
-                            nova senha deve ter no máximo 255 caracteres.</div>
-                        <div class="error" *ngIf="formRedefinePassword.get('confirmPassword')?.hasError('minlength')">A
-                            nova senha deve ter no mínimo 8 caracteres.</div>
-                        <div class="error" *ngIf="formRedefinePassword.get('confirmPassword')?.hasError('pattern')">
-                            Senha inválida.</div>
-                    </div>
-                </div>
+                    <mat-error *ngIf="formRedefinePassword.get('newPassword')?.hasError('required')">
+                        A senha é obrigatória.
+                    </mat-error>
 
-                <button type="submit" class="btn btn-primary" [disabled]="!formRedefinePassword.valid">
-                    Atualizar Senha
+                    <mat-error *ngIf="!formRedefinePassword.get('newPassword')?.hasError('required') && 
+                                      (formRedefinePassword.get('newPassword')?.hasError('minlength') || 
+                                       formRedefinePassword.get('newPassword')?.hasError('maxlength'))">
+                        A senha deve ter entre 8 e 255 caracteres.
+                    </mat-error>
+
+                    <mat-error *ngIf="!formRedefinePassword.get('newPassword')?.hasError('required') && 
+                                      !formRedefinePassword.get('newPassword')?.hasError('minlength') && 
+                                      !formRedefinePassword.get('newPassword')?.hasError('maxlength') && 
+                                       formRedefinePassword.get('newPassword')?.hasError('pattern')">
+                        Use letras, números e caractere especial.
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width-field">
+                    <mat-label>Confirmar Senha</mat-label>
+                    <input matInput [type]="showPassword.confirmPassword ? 'text' : 'password'" 
+                           formControlName="confirmPassword" placeholder="Repita a senha">
+
+                    <button mat-icon-button matSuffix type="button" (click)="togglePassword('confirmPassword')">
+                        <mat-icon>{{ showPassword.confirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
+
+                    <mat-error *ngIf="formRedefinePassword.get('confirmPassword')?.hasError('required')">
+                        A confirmação é obrigatória.
+                    </mat-error>
+                    <mat-error *ngIf="formRedefinePassword.get('confirmPassword')?.hasError('passwordMismatch')">
+                        As senhas não coincidem.
+                    </mat-error>
+                </mat-form-field>
+
+                <button type="submit" class="btn btn-primary btn-auth-submit" 
+                        [disabled]="formRedefinePassword.invalid || isLoading">
+                    <span *ngIf="!isLoading">Atualizar Senha</span>
+                    <span *ngIf="isLoading" class="spinner-container">
+                        <span class="spinner"></span> Enviando...
+                    </span>
                 </button>
+
             </form>
 
-            <a class="forgot-link" routerLink="/login">Voltar ao login</a>
+            <a class="auth-link-back" routerLink="/login">Voltar ao login</a>
         </div>
     </div>
 </div>
