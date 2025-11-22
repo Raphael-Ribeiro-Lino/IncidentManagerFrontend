@@ -9,11 +9,23 @@ import { NavigationExtras, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RecuperarSenhaService } from '../../services/recuperar-senha/recuperar-senha.service';
 import { EmailRedefinirSenhaInput } from '../../models/recuperar-senha/recuperarSenhaInput';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-recuperar-senha',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule
+  ],
   templateUrl: './recuperar-senha.component.html',
   styleUrl: './recuperar-senha.component.css',
 })
@@ -21,7 +33,7 @@ export class RecuperarSenhaComponent implements OnInit {
   formRecover!: FormGroup;
   errorMessages: string[] = [];
   successMessage: string | null = null;
-  loading: boolean = false;
+  isLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -43,7 +55,7 @@ export class RecuperarSenhaComponent implements OnInit {
   submitForm(): void {
     this.errorMessages = [];
     this.successMessage = null;
-    this.loading = true;
+    this.isLoading = true;
 
     if (this.formRecover.invalid) {
       this.errorMessages.push('Por favor, preencha o e-mail corretamente.');
@@ -71,13 +83,13 @@ export class RecuperarSenhaComponent implements OnInit {
             'Não foi possível enviar o link. Tente novamente mais tarde.'
           );
         }
-        this.loading = false;
+        this.isLoading = false;
         setTimeout(() => {
           this.errorMessages = [];
         }, 3000);
       },
       complete: () => {
-        this.loading = false;
+        this.isLoading = false;
       }
     });
   }

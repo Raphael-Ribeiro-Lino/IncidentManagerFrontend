@@ -1,57 +1,40 @@
-<div class="login-container">
-  <!-- Lado esquerdo: logo e descrição -->
-  <div class="login-left">
-    <div class="login-left-content">
-      <img src="assets/logo.png" alt="Logo Smartdesk" class="login-image" />
-      <p class="system-subtitle">
-        Gerencie chamados com eficiência e agilidade
-      </p>
-    </div>
-  </div>
-
-  <!-- Lado direito: card de recuperação de senha -->
-  <div class="login-right">
-    <div class="login-card">
-      <h2>Recuperar Senha</h2>
-      <p>Digite seu e-mail para receber o link de redefinição de senha.</p>
-
-      <!-- Mensagens de erro -->
-      <div *ngIf="errorMessages.length > 0" class="error-message">
-        <div class="error" *ngFor="let msg of errorMessages">{{ msg }}</div>
-      </div>
-
-      <!-- Mensagem de sucesso -->
-      <div *ngIf="successMessage" class="success">
-        {{ successMessage }}
-      </div>
-
-      <!-- Formulário -->
-      <form [formGroup]="formRecover" (ngSubmit)="submitForm()">
-        <div class="form-group">
-          <label class="label" for="email">E-mail</label>
-          <input id="email" class="input" type="email" formControlName="email" placeholder="Digite seu e-mail" />
-          <div *ngIf="
-              formRecover.get('email')?.touched &&
-              formRecover.get('email')?.invalid
-            ">
-            <div class="error" *ngIf="formRecover.get('email')?.hasError('required')">
-              O e-mail é obrigatório.
-            </div>
-            <div class="error" *ngIf="formRecover.get('email')?.hasError('pattern')">
-              Endereço de e-mail inválido.
-            </div>
-            <div class="error" *ngIf="formRecover.get('email')?.hasError('maxlength')">
-              O e-mail deve ter no máximo 320 caracteres.
-            </div>
-          </div>
+<div class="auth-container">
+    <div class="auth-banner">
+        <div class="auth-banner-content">
+            <a routerLink="/login">
+                <img src="assets/logo.png" alt="Logo Smartdesk" class="auth-logo">
+            </a>
+            <p class="auth-subtitle">Recupere o acesso à sua conta de forma rápida e segura</p>
         </div>
-
-        <button type="submit" class="btn btn-primary" [disabled]="!formRecover.valid">
-          Enviar Link
-        </button>
-      </form>
-
-      <a class="forgot-link" routerLink="/login">Voltar ao login</a>
     </div>
-  </div>
+
+    <div class="auth-content-wrapper">
+        <div class="auth-card">
+            <h2>Esqueceu a Senha?</h2>
+            <p class="auth-description">
+                Não se preocupe. Digite seu e-mail abaixo e enviaremos as instruções para você.
+            </p>
+
+            <form [formGroup]="formRecover" (ngSubmit)="submitForm()" class="auth-form">
+                <mat-form-field appearance="outline" class="full-width-field">
+                    <mat-label>E-mail</mat-label>
+                    <input matInput formControlName="email" type="email">
+                    <mat-icon matSuffix>email</mat-icon>
+                    <mat-error *ngIf="formRecover.get('email')?.hasError('pattern')">E-mail inválido</mat-error>
+                    <mat-error *ngIf="formRecover.get('email')?.hasError('required')">Obrigatório</mat-error>
+                    <mat-error *ngIf="formRecover.get('email')?.hasError('maxlength')">O e-mail deve ter no máximo 320 caracteres</mat-error>
+                </mat-form-field>
+
+                <button type="submit" class="btn btn-primary btn-auth-submit" 
+                        [disabled]="formRecover.invalid || isLoading">
+                    <span *ngIf="!isLoading">Enviar Link</span>
+                    <span *ngIf="isLoading" class="spinner-container"><span class="spinner"></span></span>
+                </button>
+            </form>
+
+            <a routerLink="/login" class="auth-link-back">
+                <mat-icon>arrow_back</mat-icon> Voltar ao Login
+            </a>
+        </div>
+    </div>
 </div>

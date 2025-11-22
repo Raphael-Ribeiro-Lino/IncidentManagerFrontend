@@ -348,3 +348,173 @@ h5 {
     width: 100%;
   }
 }
+
+/* =========================================
+   LAYOUT DE AUTENTICAÇÃO UNIFICADO (GLOBAL)
+   Usado em: Login, Recuperar, Redefinir, Definir Senha
+   ========================================= */
+
+.auth-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg-0);
+  font-family: var(--font-sans);
+  color: var(--text-1);
+}
+
+/* --- Lado Esquerdo (Banner/Branding) --- */
+.auth-banner {
+  flex: 1;
+  background-color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.auth-banner-content {
+  max-width: 420px;
+}
+
+.auth-logo {
+  width: 100%;
+  max-width: 360px; /* Ajustado para ficar harmônico */
+  height: auto;
+  margin-bottom: var(--space-md);
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.auth-logo:hover {
+  transform: scale(1.03);
+}
+
+.auth-subtitle {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 300;
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
+/* --- Lado Direito (Formulário) --- */
+.auth-content-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-xl);
+  background-color: var(--bg-0);
+}
+
+.auth-card {
+  background: var(--bg-1, #fff);
+  border-radius: var(--radius-md);
+  padding: 48px; /* Espaçamento interno generoso */
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 480px; /* Largura confortável */
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: var(--space-sm);
+  color: var(--color-primary);
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.auth-description {
+  text-align: center;
+  color: var(--text-2);
+  opacity: 0.8;
+  margin-bottom: var(--space-lg);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* Formulário */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Espaço entre os inputs */
+}
+
+/* Botão Principal */
+.btn-auth-submit {
+  width: 100%;
+  margin-top: var(--space-md);
+  height: 50px;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+
+/* Link de Voltar */
+.auth-link-back {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 24px;
+  font-size: 0.9rem;
+  color: var(--color-cta);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.auth-link-back:hover {
+  color: var(--color-cta-hover);
+  text-decoration: underline;
+}
+
+/* Animação de Entrada */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .auth-container {
+    flex-direction: column;
+  }
+
+  .auth-banner {
+    flex: none;
+    height: 30vh;
+    padding: var(--space-lg);
+    max-width: 100%;
+  }
+
+  .auth-logo {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+    margin-bottom: var(--space-md);
+    transition: transform 0.3s;
+  }
+  .auth-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .auth-content-wrapper {
+    align-items: flex-start;
+    padding-top: 32px;
+  }
+
+  .auth-card {
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+  }
+}
