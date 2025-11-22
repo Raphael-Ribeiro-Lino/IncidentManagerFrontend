@@ -55,35 +55,36 @@ export class RecuperarSenhaComponent implements OnInit {
   submitForm(): void {
     this.errorMessages = [];
     this.successMessage = null;
-    this.isLoading = true;
 
     if (this.formRecover.invalid) {
       this.errorMessages.push('Por favor, preencha o e-mail corretamente.');
       return;
     }
 
+    this.isLoading = true;
+
     const email = this.formRecover.getRawValue() as EmailRedefinirSenhaInput;
 
     this.recuperarSenhaService.enviarEmailParaRedefinirSenha(email).subscribe({
       next: () => {
-        this.successMessage =
-          'Se o e-mail estiver cadastrado, enviaremos um link de redefinição.';
-        const navigationExtras: NavigationExtras = {
-          state: {
-            successData: this.successMessage,
-          },
-        };
-        this.route.navigate(['login'], navigationExtras);
+        this.successMessage = 'Se o e-mail estiver cadastrado, enviaremos um link de redefinição.';
+        
+        setTimeout(() => {
+          const navigationExtras: NavigationExtras = {
+            state: { successData: this.successMessage },
+          };
+          this.route.navigate(['login'], navigationExtras);
+        }, 2000);
       },
       error: (error) => {
+        this.isLoading = false;
+        
         if (error?.error?.messages) {
           this.errorMessages = error.error.messages;
         } else {
-          this.errorMessages.push(
-            'Não foi possível enviar o link. Tente novamente mais tarde.'
-          );
+          this.errorMessages.push('Não foi possível enviar o link. Tente novamente mais tarde.');
         }
-        this.isLoading = false;
+        
         setTimeout(() => {
           this.errorMessages = [];
         }, 3000);

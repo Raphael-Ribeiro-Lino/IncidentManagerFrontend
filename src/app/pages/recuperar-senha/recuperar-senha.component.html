@@ -15,6 +15,13 @@
                 Não se preocupe. Digite seu e-mail abaixo e enviaremos as instruções para você.
             </p>
 
+            <div *ngIf="errorMessages.length > 0" class="alert-box error">
+                <div *ngFor="let msg of errorMessages">{{ msg }}</div>
+            </div>
+
+            <div *ngIf="successMessage" class="alert-box success">
+                {{ successMessage }}
+            </div>
             <form [formGroup]="formRecover" (ngSubmit)="submitForm()" class="auth-form">
                 <mat-form-field appearance="outline" class="full-width-field">
                     <mat-label>E-mail</mat-label>
