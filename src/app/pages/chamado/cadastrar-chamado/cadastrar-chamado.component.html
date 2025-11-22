@@ -3,9 +3,14 @@
         <h1 class="section-title">Abrir Novo Chamado</h1>
 
         <div *ngIf="errorMessages.length" class="alert-box error">
-            <span class="alert-msg" *ngFor="let msg of errorMessages">{{ msg }}</span>
+            <div *ngFor="let msg of errorMessages; let i = index" class="alert-item">
+                <span class="alert-msg">{{ msg }}</span>
+                <button type="button" class="btn-close-alert" (click)="removeErrorIndex(i)">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
         </div>
-        
+
         <div *ngIf="successfullyRegisteredChamado" class="alert-box success">
             {{ successfullyRegisteredChamado }}
         </div>
@@ -58,12 +63,9 @@
             </div>
 
             <div class="form-row">
-                <div class="form-col full drop-zone" 
-                    [class.dragging]="isDragging" 
-                    (drop)="onDrop($event)"
-                    (dragover)="onDragOver($event)" 
-                    (dragleave)="onDragLeave($event)">
-                    
+                <div class="form-col full drop-zone" [class.dragging]="isDragging" (drop)="onDrop($event)"
+                    (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+
                     <label class="label">Anexar Arquivos (Opcional)</label>
 
                     <div class="file-input-wrapper">
@@ -78,8 +80,24 @@
                     </div>
 
                     <p class="text-muted small-text">
-                        Formatos: PDF, DOCX, PNG, JPG, ZIP (Máx 5MB)
+                        Formatos: PDF, DOCX, PNG, JPG, ZIP (Máx 50MB/arq • Total 500MB • Máx 20 arquivos)
                     </p>
+
+                    <div class="storage-indicator" *ngIf="anexosSelecionados.length > 0">
+                        <div class="storage-header">
+                            <span class="storage-label">Armazenamento Utilizado</span>
+                            <span class="storage-values">
+                                <strong>{{ totalSizeUsed / 1024 / 1024 | number:'1.2-2' }} MB</strong>
+                                / {{ maxTotalMB }} MB
+                            </span>
+                        </div>
+
+                        <div class="progress-track">
+                            <div class="progress-fill" [style.width.%]="percentageUsed"
+                                [ngClass]="getProgressColorClass()">
+                            </div>
+                        </div>
+                    </div>
 
                     <div *ngIf="anexosSelecionados.length > 0" class="anexos-chips-container">
                         <div *ngFor="let anexo of anexosSelecionados; let i = index" class="anexo-chip">

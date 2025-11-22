@@ -75,7 +75,7 @@
 .file-upload-btn {
   padding: 6px 12px;
   font-size: 0.9rem;
-  background-color: #fff; /* Destaca dentro da área cinza */
+  background-color: #fff;
 }
 
 .file-input-info {
@@ -149,4 +149,110 @@
   font-size: 18px;
   width: 18px;
   height: 18px;
+}
+
+/* --- Alertas --- */
+.alert-box {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-md);
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alert-box.error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+}
+
+/* Cada linha de erro */
+.alert-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Botão de fechar o erro */
+.btn-close-alert {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #c62828;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  opacity: 0.7;
+}
+
+.btn-close-alert:hover {
+  background-color: rgba(198, 40, 40, 0.1);
+  opacity: 1;
+}
+
+.btn-close-alert mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* --- Indicador de Armazenamento --- */
+.storage-indicator {
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.storage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+}
+
+.storage-label {
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.storage-values {
+  color: var(--text-1);
+}
+
+/* Trilha da barra (o fundo cinza) */
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* O preenchimento colorido */
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease-in-out, background-color 0.4s ease;
+}
+
+/* Cores Dinâmicas */
+.progress-success {
+  background-color: #2ecc71; /* Verde */
+}
+
+.progress-warning {
+  background-color: #f39c12; /* Laranja */
+}
+
+.progress-danger {
+  background-color: #e74c3c; /* Vermelho */
 }
