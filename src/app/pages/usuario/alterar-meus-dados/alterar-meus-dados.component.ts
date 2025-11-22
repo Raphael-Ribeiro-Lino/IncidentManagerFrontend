@@ -6,9 +6,14 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+// --- Imports Material ---
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+// ------------------------
+import { ActivatedRoute, NavigationExtras, Router, RouterModule } from '@angular/router';
 import { PerfilEnum } from '../../../models/usuario/perfilEnum';
-import { EmpresaOutput } from '../../../models/empresa/empresaOutput';
 import { UsuarioTokenOutput } from '../../../models/usuario/usuarioTokenOutput';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { EmpresaService } from '../../../services/empresa/empresa.service';
@@ -19,11 +24,20 @@ import { AlteraMeusDadosInput } from '../../../models/usuario/alteraMeusDadosInp
 @Component({
   selector: 'app-alterar-meus-dados',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatFormFieldModule, // Adicionado
+    MatInputModule, // Adicionado
+    MatButtonModule, // Adicionado
+    MatIconModule, // Adicionado
+  ],
   templateUrl: './alterar-meus-dados.component.html',
   styleUrl: './alterar-meus-dados.component.css',
 })
 export class AlterarMeusDadosComponent implements OnInit {
+  // Configs
   perfilLabels: Record<PerfilEnum, string> = {
     [PerfilEnum.ADMIN_EMPRESA]: 'Administrador da Empresa',
     [PerfilEnum.USUARIO]: 'Usuário Comum',
@@ -34,15 +48,11 @@ export class AlterarMeusDadosComponent implements OnInit {
   errorMessages: string[] = [];
   successfullyUpdatedUsuario = '';
   token = localStorage.getItem('token') as string;
-  perfis: PerfilEnum[] = Object.values(PerfilEnum);
 
-  empresaSelecionada: EmpresaOutput | null = null;
-  empresasFiltradas: EmpresaOutput[] = [];
-  mostrarDropdown = false;
-  ultimaBusca = '';
-  mensagemNenhumaEmpresa = '';
+  // Controle de Loading
+  isLoading = false;
+
   usuarioLogado!: UsuarioTokenOutput;
-  usuarioId!: number;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -60,8 +70,29 @@ export class AlterarMeusDadosComponent implements OnInit {
       next: (usuario: UsuarioOutput) => {
         this.initForm(usuario);
       },
-      error: () => {
-        this.errorMessages.push('Erro ao carregar dados do usuário.');
+      error: (erro) => {
+        if (erro.status === 0) {
+          this.errorMessages.push(
+            'Não foi possível conectar ao servidor. Verifique sua internet ou tente mais tarde.'
+          );
+          return;
+        }
+        if (erro.error && erro.error.message) {
+          this.errorMessages.push(erro.error.message);
+
+          // Redireciona para o LOGIN após 3 segundos para o usuário ler a mensagem
+          setTimeout(() => {
+            const navigationExtras: NavigationExtras = {
+              state: {
+                errorData: erro.error.message,
+              },
+            };
+            this.router.navigate(['home'], navigationExtras);
+          }, 3000);
+        }
+        else{
+          this.errorMessages.push('Erro ao carregar dados do usuário.');
+        }
       },
     });
   }
@@ -70,7 +101,11 @@ export class AlterarMeusDadosComponent implements OnInit {
     const formConfig: any = {
       nome: [
         usuario.nome || '',
-        [Validators.required, Validators.maxLength(100), Validators.pattern(/^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ -][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/)],
+        [
+          Validators.required,
+          Validators.maxLength(100),
+          Validators.pattern(/^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ -][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/),
+        ],
       ],
       email: [
         usuario.email || '',
@@ -96,6 +131,11 @@ export class AlterarMeusDadosComponent implements OnInit {
     this.formUsuario = this.formBuilder.group(formConfig);
   }
 
+  // Remove erro individual da lista
+  removeErrorIndex(index: number) {
+    this.errorMessages.splice(index, 1);
+  }
+
   cancelar() {
     this.router.navigate(['/home']);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -103,7 +143,9 @@ export class AlterarMeusDadosComponent implements OnInit {
 
   submitForm() {
     this.errorMessages = [];
+
     if (this.formUsuario.invalid) {
+      this.formUsuario.markAllAsTouched();
       this.errorMessages.push(
         'Corrija os erros do formulário antes de salvar.'
       );
@@ -111,8 +153,11 @@ export class AlterarMeusDadosComponent implements OnInit {
       return;
     }
 
+    this.isLoading = true; // Inicia loading
+
     const payload: AlteraMeusDadosInput = { ...this.formUsuario.value };
 
+    // Formatação de Nome
     if (payload.nome) {
       payload.nome = payload.nome
         .trim()
@@ -124,6 +169,7 @@ export class AlterarMeusDadosComponent implements OnInit {
         .join(' ');
     }
 
+    // Formatação de Telefone
     if (payload.telefone) {
       const numeros = payload.telefone.replace(/\D/g, '');
       if (numeros.length === 11)
@@ -141,11 +187,13 @@ export class AlterarMeusDadosComponent implements OnInit {
 
     this.usuarioService.alterarMeusDados(this.token, payload).subscribe({
       next: () => {
+        this.isLoading = false; // Para loading
         this.successfullyUpdatedUsuario = 'Dados atualizados com sucesso!';
         window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => this.router.navigate(['/home']), 2000);
       },
       error: (erro) => {
+        this.isLoading = false; // Para loading
         this.errorMessages.push(
           erro.error?.message || 'Ocorreu um erro inesperado. Tente mais tarde.'
         );

@@ -76,11 +76,7 @@ body {
   background: var(--bg-0);
 }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
+h1, h2, h3, h4, h5 {
   font-family: var(--font-display);
   color: var(--text-2);
   margin: 0;
@@ -122,12 +118,13 @@ h5 {
   max-width: 450px;
 }
 
-/* Títulos de Seção com sublinhado */
-.section-title {
-  font-size: 2rem;
-  font-weight: 700;
+/* Títulos de Seção com sublinhado 
+   OBS: "h1" e "!important" garantem prioridade sobre o tema do Material */
+h1.section-title {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
   color: var(--color-primary);
-  margin: 0 0 8px 0;
+  margin: 0 0 var(--space-xl) 0 !important;
   position: relative;
   display: inline-block;
 }
@@ -135,7 +132,7 @@ h5 {
 .section-title::after {
   content: "";
   position: absolute;
-  bottom: -8px;
+  bottom: -12px; /* Ajustado para descer um pouco mais */
   left: 0;
   width: 80%;
   height: 5px;
@@ -151,6 +148,8 @@ h5 {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  /* Respiro extra no topo caso não haja erros visíveis */
+  margin-top: var(--space-sm); 
 }
 
 /* Linha (Row) */
@@ -181,7 +180,7 @@ h5 {
 .form-col.x-small {
   flex: 0 0 100px;
   min-width: auto;
-} /* Ex: para "Número" */
+} 
 
 /* Garante que o input do Material ocupe tudo */
 .full-width-field {
@@ -260,7 +259,7 @@ h5 {
 
 /* --- Mensagens de Feedback (Alerts) --- */
 .alert-box {
-  padding: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-md);
   font-size: var(--fs-sm);
@@ -268,6 +267,9 @@ h5 {
   border-left-width: 4px;
   border-left-style: solid;
   animation: fadeIn 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .alert-box.error {
@@ -282,20 +284,50 @@ h5 {
   color: var(--color-success);
 }
 
+/* Container de cada linha de erro com botão fechar */
+.alert-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+}
+
 .alert-msg {
   display: block;
-  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* Botão de fechar alerta (X) */
+.btn-close-alert {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: inherit;
+    opacity: 0.7;
+    transition: all 0.2s;
+}
+
+.btn-close-alert:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.btn-close-alert mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* --- Spinner de Loading --- */
@@ -316,9 +348,7 @@ h5 {
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
 /* =========================================
@@ -380,7 +410,7 @@ h5 {
 
 .auth-logo {
   width: 100%;
-  max-width: 360px; /* Ajustado para ficar harmônico */
+  max-width: 360px;
   height: auto;
   margin-bottom: var(--space-md);
   transition: transform 0.3s ease;
@@ -412,10 +442,10 @@ h5 {
 .auth-card {
   background: var(--bg-1, #fff);
   border-radius: var(--radius-md);
-  padding: 48px; /* Espaçamento interno generoso */
+  padding: 48px;
   box-shadow: var(--shadow-md);
   width: 100%;
-  max-width: 480px; /* Largura confortável */
+  max-width: 480px;
   animation: fadeInUp 0.4s ease-out;
 }
 
@@ -440,7 +470,7 @@ h5 {
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 12px; /* Espaço entre os inputs */
+  gap: 12px;
 }
 
 /* Botão Principal */
@@ -473,14 +503,8 @@ h5 {
 
 /* Animação de Entrada */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsividade */
@@ -519,6 +543,10 @@ h5 {
   }
 }
 
+/* =========================================
+   CORREÇÃO DE ERROS DO MATERIAL (OVERLAP)
+   ========================================= */
+
 /* Força o container de erro/dica a ter altura automática 
    e posição relativa (empurra o conteúdo de baixo)
 */
@@ -532,15 +560,13 @@ h5 {
    dentro dos formulários de autenticação
 */
 .auth-form mat-form-field {
-    margin-bottom: 8px; /* Ajuste conforme necessário */
+    margin-bottom: 8px; 
 }
 
-/* (OPCIONAL) Reduz levemente a fonte do erro em telas muito pequenas
-   para tentar evitar que quebre linha
-*/
+/* Reduz levemente a fonte do erro em telas muito pequenas */
 @media (max-width: 400px) {
     .mat-mdc-form-field-error {
-        font-size: 0.75rem; /* 12px */
+        font-size: 0.75rem;
         line-height: 1.1;
     }
 }
