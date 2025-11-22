@@ -1,32 +1,33 @@
-<div class="login-container">
-    <div class="login-left">
-        <div class="login-left-content">
+<div class="auth-container">
+    <div class="auth-banner">
+        <div class="auth-banner-content">
             <a routerLink="">
-                <img src="assets/logo.png" alt="Logo Smartdesk" class="login-image">
+                <img src="assets/logo.png" alt="Logo Smartdesk" class="auth-logo">
             </a>
-            <p class="system-subtitle">Gerencie chamados com eficiência e agilidade</p>
+            <p class="auth-subtitle">Gerencie chamados com eficiência e agilidade</p>
         </div>
     </div>
 
-    <div class="login-right">
-        <div class="login-card">
+    <div class="auth-content-wrapper">
+        <div class="auth-card">
             <h2>Login</h2>
 
-            <div *ngIf="errorMessages.length > 0" class="error-message-box">
+            <div *ngIf="errorMessages.length > 0" class="alert-box error">
                 <div *ngFor="let errorMessage of errorMessages">{{ errorMessage }}</div>
             </div>
 
-            <div *ngIf="successfullyRegisteredUser" class="success-message-box">
+            <div *ngIf="successfullyRegisteredUser" class="alert-box success">
                 {{ successfullyRegisteredUser }}
             </div>
 
-            <form [formGroup]="formLogin" (ngSubmit)="submitForm()" class="form-content">
+            <form [formGroup]="formLogin" (ngSubmit)="submitForm()" class="auth-form">
 
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width-field">
                     <mat-label>E-mail</mat-label>
                     <input matInput type="email" formControlName="email" placeholder="Ex: usuario@email.com"
                         autocomplete="username">
-
+                    <mat-icon matSuffix>email</mat-icon>
+                    
                     <mat-error *ngIf="formLogin.get('email')?.hasError('required')">
                         O e-mail é obrigatório
                     </mat-error>
@@ -35,7 +36,7 @@
                     </mat-error>
                 </mat-form-field>
 
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width-field">
                     <mat-label>Senha</mat-label>
                     <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password"
                         autocomplete="current-password">
@@ -49,19 +50,19 @@
                         A senha é obrigatória
                     </mat-error>
                     <mat-error *ngIf="formLogin.get('password')?.hasError('minlength')">
-                        A senha deve ter no mínimo de 8 caracteres
+                        Mínimo de 8 caracteres
                     </mat-error>
                     <mat-error *ngIf="formLogin.get('password')?.hasError('maxlength')">
-                        A senha deve ter no máximo 255 caracteres.
+                        Máximo de 255 caracteres
                     </mat-error>
                 </mat-form-field>
 
-                <button type="submit" class="btn btn-primary btn-submit" [disabled]="formLogin.invalid">
+                <button type="submit" class="btn btn-primary btn-auth-submit" [disabled]="formLogin.invalid">
                     Entrar
                 </button>
             </form>
 
-            <a class="forgot-link" routerLink="/recuperar-senha">Esqueceu sua senha?</a>
+            <a class="auth-link-back" routerLink="/recuperar-senha">Esqueceu sua senha?</a>
         </div>
     </div>
 </div>
