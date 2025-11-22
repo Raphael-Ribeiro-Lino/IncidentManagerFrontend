@@ -518,3 +518,29 @@ h5 {
     padding: 0;
   }
 }
+
+/* Força o container de erro/dica a ter altura automática 
+   e posição relativa (empurra o conteúdo de baixo)
+*/
+.mat-mdc-form-field-subscript-wrapper {
+    height: auto !important;
+    position: relative !important;
+    overflow: visible !important;
+}
+
+/* Garante um pequeno espaçamento extra entre os inputs 
+   dentro dos formulários de autenticação
+*/
+.auth-form mat-form-field {
+    margin-bottom: 8px; /* Ajuste conforme necessário */
+}
+
+/* (OPCIONAL) Reduz levemente a fonte do erro em telas muito pequenas
+   para tentar evitar que quebre linha
+*/
+@media (max-width: 400px) {
+    .mat-mdc-form-field-error {
+        font-size: 0.75rem; /* 12px */
+        line-height: 1.1;
+    }
+}
