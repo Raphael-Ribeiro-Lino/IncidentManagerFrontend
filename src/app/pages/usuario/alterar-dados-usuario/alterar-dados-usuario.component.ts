@@ -6,7 +6,17 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute, NavigationExtras } from '@angular/router';
+
+// --- Imports Material ---
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+// ------------------------
+
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { EmpresaService } from '../../../services/empresa/empresa.service';
 import { PerfilEnum } from '../../../models/usuario/perfilEnum';
@@ -19,14 +29,27 @@ import { UsuarioInput } from '../../../models/usuario/usuarioInput';
 @Component({
   selector: 'app-alterar-dados-usuario',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSelectModule, // Necessário para o dropdown de perfil
+    MatCheckboxModule, // Necessário para o campo Ativo
+  ],
   templateUrl: './alterar-dados-usuario.component.html',
-  styleUrls: ['./alterar-dados-usuario.component.css'],
+  styleUrls: ['./alterar-dados-usuario.component.css'], // Arquivo vazio
 })
 export class AlterarDadosUsuarioComponent implements OnInit {
   formUsuario!: FormGroup;
   errorMessages: string[] = [];
   successfullyUpdatedUsuario = '';
+
+  // Controle de Loading
+  isLoading = false;
 
   token = localStorage.getItem('token')!;
   usuarioLogado!: UsuarioTokenOutput;
@@ -60,8 +83,29 @@ export class AlterarDadosUsuarioComponent implements OnInit {
 
     this.usuarioService.buscarPorId(this.token, this.usuarioId).subscribe({
       next: (usuario) => this.initForm(usuario),
-      error: () =>
-        this.errorMessages.push('Erro ao carregar dados do usuário.'),
+      error: (erro) => {
+        if (erro.status === 0) {
+          this.errorMessages.push(
+            'Não foi possível conectar ao servidor. Verifique sua internet ou tente mais tarde.'
+          );
+          return;
+        }
+        if (erro.error && erro.error.message) {
+          this.errorMessages.push(erro.error.message);
+
+          // Redireciona para o LOGIN após 3 segundos para o usuário ler a mensagem
+          setTimeout(() => {
+            const navigationExtras: NavigationExtras = {
+              state: {
+                errorData: erro.error.message,
+              },
+            };
+            this.router.navigate(['empresa/listar'], navigationExtras);
+          }, 3000);
+        } else {
+          this.errorMessages.push('Erro ao carregar dados do usuário.');
+        }
+      },
     });
   }
 
@@ -98,8 +142,13 @@ export class AlterarDadosUsuarioComponent implements OnInit {
       ],
       ativo: [usuario.ativo, Validators.required],
       perfil: [usuario.perfil, Validators.required],
+      // O campo empresa existe no form para validação, mas é readonly no HTML
       empresa: [usuario.empresa?.id ?? '', Validators.required],
     });
+  }
+
+  removeErrorIndex(index: number) {
+    this.errorMessages.splice(index, 1);
   }
 
   cancelar() {
@@ -127,12 +176,15 @@ export class AlterarDadosUsuarioComponent implements OnInit {
     this.errorMessages = [];
 
     if (this.formUsuario.invalid) {
+      this.formUsuario.markAllAsTouched();
       this.errorMessages.push(
         'Corrija os erros do formulário antes de salvar.'
       );
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
+
+    this.isLoading = true; // Inicia loading
 
     let payload: UsuarioInput = {
       ...this.formUsuario.value,
@@ -151,11 +203,13 @@ export class AlterarDadosUsuarioComponent implements OnInit {
       .alterarDados(this.token, this.usuarioId, payload)
       .subscribe({
         next: () => {
+          this.isLoading = false; // Para loading
           this.successfullyUpdatedUsuario = 'Dados atualizados com sucesso!';
           window.scrollTo({ top: 0, behavior: 'smooth' });
           setTimeout(() => this.router.navigate(['/usuario/listar']), 2000);
         },
         error: (erro) => {
+          this.isLoading = false; // Para loading
           this.errorMessages.push(
             erro.error?.message ||
               'Ocorreu um erro inesperado. Tente mais tarde.'

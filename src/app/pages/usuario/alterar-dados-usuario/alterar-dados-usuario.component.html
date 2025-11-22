@@ -1,102 +1,128 @@
-<div class="usuario-page">
-  <div class="usuario-card">
-    <h1 class="usuario-title">Alterar Dados do Usuário</h1>
+<div class="page-container">
+    <div class="content-card">
+        <h1 class="section-title">Alterar Dados do Usuário</h1>
 
-    <!-- Erros -->
-    <div *ngIf="errorMessages.length" class="error-message">
-      <div class="error" *ngFor="let msg of errorMessages">{{ msg }}</div>
-    </div>
-
-    <!-- Sucesso -->
-    <div *ngIf="successfullyUpdatedUsuario" class="success">
-      {{ successfullyUpdatedUsuario }}
-    </div>
-
-    <form *ngIf="formUsuario" [formGroup]="formUsuario" (ngSubmit)="submitForm()" class="usuario-form">
-
-      <!-- Nome -->
-      <div class="form-row">
-        <div class="form-field full">
-          <label class="label">Nome Completo *</label>
-          <input class="input" formControlName="nome" />
-
-          <div *ngIf="formUsuario.get('nome')?.touched && formUsuario.get('nome')?.invalid" class="error">
-            <div *ngIf="formUsuario.get('nome')?.hasError('required')">O nome é obrigatório.</div>
-            <div *ngIf="formUsuario.get('nome')?.hasError('maxlength')">Máximo de 100 caracteres.</div>
-            <div *ngIf="formUsuario.get('nome')?.hasError('pattern')">Nome inválido. Use apenas letras, espaços ou hífen.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- E-mail -->
-      <div class="form-row">
-        <div class="form-field full">
-          <label class="label">E-mail *</label>
-          <input class="input" formControlName="email" />
-
-          <div *ngIf="formUsuario.get('email')?.touched && formUsuario.get('email')?.invalid" class="error">
-            <div *ngIf="formUsuario.get('email')?.hasError('required')">O e-mail é obrigatório.</div>
-            <div *ngIf="formUsuario.get('email')?.hasError('maxlength')">Máximo de 320 caracteres.</div>
-            <div *ngIf="formUsuario.get('email')?.hasError('pattern')">E-mail inválido.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Telefone e Perfil -->
-      <div class="form-row">
-
-        <div class="form-field small">
-          <label class="label">Telefone *</label>
-          <input class="input" formControlName="telefone" placeholder="(11) 98765-4321" appMask="telefone" />
-
-          <div *ngIf="formUsuario.get('telefone')?.touched && formUsuario.get('telefone')?.invalid" class="error">
-            <div *ngIf="formUsuario.get('telefone')?.hasError('required')">Telefone obrigatório.</div>
-            <div *ngIf="formUsuario.get('telefone')?.hasError('minlength') || formUsuario.get('telefone')?.hasError('maxlength')">
-              Deve ter entre 10 e 15 caracteres.
+        <div *ngIf="errorMessages.length" class="alert-box error">
+            <div *ngFor="let msg of errorMessages; let i = index" class="alert-item">
+                <span class="alert-msg">{{ msg }}</span>
+                <button type="button" class="btn-close-alert" (click)="removeErrorIndex(i)">
+                    <mat-icon>close</mat-icon>
+                </button>
             </div>
-            <div *ngIf="formUsuario.get('telefone')?.hasError('pattern')">
-              Telefone inválido!<br>Use um formato válido, como (11) 98765-4321 ou 11 98765-4321.
+        </div>
+
+        <div *ngIf="successfullyUpdatedUsuario" class="alert-box success">
+            {{ successfullyUpdatedUsuario }}
+        </div>
+
+        <form *ngIf="formUsuario" [formGroup]="formUsuario" class="standard-form" (ngSubmit)="submitForm()">
+
+            <div class="form-row">
+                <div class="form-col full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Nome Completo</mat-label>
+                        <input matInput formControlName="nome" />
+                        <mat-icon matSuffix>person</mat-icon>
+                        
+                        <mat-error *ngIf="formUsuario.get('nome')?.hasError('required')">
+                            O nome é obrigatório.
+                        </mat-error>
+                        <mat-error *ngIf="formUsuario.get('nome')?.hasError('maxlength')">
+                            Máximo de 100 caracteres.
+                        </mat-error>
+                        <mat-error *ngIf="formUsuario.get('nome')?.hasError('pattern')">
+                            Nome inválido (apenas letras e espaços).
+                        </mat-error>
+                    </mat-form-field>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <div class="form-field small">
-          <label class="label">Perfil *</label>
-          <select class="input" formControlName="perfil">
-            <option value="">Selecione</option>
-            <option *ngFor="let p of perfilLabels | keyvalue" [value]="p.key">
-              {{ p.value }}
-            </option>
-          </select>
+            <div class="form-row">
+                <div class="form-col full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>E-mail</mat-label>
+                        <input matInput formControlName="email" type="email" />
+                        <mat-icon matSuffix>email</mat-icon>
 
-          <div *ngIf="formUsuario.get('perfil')?.touched && formUsuario.get('perfil')?.invalid" class="error">
-            <div *ngIf="formUsuario.get('perfil')?.hasError('required')">O perfil é obrigatório.</div>
-          </div>
-        </div>
-      </div>
+                        <mat-error *ngIf="formUsuario.get('email')?.hasError('required')">
+                            O e-mail é obrigatório.
+                        </mat-error>
+                        <mat-error *ngIf="formUsuario.get('email')?.hasError('maxlength')">
+                            Máximo de 320 caracteres.
+                        </mat-error>
+                        <mat-error *ngIf="formUsuario.get('email')?.hasError('pattern')">
+                            E-mail inválido.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
 
-      <!-- Empresa -->
-      <div class="form-row">
-        <div class="form-field full">
-          <label class="label">Empresa</label>
-          <input class="input input-readonly" [value]="empresaSelecionada?.nome" readonly />
-        </div>
-      </div>
+            <div class="form-row">
+                <div class="form-col small">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Telefone</mat-label>
+                        <input matInput formControlName="telefone" appMask="telefone" placeholder="(11) 98765-4321" />
+                        <mat-icon matSuffix>phone</mat-icon>
 
-      <!-- Ativo -->
-      <div class="form-row">
-        <label class="checkbox">
-          <input type="checkbox" formControlName="ativo" />
-          Ativo
-        </label>
-      </div>
+                        <mat-error *ngIf="formUsuario.get('telefone')?.hasError('required')">
+                            Obrigatório.
+                        </mat-error>
+                        <mat-error *ngIf="!formUsuario.get('telefone')?.hasError('required') && 
+                                          (formUsuario.get('telefone')?.hasError('minlength') || 
+                                           formUsuario.get('telefone')?.hasError('maxlength'))">
+                            Entre 10 e 15 dígitos.
+                        </mat-error>
+                        <mat-error *ngIf="formUsuario.get('telefone')?.hasError('pattern')">
+                            Formato inválido.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
 
-      <p class="text-muted">* Campos obrigatórios</p>
+                <div class="form-col small">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Perfil</mat-label>
+                        <mat-select formControlName="perfil">
+                            <mat-option *ngFor="let p of perfilLabels | keyvalue" [value]="p.key">
+                                {{ p.value }}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="formUsuario.get('perfil')?.hasError('required')">
+                            O perfil é obrigatório.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
 
-      <div class="actions">
-        <button type="button" class="btn btn-ghost" (click)="cancelar()">Cancelar</button>
-        <button type="submit" class="btn btn-primary" [disabled]="formUsuario.invalid">Salvar</button>
-      </div>
-    </form>
-  </div>
+            <div class="form-row">
+                <div class="form-col full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Empresa</mat-label>
+                        <input matInput [value]="empresaSelecionada?.nome" disabled />
+                        <mat-icon matSuffix>business</mat-icon>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col full">
+                    <mat-checkbox formControlName="ativo" color="primary">
+                        Usuário Ativo
+                    </mat-checkbox>
+                </div>
+            </div>
+
+            <p class="text-muted small-text" style="margin-top: var(--space-sm);">* Campos obrigatórios</p>
+
+            <div class="form-actions">
+                <button class="btn btn-ghost" type="button" (click)="cancelar()">Cancelar</button>
+                <button class="btn btn-primary" type="submit" [disabled]="formUsuario.invalid || isLoading">
+                    <span *ngIf="!isLoading">Salvar Alterações</span>
+                    <span *ngIf="isLoading" class="spinner-container">
+                        <span class="spinner"></span> Salvando...
+                    </span>
+                </button>
+            </div>
+
+        </form>
+    </div>
 </div>
