@@ -30,7 +30,8 @@ export class EmpresaService {
   listar(
     token: String,
     numPage: number,
-    search: string = ''
+    search: string = '',
+    ativo: string = ''
   ): Observable<PaginationOutput<EmpresaOutput>> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
