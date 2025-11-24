@@ -1,126 +1,170 @@
 <div class="list-page-container">
-    
-    <div class="list-page-header">
-        <h1 class="section-title">Empresas</h1>
-        <p class="list-page-subtitle">
-            Visualize e gerencie as empresas cadastradas no sistema
-        </p>
+  <div class="list-page-header">
+    <h1 class="section-title">Empresas</h1>
+    <p class="list-page-subtitle">
+      Visualize e gerencie as empresas cadastradas no sistema
+    </p>
+  </div>
+
+  <div *ngIf="errorMessages.length" class="alert-box error">
+    <div *ngFor="let msg of errorMessages" class="alert-item">
+      <span class="alert-msg">{{ msg }}</span>
     </div>
+  </div>
 
-    <div *ngIf="errorMessages.length" class="alert-box error">
-        <div *ngFor="let msg of errorMessages" class="alert-item">
-            <span class="alert-msg">{{ msg }}</span>
-        </div>
-    </div>
+  <div *ngIf="successfullyRegisteredEmpresa" class="alert-box success">
+    <span class="alert-msg">{{ successfullyRegisteredEmpresa }}</span>
+  </div>
 
-    <div *ngIf="successfullyRegisteredEmpresa" class="alert-box success">
-        <span class="alert-msg">{{ successfullyRegisteredEmpresa }}</span>
-    </div>
-
-    <div class="list-action-bar">
-        <div class="list-filters">
-            <mat-form-field appearance="outline" class="filter-field-large" subscriptSizing="dynamic">
-                <mat-label>Buscar Nome ou CNPJ</mat-label>
-                <input matInput placeholder="Ex: Tech Solutions" 
-                       [(ngModel)]="searchTerm" (ngModelChange)="searchEmpresas($event)" />
-                <mat-icon matSuffix>search</mat-icon>
-                <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Limpar" (click)="limparBusca()">
-                    <mat-icon>close</mat-icon>
-                </button>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="filter-field-small" subscriptSizing="dynamic">
-                <mat-label>Situação</mat-label>
-                <mat-select [(ngModel)]="selectedAtivo" (selectionChange)="onFilterChange()">
-                    <mat-option value="">Todos</mat-option>
-                    <mat-option value="true">Ativos</mat-option>
-                    <mat-option value="false">Inativos</mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-
-        <div class="action-button-wrapper">
-            <button class="btn-action-primary" routerLink="/empresa/cadastrar" matTooltip="Registrar nova empresa">
-                <mat-icon>add_business</mat-icon>
-                <span>Nova Empresa</span>
-            </button>
-        </div>
-    </div>
-
-    <div class="state-container" *ngIf="isLoading">
-        <mat-spinner diameter="40" style="margin:0 auto;"></mat-spinner>
-        <p style="margin-top: 16px;">Carregando empresas...</p>
-    </div>
-
-    <div class="state-container" *ngIf="loadingFailed && !isLoading">
-        <mat-icon class="state-icon" color="warn">sentiment_dissatisfied</mat-icon>
-        <h3>Ops! Algo deu errado.</h3>
-        <p>Não foi possível carregar a lista de empresas.</p>
-        <button class="btn-small accent" style="margin: 16px auto; width: fit-content;" (click)="carregarPagina(0)">
-            <mat-icon>refresh</mat-icon> Tentar Novamente
+  <div class="list-action-bar">
+    <div class="list-filters">
+      <mat-form-field
+        appearance="outline"
+        class="filter-field-large"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Buscar Nome ou CNPJ</mat-label>
+        <input
+          matInput
+          placeholder="Ex: Tech Solutions"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="searchEmpresas($event)"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+        <button
+          *ngIf="searchTerm"
+          matSuffix
+          mat-icon-button
+          aria-label="Limpar"
+          (click)="limparBusca()"
+        >
+          <mat-icon>close</mat-icon>
         </button>
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="outline"
+        class="filter-field-small"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Situação</mat-label>
+        <mat-select
+          [(ngModel)]="selectedAtivo"
+          (selectionChange)="onFilterChange()"
+        >
+          <mat-option value="">Todos</mat-option>
+          <mat-option value="true">Ativos</mat-option>
+          <mat-option value="false">Inativos</mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
 
-    <div class="list-cards-wrapper" *ngIf="!isLoading && !loadingFailed && empresas.length > 0">
-        
-        <div class="list-card-row company-card" 
-             *ngFor="let empresa of empresas"
-             [class.border-active]="empresa.ativo"
-             [class.border-inactive]="!empresa.ativo">
-            
-            <div class="company-avatar" [class.inactive]="!empresa.ativo">
-                <span>{{ empresa.nome.charAt(0) | uppercase }}</span>
-            </div>
+    <div class="action-button-wrapper">
+      <button
+        class="btn-action-primary"
+        routerLink="/empresa/cadastrar"
+        matTooltip="Registrar nova empresa"
+      >
+        <mat-icon>add_business</mat-icon>
+        <span>Nova Empresa</span>
+      </button>
+    </div>
+  </div>
 
-            <div class="card-content">
-                <div class="company-header">
-                    <h3 class="card-title">{{ empresa.nome }}</h3>
-                    
-                    <span class="status-pill" 
-                          [class.pill-success]="empresa.ativo" 
-                          [class.pill-danger]="!empresa.ativo">
-                        {{ empresa.ativo ? 'Ativa' : 'Inativa' }}
-                    </span>
-                </div>
+  <div class="state-container" *ngIf="isLoading">
+    <mat-spinner diameter="40" style="margin: 0 auto"></mat-spinner>
+    <p style="margin-top: 16px">Carregando empresas...</p>
+  </div>
 
-                <div class="company-details-grid">
-                    <div class="detail-item" matTooltip="CNPJ">
-                        <mat-icon class="icon-tiny">badge</mat-icon>
-                        <span>{{ empresa.cnpj }}</span>
-                    </div>
+  <div class="error-card" *ngIf="loadingFailed">
+    <mat-icon class="error-icon">sentiment_dissatisfied</mat-icon>
+    <div class="error-content">
+      <h3>Ops! Algo deu errado.</h3>
+      <p>
+        Não foi possível carregar a lista de empresas. Verifique sua conexão ou
+        tente novamente mais tarde.
+      </p>
+      <button class="btn-error-retry" (click)="carregarPagina(0)">
+        <mat-icon>refresh</mat-icon> Tentar Novamente
+      </button>
+    </div>
+  </div>
 
-                    <div class="detail-item" matTooltip="Localização">
-                        <mat-icon class="icon-tiny">location_on</mat-icon>
-                        <span>{{ empresa.cidade }} - {{ empresa.estado }}</span>
-                    </div>
-                </div>
-            </div>
+  <div
+    class="list-cards-wrapper"
+    *ngIf="!isLoading && !loadingFailed && empresas.length > 0"
+  >
+    <div
+      class="list-card-row company-card"
+      *ngFor="let empresa of empresas"
+      [class.border-active]="empresa.ativo"
+      [class.border-inactive]="!empresa.ativo"
+    >
+      <div class="company-avatar" [class.inactive]="!empresa.ativo">
+        <span>{{ empresa.nome.charAt(0) | uppercase }}</span>
+      </div>
 
-            <div class="card-actions-side">
-                <div class="btn-group-vertical">
-                    <button class="btn-card-action" [routerLink]="['/empresa', empresa.id, 'editar']" matTooltip="Editar dados">
-                        <mat-icon>edit</mat-icon> 
-                        <span>Editar</span>
-                    </button>
-                </div>
-            </div>
+      <div class="card-content">
+        <div class="company-header">
+          <h3 class="card-title">{{ empresa.nome }}</h3>
+
+          <span
+            class="status-pill"
+            [class.pill-success]="empresa.ativo"
+            [class.pill-danger]="!empresa.ativo"
+          >
+            {{ empresa.ativo ? "Ativa" : "Inativa" }}
+          </span>
         </div>
-    </div>
 
-    <div class="state-container" *ngIf="!isLoading && !loadingFailed && empresas.length === 0">
-        <mat-icon class="state-icon">business_off</mat-icon>
-        <h3>
-            {{ searchTerm ? 'Nenhuma empresa encontrada' : 'Nenhuma empresa cadastrada' }}
-        </h3>
-        <p *ngIf="searchTerm">Não encontramos nada para "{{ searchTerm }}".</p>
-        <p *ngIf="!searchTerm">Comece cadastrando a primeira empresa do sistema.</p>
-    </div>
+        <div class="company-details-grid">
+          <div class="detail-item" matTooltip="CNPJ">
+            <mat-icon class="icon-tiny">badge</mat-icon>
+            <span>{{ empresa.cnpj }}</span>
+          </div>
 
-    <div class="pagination-container" *ngIf="empresas.length > 0 && !isLoading">
-        <app-pagination 
-            [pageNumber]="currentPage" 
-            [totalPages]="totalPages" 
-            (pageChange)="carregarPagina($event)">
-        </app-pagination>
+          <div class="detail-item" matTooltip="Localização">
+            <mat-icon class="icon-tiny">location_on</mat-icon>
+            <span>{{ empresa.cidade }} - {{ empresa.estado }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions-side">
+        <div class="btn-group-vertical">
+          <button
+            class="btn-card-action"
+            [routerLink]="['/empresa', empresa.id, 'editar']"
+            matTooltip="Editar dados"
+          >
+            <mat-icon>edit</mat-icon>
+            <span>Editar</span>
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <div
+    class="state-container"
+    *ngIf="!isLoading && !loadingFailed && empresas.length === 0"
+  >
+    <mat-icon class="state-icon">business_off</mat-icon>
+    <h3>
+      {{
+        searchTerm ? "Nenhuma empresa encontrada" : "Nenhuma empresa cadastrada"
+      }}
+    </h3>
+    <p *ngIf="searchTerm">Não encontramos nada para "{{ searchTerm }}".</p>
+    <p *ngIf="!searchTerm">Comece cadastrando a primeira empresa do sistema.</p>
+  </div>
+
+  <div class="pagination-container" *ngIf="empresas.length > 0 && !isLoading">
+    <app-pagination
+      [pageNumber]="currentPage"
+      [totalPages]="totalPages"
+      (pageChange)="carregarPagina($event)"
+    >
+    </app-pagination>
+  </div>
 </div>
