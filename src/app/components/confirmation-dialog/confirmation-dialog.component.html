@@ -1,0 +1,33 @@
+<div class="dialog-container">
+  
+  <div class="dialog-icon-wrapper" [ngClass]="data.corBotao || 'primary'" *ngIf="data.icone">
+    <mat-icon>{{ data.icone }}</mat-icon>
+  </div>
+
+  <h2 mat-dialog-title class="dialog-title">
+    {{ data.titulo }}
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <p class="dialog-message">{{ data.mensagem }}</p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button 
+      *ngIf="data.mostrarCancelar !== false" 
+      type="button" 
+      class="btn btn-ghost" 
+      (click)="onNoClick()">
+      {{ data.textoCancelar || 'Cancelar' }}
+    </button>
+
+    <button 
+      type="button" 
+      class="btn"
+      [ngClass]="data.corBotao === 'warn' ? 'btn-danger' : 'btn-primary'"
+      [mat-dialog-close]="true" 
+      cdkFocusInitial>
+      {{ data.textoConfirmar || 'Confirmar' }}
+    </button>
+  </mat-dialog-actions>
+</div>
