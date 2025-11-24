@@ -28,18 +28,27 @@ export class EmpresaService {
   }
 
   listar(
-    token: String,
+    token: string,
     numPage: number,
     search: string = '',
-    ativo: string = ''
+    ativoStr: string = ''
   ): Observable<PaginationOutput<EmpresaOutput>> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
-    let params = new HttpParams().set('page', numPage.toString());
+
+    let params = new HttpParams()
+      .set('page', numPage.toString())
+      .set('sort', 'nome,asc');
 
     if (search) {
       params = params.set('search', search);
+    }
+
+    if (ativoStr === 'true') {
+      params = params.set('ativo', 'true');
+    } else if (ativoStr === 'false') {
+      params = params.set('ativo', 'false');
     }
 
     return this.httpClient.get<PaginationOutput<EmpresaOutput>>(API_URL, {
