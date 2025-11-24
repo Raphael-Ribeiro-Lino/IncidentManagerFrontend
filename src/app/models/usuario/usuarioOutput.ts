@@ -9,4 +9,5 @@ export interface UsuarioOutput{
     ativo: boolean,
     empresa: EmpresaOutput,
     perfil: PerfilEnum
+    podeReenviarEmail: boolean
 }

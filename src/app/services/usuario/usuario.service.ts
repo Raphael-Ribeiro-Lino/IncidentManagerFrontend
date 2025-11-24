@@ -42,17 +42,23 @@ export class UsuarioService {
   listar(
     token: string,
     numPage: number,
-    searchTerm: string = ''
+    searchTerm: string = '',
+    ativoStr: string = ''
   ): Observable<PaginationOutput<UsuarioOutput>> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
     });
 
     let params = new HttpParams().set('page', numPage.toString());
 
     if (searchTerm) {
       params = params.set('search', searchTerm);
+    }
+
+    if (ativoStr === 'true') {
+      params = params.set('ativo', 'true');
+    } else if (ativoStr === 'false') {
+      params = params.set('ativo', 'false');
     }
 
     return this.httpClient.get<PaginationOutput<UsuarioOutput>>(
@@ -112,6 +118,19 @@ export class UsuarioService {
     return this.httpClient.put<void>(
       API_URL + '/altera-senha',
       alteraSenhaInput,
+      { headers }
+    );
+  }
+
+  reenviarEmailDefinicaoSenha(token: string, id: number) {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+
+    return this.httpClient.post<void>(
+      API_URL + `/${id}/reenviar-email/definir-senha`,
+      {},
       { headers }
     );
   }

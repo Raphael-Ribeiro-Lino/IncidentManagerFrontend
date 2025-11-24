@@ -31,15 +31,6 @@
           (ngModelChange)="searchEmpresas($event)"
         />
         <mat-icon matSuffix>search</mat-icon>
-        <button
-          *ngIf="searchTerm"
-          matSuffix
-          mat-icon-button
-          aria-label="Limpar"
-          (click)="limparBusca()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
       </mat-form-field>
 
       <mat-form-field
@@ -69,11 +60,6 @@
         <span>Nova Empresa</span>
       </button>
     </div>
-  </div>
-
-  <div class="state-container" *ngIf="isLoading">
-    <mat-spinner diameter="40" style="margin: 0 auto"></mat-spinner>
-    <p style="margin-top: 16px">Carregando empresas...</p>
   </div>
 
   <div class="error-card" *ngIf="loadingFailed">
@@ -146,10 +132,10 @@
   </div>
 
   <div
-    class="state-container"
+    class="empty-state"
     *ngIf="!isLoading && !loadingFailed && empresas.length === 0"
   >
-    <mat-icon class="state-icon">business_off</mat-icon>
+    <mat-icon>business_off</mat-icon>
     <h3>
       {{
         searchTerm ? "Nenhuma empresa encontrada" : "Nenhuma empresa cadastrada"

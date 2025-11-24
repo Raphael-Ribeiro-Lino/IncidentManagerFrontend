@@ -784,12 +784,42 @@ h1.section-title {
   justify-content: center;
 }
 
-.state-icon {
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+}
+
+.empty-state mat-icon {
   font-size: 48px;
-  width: 48px;
   height: 48px;
-  margin-bottom: 16px;
-  opacity: 0.5;
+  width: 48px;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+mat-icon.state-icon {
+    /* 1. Força o tamanho do container a acompanhar a fonte */
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 48px !important;
+
+    /* 2. Garante alinhamento vertical perfeito */
+    line-height: 48px !important;
+
+    /* 3. A CHAVE DO PROBLEMA: Permite que o desenho "vaze" se necessário */
+    overflow: visible !important; 
+    
+    /* 4. Estilos visuais */
+    margin-bottom: 16px;
+    opacity: 0.5;
+    color: var(--text-2);
+    
+    /* 5. Prevenção extra para Flexbox não esmagar o ícone */
+    flex-shrink: 0; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* --- Responsividade Otimizada --- */

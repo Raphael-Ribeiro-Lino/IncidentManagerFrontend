@@ -1,154 +1,179 @@
-<main class="empresa-container">
-  <h1 class="page-title">Usuários Cadastrados</h1>
-  <h2 class="page-subtitle">
-    Visualize e gerencie todos os usuários cadastrados
-  </h2>
-
-  <!-- MENSAGENS DE SUCESSO / ERRO -->
-  <ng-container *ngIf="errorMessages.length || successfullyRegisteredUsuario">
-    <mat-card *ngIf="errorMessages.length" class="message-card error">
-      <mat-icon>error</mat-icon>
-      <div class="text">
-        <div *ngFor="let error of errorMessages">{{ error }}</div>
-      </div>
-    </mat-card>
-
-    <mat-card
-      *ngIf="successfullyRegisteredUsuario"
-      class="message-card success"
-    >
-      <mat-icon>check_circle</mat-icon>
-      <div class="text">{{ successfullyRegisteredUsuario }}</div>
-    </mat-card>
-  </ng-container>
-
-  <!-- HEADER: BUSCA + BOTÃO CADASTRAR -->
-  <div class="header-actions">
-    <mat-form-field appearance="outline" class="material-search">
-      <mat-icon matPrefix>search</mat-icon>
-      <input
-        matInput
-        placeholder="Buscar por nome ou e-mail..."
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="searchUsuarios($event)"
-      />
-      <button
-        mat-icon-button
-        *ngIf="searchTerm"
-        matSuffix
-        (click)="limparBusca()"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-
-    <button
-      *ngIf="usuarios.length > 0"
-      mat-raised-button
-      color="primary"
-      class="btn-cadastrar"
-      routerLink="/usuario/cadastrar"
-    >
-      <mat-icon>person_add</mat-icon>
-      Registrar Novo Usuário
-    </button>
+<div class="list-page-container">
+  <div class="list-page-header">
+    <h1 class="section-title">Usuários</h1>
+    <p class="list-page-subtitle">
+      Gerencie acessos, perfis e reenvio de convites
+    </p>
   </div>
 
-  <!-- SKELETON LOADING -->
-  <ng-container *ngIf="isLoading">
-    <div class="empresa-list">
-      <mat-card class="empresa-card-skeleton" *ngFor="let i of [1, 2, 3, 4]">
-        <div class="skeleton-line full-width"></div>
-        <div class="skeleton-line medium-width"></div>
-        <div class="skeleton-line short-width"></div>
-      </mat-card>
+  <div *ngIf="successMessage" class="alert-box success">
+    <div class="alert-item">
+      <mat-icon class="alert-icon">check_circle</mat-icon>
+      <span class="alert-msg">{{ successMessage }}</span>
     </div>
-  </ng-container>
+  </div>
 
-  <!-- LISTA DE USUÁRIOS -->
-  <div
-    *ngIf="!isLoading && usuarios.length > 0"
-    class="empresa-list better-layout"
-  >
-    <mat-card class="empresa-row" *ngFor="let usuario of usuarios" matRipple>
-      <div class="row-left">
-        <div
-          class="status-block"
-          [class.active]="usuario.ativo"
-          [class.inactive]="!usuario.ativo"
+  <div *ngIf="errorMessages.length" class="alert-box error">
+    <div *ngFor="let msg of errorMessages" class="alert-item">
+      <span class="alert-msg">{{ msg }}</span>
+    </div>
+  </div>
+
+  <div class="list-action-bar">
+    <div class="list-filters">
+      <mat-form-field
+        appearance="outline"
+        class="filter-field-large"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Buscar Nome ou E-mail</mat-label>
+        <input
+          matInput
+          placeholder="Ex: João Silva"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="searchUsuarios($event)"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <mat-form-field
+        appearance="outline"
+        class="filter-field-small"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Situação</mat-label>
+        <mat-select
+          [(ngModel)]="selectedAtivo"
+          (selectionChange)="onFilterChange()"
         >
-          <mat-icon>{{ usuario.ativo ? "check_circle" : "cancel" }}</mat-icon>
-          <span>{{ usuario.ativo ? "Ativo" : "Inativo" }}</span>
-        </div>
-        <div class="info-block">
-          <h3>{{ usuario.nome }}</h3>
-          <p><mat-icon class="icon">email</mat-icon> {{ usuario.email }}</p>
-          <p><mat-icon class="icon">phone</mat-icon> {{ usuario.telefone }}</p>
-          <p>
-            <mat-icon class="icon">badge</mat-icon>
-            {{ perfilLabels[usuario.perfil] }}
-          </p>
-          <p>
-            <mat-icon class="icon">business</mat-icon>
-            {{ usuario.empresa.nome }} - {{ usuario.empresa.cidade }}/{{
-              usuario.empresa.estado
-            }}
-          </p>
-        </div>
-        <div class="row-right">
-          <button
-            mat-raised-button
-            color="accent"
-            class="btn-editar"
-            [routerLink]="'/usuario/' + usuario.id + '/editar'"
+          <mat-option value="">Todos</mat-option>
+          <mat-option value="true">Ativos</mat-option>
+          <mat-option value="false">Inativos</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="action-button-wrapper">
+      <button
+        class="btn-action-primary"
+        routerLink="/usuario/cadastrar"
+        matTooltip="Cadastrar novo usuário"
+      >
+        <mat-icon>person_add</mat-icon>
+        <span>Novo Usuário</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="error-card" *ngIf="loadingFailed && !isLoading">
+    <mat-icon class="error-icon">sentiment_dissatisfied</mat-icon>
+    <div class="error-content">
+      <h3>Ops! Algo deu errado.</h3>
+      <p>
+        Não foi possível carregar a lista de empresas. Verifique sua conexão ou
+        tente novamente mais tarde.
+      </p>
+      <button class="btn-error-retry" (click)="carregarUsuarios(0)">
+        <mat-icon>refresh</mat-icon> Tentar Novamente
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="list-cards-wrapper"
+    *ngIf="!isLoading && !loadingFailed && usuarios.length > 0"
+  >
+    <div
+      class="list-card-row company-card"
+      *ngFor="let usuario of usuarios"
+      [class.border-active]="usuario.ativo"
+      [class.border-inactive]="!usuario.ativo"
+    >
+      <div class="company-avatar user-avatar" [class.inactive]="!usuario.ativo">
+        <span>{{ usuario.nome.charAt(0) | uppercase }}</span>
+      </div>
+
+      <div class="card-content">
+        <div class="company-header">
+          <h3 class="card-title">{{ usuario.nome }}</h3>
+          <span
+            class="status-pill"
+            [class.pill-success]="usuario.ativo"
+            [class.pill-danger]="!usuario.ativo"
           >
-            <mat-icon>edit</mat-icon> Alterar Dados
+            {{ usuario.ativo ? "Ativo" : "Inativo" }}
+          </span>
+        </div>
+
+        <div class="company-details-grid">
+          <div class="detail-item" matTooltip="E-mail">
+            <mat-icon class="icon-tiny">email</mat-icon>
+            <span class="truncate-text">{{ usuario.email }}</span>
+          </div>
+
+          <div class="detail-item" matTooltip="Perfil de Acesso">
+            <mat-icon class="icon-tiny">badge</mat-icon>
+            <span>{{ perfilLabels[usuario.perfil] || usuario.perfil }}</span>
+          </div>
+
+          <div
+            class="detail-item"
+            *ngIf="usuario.telefone"
+            matTooltip="Telefone"
+          >
+            <mat-icon class="icon-tiny">phone</mat-icon>
+            <span>{{ usuario.telefone }}</span>
+          </div>
+
+          <div class="detail-item" matTooltip="Empresa">
+            <mat-icon class="icon-tiny">business</mat-icon>
+            <span class="truncate-text">{{ usuario.empresa.nome }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions-side">
+        <div class="btn-group-vertical">
+          <button
+            class="btn-card-action"
+            [routerLink]="['/usuario', usuario.id, 'editar']"
+            matTooltip="Editar dados"
+          >
+            <mat-icon>edit</mat-icon> <span>Editar</span>
+          </button>
+
+          <button
+            class="btn-card-action secondary"
+            *ngIf="usuario.podeReenviarEmail"
+            (click)="reenviarConvite(usuario)"
+            matTooltip="Reenviar e-mail de definição de senha"
+          >
+            <mat-icon>send</mat-icon> <span>Reenviar</span>
           </button>
         </div>
       </div>
-    </mat-card>
+    </div>
   </div>
 
-  <!-- EMPTY STATE / SEM RESULTADOS -->
-  <div *ngIf="!isLoading && usuarios.length === 0 && !loadingFailed" class="empty-state">
-    <mat-icon class="empty-icon">
-      {{ searchTerm ? "person_off" : "person" }}
-    </mat-icon>
-
-    <h2>
-      {{
-        searchTerm ? "Nenhum resultado encontrado" : "Nenhum usuário cadastrado"
-      }}
-    </h2>
-
-    <p>
-      {{
-        searchTerm
-          ? 'Não encontramos nenhum usuário com "' +
-            searchTerm +
-            '". Tente outro termo de pesquisa.'
-          : "Comece adicionando o primeiro usuário para gerenciar o sistema."
-      }}
-    </p>
-
-    <button
-      *ngIf="!searchTerm"
-      mat-raised-button
-      color="primary"
-      class="empty-btn"
-      routerLink="/usuario/cadastrar"
-    >
-      <mat-icon>person_add</mat-icon>
-      Cadastrar Usuário
-    </button>
-  </div>
-
-  <!-- PAGINAÇÃO -->
-  <app-pagination
-    *ngIf="!isLoading && usuarios.length > 0"
-    [pageNumber]="currentPage"
-    [totalPages]="totalPages"
-    (pageChange)="carregarPagina($event)"
+  <div
+    class="state-container"
+    *ngIf="!isLoading && !loadingFailed && usuarios.length === 0"
   >
-  </app-pagination>
-</main>
+    <mat-icon class="state-icon">person_off</mat-icon>
+    <h3>
+      {{
+        searchTerm ? "Nenhum usuário encontrado" : "Nenhum usuário cadastrado"
+      }}
+    </h3>
+    <p *ngIf="searchTerm">Não encontramos nada para "{{ searchTerm }}".</p>
+    <p *ngIf="!searchTerm">Cadastre o primeiro usuário para começar.</p>
+  </div>
+
+  <div class="pagination-container" *ngIf="usuarios.length > 0 && !isLoading">
+    <app-pagination
+      [pageNumber]="currentPage"
+      [totalPages]="totalPages"
+      (pageChange)="carregarPagina($event)"
+    >
+    </app-pagination>
+  </div>
+</div>

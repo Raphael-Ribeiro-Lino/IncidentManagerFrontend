@@ -112,7 +112,7 @@ export class ListarEmpresasComponent implements OnInit {
           this.loadingFailed = true;
           this.errorMessages = [
             err.error?.message ||
-              'Ocorreu um erro inesperado ao carregar empresas.',
+              'Ocorreu um erro inesperado ao carregar as empresas.',
           ];
         },
       });
