@@ -1,5 +1,5 @@
 import { CommonModule, DecimalPipe, TitleCasePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core'; // Adicionado OnDestroy
 import {
   FormBuilder,
   FormGroup,
@@ -11,11 +11,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs'; // Adicionado
+
+// Ajuste os caminhos conforme seu projeto
 import { ChamadoService } from '../../../services/chamado/chamado.service';
 import { Prioridades } from '../../../models/chamado/prioridadeEnum';
 import { AnexoInput } from '../../../models/anexo/anexoInput';
 import { ChamadoOutput } from '../../../models/chamado/chamadoOutput';
-import { TipoAnexoEnum } from '../../../models/anexo/tipoAnexoEnum';
+import { DialogData } from '../../../models/dialogData/dialogData';
+import { ConfirmationDialogComponent } from '../../../components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-alterar-chamado',
@@ -33,7 +38,7 @@ import { TipoAnexoEnum } from '../../../models/anexo/tipoAnexoEnum';
   templateUrl: './alterar-chamado.component.html',
   styleUrl: './alterar-chamado.component.css',
 })
-export class AlterarChamadoComponent implements OnInit {
+export class AlterarChamadoComponent implements OnInit, OnDestroy {
   formChamado!: FormGroup;
   chamadoId!: number;
   chamadoAtual!: ChamadoOutput;
@@ -42,26 +47,22 @@ export class AlterarChamadoComponent implements OnInit {
   successfullyUpdatedMessage: string | null = null;
   isLoading = false;
   isDragging: boolean = false;
-
-  // Controle visual de bloqueio
   isStatusInvalid: boolean = false;
 
-  private readonly allowedExtensions = [
-    'PDF',
-    'DOCX',
-    'PNG',
-    'JPG',
-    'JPEG',
-    'ZIP',
-  ];
+  // Subscription para monitorar mudanças no form (Igual ao Cadastro)
+  private formSubscription?: Subscription;
+
+  private readonly allowedExtensions = ['PDF', 'DOCX', 'PNG', 'JPG', 'JPEG', 'ZIP'];
   private readonly maxFileSizeMB = 50;
   private readonly maxFileSizeInBytes = this.maxFileSizeMB * 1024 * 1024;
+  private readonly maxTotalSizeMB = 500;
+  private readonly maxTotalSizeInBytes = this.maxTotalSizeMB * 1024 * 1024;
+  private readonly maxFileCount = 20;
 
   prioridades = Object.values(Prioridades);
 
   novosAnexosSelecionados: AnexoInput[] = [];
-  // Mantemos os dados originais para poder enviar de volta (ID é crucial)
-  anexosExistentes: any[] = [];
+  anexosExistentes: any[] = []; // Mantive any ou sua interface de Output
 
   token = localStorage.getItem('token') as string;
 
@@ -69,11 +70,21 @@ export class AlterarChamadoComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private chamadoService: ChamadoService
+    private chamadoService: ChamadoService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
     this.initForm();
+    
+    // Lógica igual ao Cadastro: Limpa erros (exceto de anexo) ao digitar
+    this.formSubscription = this.formChamado.valueChanges.subscribe(() => {
+      if (this.errorMessages.length > 0) {
+        this.errorMessages = this.errorMessages.filter((msg) =>
+          msg.startsWith('Erro de Anexo:')
+        );
+      }
+    });
 
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
@@ -84,31 +95,64 @@ export class AlterarChamadoComponent implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    if (this.formSubscription) {
+      this.formSubscription.unsubscribe();
+    }
+  }
+
   private initForm(): void {
+    // Mesmas validações do Cadastro
     this.formChamado = this.fb.group({
-      titulo: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(5),
-          Validators.maxLength(100),
-        ],
-      ],
-      descricao: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(10),
-          Validators.maxLength(2000),
-        ],
-      ],
+      titulo: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
+      descricao: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(2000)]],
       prioridade: ['', [Validators.required]],
     });
   }
 
-  get f() {
-    return this.formChamado.controls;
+  get f() { return this.formChamado.controls; }
+
+  get maxTotalMB(): number { return this.maxTotalSizeMB; }
+
+  get totalSizeUsed(): number {
+    const sizeExisting = this.anexosExistentes.reduce((acc, anexo) => acc + (anexo.tamanhoBytes || 0), 0);
+    const sizeNew = this.novosAnexosSelecionados.reduce((acc, anexo) => acc + anexo.tamanhoBytes, 0);
+    return sizeExisting + sizeNew;
   }
+
+  get percentageUsed(): number {
+    return Math.min(100, (this.totalSizeUsed / this.maxTotalSizeInBytes) * 100);
+  }
+
+  getProgressColorClass(): string {
+    const pct = this.percentageUsed;
+    if (pct < 50) return 'progress-success';
+    if (pct < 80) return 'progress-warning';
+    return 'progress-danger';
+  }
+
+  // --- MÉTODOS DE ERRO IDÊNTICOS AO CADASTRO ---
+
+  addErrorMessage(msg: string, timeInMillis: number = 0) {
+    this.errorMessages.push(msg);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (timeInMillis > 0) {
+      setTimeout(() => {
+        this.removeErrorMsg(msg);
+      }, timeInMillis);
+    }
+  }
+
+  removeErrorMsg(msg: string) {
+    this.errorMessages = this.errorMessages.filter((m) => m !== msg);
+  }
+
+  removeErrorIndex(index: number) {
+    this.errorMessages.splice(index, 1);
+  }
+
+  // ------------------------------------------------
 
   carregarDadosChamado(): void {
     this.isLoading = true;
@@ -117,11 +161,10 @@ export class AlterarChamadoComponent implements OnInit {
     this.chamadoService.buscarPorId(this.token, this.chamadoId).subscribe({
       next: (chamado) => {
         this.chamadoAtual = chamado;
-
-        // Validação Visual de Status
         const statusPermitidos = ['ABERTO', 'TRIAGEM', 'REABERTO'];
+        
         if (!statusPermitidos.includes(chamado.status)) {
-          this.isStatusInvalid = true; // Ativa o card de bloqueio e esconde o form
+          this.isStatusInvalid = true;
           this.isLoading = false;
           return;
         }
@@ -132,13 +175,12 @@ export class AlterarChamadoComponent implements OnInit {
           prioridade: chamado.prioridade,
         });
 
-        // Clona o array para permitir manipulação local (exclusão)
         this.anexosExistentes = chamado.anexos ? [...chamado.anexos] : [];
         this.isLoading = false;
       },
       error: (err) => {
         console.error(err);
-        this.errorMessages.push('Erro ao carregar os dados do chamado.');
+        this.addErrorMessage('Erro ao carregar os dados do chamado.', 0);
         this.isLoading = false;
       },
     });
@@ -146,53 +188,73 @@ export class AlterarChamadoComponent implements OnInit {
 
   getFileIcon(tipo: string): string {
     switch (tipo?.toLowerCase()) {
-      case 'pdf':
-        return 'picture_as_pdf';
-      case 'doc':
-      case 'docx':
-        return 'description';
-      case 'png':
-      case 'jpg':
-      case 'jpeg':
-        return 'image';
-      case 'zip':
-        return 'folder_zip';
-      default:
-        return 'attach_file';
+      case 'pdf': return 'picture_as_pdf';
+      case 'doc': case 'docx': return 'description';
+      case 'png': case 'jpg': case 'jpeg': return 'image';
+      case 'zip': return 'folder_zip';
+      default: return 'attach_file';
     }
   }
 
-  // --- Manipulação de Arquivos ---
+  private getTipoAnexo(ext: string): any {
+    return ext as string; // Ou use seu Enum se necessário
+  }
+
+  // --- Lógica de Upload (Ajustada para considerar Existentes + Novos) ---
 
   onFileSelected(event: any): void {
-    this.errorMessages = this.errorMessages.filter(
-      (msg) => !msg.startsWith('Erro de Anexo:')
-    );
+    // Filtra erros de anexo anteriores
+    this.errorMessages = this.errorMessages.filter((msg) => !msg.startsWith('Erro de Anexo:'));
+
     const files: FileList = event.target.files;
     if (files.length === 0) return;
 
+    // Validação de Quantidade Total
+    const totalCount = this.anexosExistentes.length + this.novosAnexosSelecionados.length + files.length;
+
+    if (totalCount > this.maxFileCount) {
+      this.addErrorMessage(
+        `Erro de Anexo: Limite excedido. O máximo permitido são ${this.maxFileCount} arquivos por chamado.`,
+        7000
+      );
+      event.target.value = null;
+      return;
+    }
+
     const novosAnexos: AnexoInput[] = [];
+    let tamanhoSimulado = this.totalSizeUsed;
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const fileNameParts = file.name.split('.');
       const fileExtension = fileNameParts.pop()?.toUpperCase() || '';
-
-      // Cast seguro se você tiver certeza que a extensão bate com o Enum,
-      // senão use um default ou valide antes.
-      const tipoAnexo = fileExtension as TipoAnexoEnum;
+      const tipoAnexo = this.getTipoAnexo(fileExtension);
 
       let isValid = true;
 
+      // Validação Tamanho Individual
       if (file.size > this.maxFileSizeInBytes) {
-        this.errorMessages.push(
-          `Erro de Anexo: O arquivo "${file.name}" excede o limite.`
+        this.addErrorMessage(
+          `Erro de Anexo: O arquivo "${file.name}" excede o limite individual de ${this.maxFileSizeMB}MB.`,
+          7000
         );
         isValid = false;
       }
+      
+      // Validação Extensão
       if (!this.allowedExtensions.includes(fileExtension)) {
-        this.errorMessages.push(
-          `Erro de Anexo: Formato inválido para "${file.name}".`
+        this.addErrorMessage(
+          `Erro de Anexo: O arquivo "${file.name}" possui formato inválido.`,
+          7000
+        );
+        isValid = false;
+      }
+      
+      // Validação Tamanho Total
+      if (isValid && tamanhoSimulado + file.size > this.maxTotalSizeInBytes) {
+        this.addErrorMessage(
+          `Erro de Anexo: O arquivo "${file.name}" não cabe no limite total de ${this.maxTotalSizeMB}MB.`,
+          7000
         );
         isValid = false;
       }
@@ -204,12 +266,11 @@ export class AlterarChamadoComponent implements OnInit {
           tipo: tipoAnexo,
           arquivo: file,
         });
+        tamanhoSimulado += file.size;
       }
     }
-    this.novosAnexosSelecionados = [
-      ...this.novosAnexosSelecionados,
-      ...novosAnexos,
-    ];
+
+    this.novosAnexosSelecionados = [...this.novosAnexosSelecionados, ...novosAnexos];
     event.target.value = null;
   }
 
@@ -229,8 +290,9 @@ export class AlterarChamadoComponent implements OnInit {
     this.isDragging = false;
     const dataTransfer = event.dataTransfer;
     if (dataTransfer && dataTransfer.files.length) {
-      const mockEvent = { target: { files: dataTransfer.files, value: null } };
-      this.onFileSelected(mockEvent);
+      this.onFileSelected({
+        target: { files: dataTransfer.files, value: null },
+      });
     }
   }
 
@@ -238,51 +300,65 @@ export class AlterarChamadoComponent implements OnInit {
     this.novosAnexosSelecionados.splice(index, 1);
   }
 
-  // Remove da lista visual. Ao salvar, este anexo não será enviado,
-  // indicando ao backend que ele deve ser removido (dependendo da lógica do backend).
   removerAnexoExistente(index: number): void {
-    if (confirm('Tem certeza que deseja remover este anexo?')) {
-      this.anexosExistentes.splice(index, 1);
-    }
+    const anexo = this.anexosExistentes[index];
+    const dialogData: DialogData = {
+      titulo: 'Remover Anexo',
+      mensagem: `Deseja remover o arquivo "${anexo.nomeArquivo}"? A exclusão será salva ao clicar em "Salvar Alterações".`,
+      icone: 'delete_forever',
+      corBotao: 'warn',
+      textoConfirmar: 'Remover',
+      textoCancelar: 'Manter',
+      mostrarCancelar: true,
+    };
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: dialogData,
+      width: '400px',
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result === true) {
+        this.anexosExistentes.splice(index, 1);
+      }
+    });
   }
 
-  // --- Submissão ---
-
   submitForm(): void {
-    this.errorMessages = this.errorMessages.filter(
-      (msg) => !msg.startsWith('Erro de Anexo:')
-    );
+    // 1. Limpa erros antigos (que não sejam de anexo, pois a lógica abaixo pode gerar novos)
+    this.errorMessages = this.errorMessages.filter(msg => msg.startsWith('Erro de Anexo:'));
     this.successfullyUpdatedMessage = null;
 
+    // 2. Validação Campos Obrigatórios
     if (this.formChamado.invalid) {
       this.formChamado.markAllAsTouched();
-      this.errorMessages.push(
-        'Por favor, preencha todos os campos obrigatórios corretamente.'
-      );
+      this.addErrorMessage('Por favor, preencha todos os campos obrigatórios corretamente.');
+      return;
+    }
+
+    // 3. Impede envio se houver erros de anexo pendentes
+    if (this.errorMessages.some((msg) => msg.startsWith('Erro de Anexo:'))) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
     this.isLoading = true;
 
-    // 1. Preparar Anexos Existentes
-    // Criamos um "Dummy File" para passar pela validação do serviço que lê .name
-    const anexosExistentesMapeados = this.anexosExistentes.map((anexo) => {
-      const dummyFile = new File([''], anexo.nomeArquivo, {
-        type: 'application/octet-stream',
-      });
-
-      return {
-        id: anexo.id, // Importante manter o ID para o backend saber quem é
-        nomeArquivo: anexo.nomeArquivo,
-        tamanhoBytes: anexo.tamanhoBytes || 0,
-        tipo: anexo.tipo,
-        arquivo: dummyFile,
-      };
+    // Preparar lista de existentes (enviando ID para o backend reconhecer)
+    const anexosExistentesParaEnvio: AnexoInput[] = this.anexosExistentes.map((anexo) => {
+        return {
+          id: anexo.id, // IMPORTANTE: O ID deve ir aqui
+          nomeArquivo: anexo.nomeArquivo,
+          tamanhoBytes: anexo.tamanhoBytes,
+          tipo: anexo.tipo,
+          arquivo: null as any,
+        };
     });
 
-    // 2. Combinar Listas
-    const listaFinalAnexos = [
-      ...anexosExistentesMapeados,
+    // Unir com os novos uploads
+    const listaFinalAnexos: AnexoInput[] = [
+      ...anexosExistentesParaEnvio,
       ...this.novosAnexosSelecionados,
     ];
 
@@ -298,34 +374,25 @@ export class AlterarChamadoComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.isLoading = false;
-          this.successfullyUpdatedMessage = `Chamado ${res.protocolo} atualizado com sucesso!`;
+          this.successfullyUpdatedMessage = `Chamado atualizado com sucesso!`;
           this.formChamado.disable();
           this.novosAnexosSelecionados = [];
           window.scrollTo({ top: 0, behavior: 'smooth' });
 
           setTimeout(
-            () =>
-              this.router.navigate(['/chamado', this.chamadoId, 'detalhes']),
-            2000
+            () => this.router.navigate(['/chamado', this.chamadoId, 'detalhes']),
+            1500
           );
         },
         error: (erro) => {
           this.isLoading = false;
-          const msgBackend =
-            erro.error?.message ||
-            erro.error?.error ||
-            'Ocorreu um erro ao atualizar.';
-          this.errorMessages.push(msgBackend);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          const msgBackend = erro.error?.message || erro.error?.error || 'Ocorreu um erro ao atualizar.';
+          this.addErrorMessage(msgBackend, 10000); // Timeout maior para erro de backend
         },
       });
   }
 
   cancelar(): void {
-    if (this.isStatusInvalid) {
-      this.router.navigate(['/chamado/listar']);
-    } else {
-      this.router.navigate(['/chamado/listar']);
-    }
+    this.router.navigate(['/chamado/listar']);
   }
 }

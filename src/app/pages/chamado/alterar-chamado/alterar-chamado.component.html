@@ -1,194 +1,206 @@
-<div class="chamado-page">
-  <div class="chamado-card">
-      
-      <div class="header-flex">
-        <h1 class="chamado-title">Editar Chamado</h1>
-        <!-- Exibe protocolo se existir e se o status for válido -->
-        <span class="protocolo-tag" *ngIf="chamadoAtual && !isStatusInvalid">#{{ chamadoAtual.protocolo }}</span>
-      </div>
+<div class="page-container">
+    <div class="content-card">
 
-      <!-- CARD DE BLOQUEIO DE STATUS -->
-      <div *ngIf="isStatusInvalid" class="status-lock-card">
-          <div class="lock-icon-area">
-              <mat-icon>lock_clock</mat-icon>
-          </div>
-          <div class="lock-content">
-              <h3>Edição Bloqueada</h3>
-              <p>
-                  O chamado atual está com status <strong>{{ chamadoAtual.status }}</strong>. <br>
-                  Por questões de conformidade, apenas chamados <strong>Abertos</strong> ou em <strong>Triagem</strong> podem ser editados.
-              </p>
-              <button class="btn btn-primary btn-lock-action" (click)="cancelar()">Voltar para a Lista</button>
-          </div>
-      </div>
+        <div class="header-flex">
+            <h1 class="section-title">Editar Chamado</h1>
+            <span class="protocolo-tag" *ngIf="chamadoAtual && !isStatusInvalid">#{{ chamadoAtual.protocolo }}</span>
+        </div>
 
-      <!-- MENSAGENS -->
-      <div *ngIf="errorMessages.length" class="error-message">
-          <div class="error" *ngFor="let msg of errorMessages">{{ msg }}</div>
-      </div>
-      <div *ngIf="successfullyUpdatedMessage" class="success">
-          {{ successfullyUpdatedMessage }}
-      </div>
+        <!-- CARD DE BLOQUEIO DE STATUS -->
+        <div *ngIf="isStatusInvalid" class="status-lock-card">
+            <div class="lock-icon-area">
+                <mat-icon>lock_clock</mat-icon>
+            </div>
+            <div class="lock-content">
+                <h3>Edição Bloqueada</h3>
+                <p>
+                    O chamado atual está com status <strong>{{ chamadoAtual.status }}</strong>. <br>
+                    Por questões de conformidade, apenas chamados <strong>Abertos</strong> ou em
+                    <strong>Triagem</strong> podem ser editados.
+                </p>
+                <button class="btn btn-primary btn-lock-action" (click)="cancelar()">Voltar para a Lista</button>
+            </div>
+        </div>
 
-      <!-- LOADING SKELETON (Se estiver carregando o chamado inicial) -->
-      <div *ngIf="isLoading && !chamadoAtual" class="loading-skeleton">
-         <div class="spinner"></div>
-         <p>Carregando dados...</p>
-      </div>
+        <!-- ALERTAS -->
+        <div *ngIf="errorMessages.length" class="alert-box error">
+            <div *ngFor="let msg of errorMessages; let i = index" class="alert-item">
+                <span class="alert-msg">{{ msg }}</span>
+                <button type="button" class="btn-close-alert" (click)="removeErrorIndex(i)">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+        </div>
 
-      <!-- FORMULÁRIO (Só aparece se status for válido e chamado carregado) -->
-      <form [formGroup]="formChamado" class="chamado-form" (ngSubmit)="submitForm()" *ngIf="chamadoAtual && !isStatusInvalid">
+        <div *ngIf="successfullyUpdatedMessage" class="alert-box success">
+            {{ successfullyUpdatedMessage }}
+        </div>
 
-          <!-- 1. TÍTULO -->
-          <div class="form-row">
-              <div class="form-field full">
-                  <mat-form-field appearance="outline" class="full-width-field">
-                      <mat-label>Título do Chamado</mat-label>
-                      <input matInput formControlName="titulo" placeholder="Ex: Problema com o sistema X" />
-                      <mat-error *ngIf="f['titulo'].hasError('required')">O título é obrigatório.</mat-error>
-                      <mat-error *ngIf="f['titulo'].hasError('minlength')">Mínimo de 5 caracteres.</mat-error>
-                      <mat-error *ngIf="f['titulo'].hasError('maxlength')">Máximo de 100 caracteres.</mat-error>
-                  </mat-form-field>
-              </div>
-          </div>
+        <!-- LOADING -->
+        <div *ngIf="isLoading && !chamadoAtual" class="loading-skeleton">
+            <div class="spinner"></div>
+            <p>Carregando dados...</p>
+        </div>
 
-          <!-- 2. PRIORIDADE -->
-          <div class="form-row">
-              <div class="form-field small">
-                  <mat-form-field appearance="outline" class="full-width-field">
-                      <mat-label>Prioridade</mat-label>
-                      <mat-select formControlName="prioridade">
-                          <mat-option value="">Selecione a Prioridade</mat-option>
-                          <mat-option
-                              *ngFor="let p of prioridades"
-                              [value]="p"
-                              [ngClass]="'prioridade-chip-' + p.toLowerCase()"
-                          >
-                              <span class="prioridade-option-label">
-                                  <span [ngClass]="'prioridade-dot-' + p.toLowerCase()"></span>
-                                  {{ p | lowercase | titlecase }}
-                              </span>
-                          </mat-option>
-                      </mat-select>
-                      <mat-error *ngIf="f['prioridade'].hasError('required')">A prioridade é obrigatória.</mat-error>
-                  </mat-form-field>
-              </div>
-              <div class="form-field small"></div>
-          </div>
+        <!-- FORMULÁRIO -->
+        <form [formGroup]="formChamado" class="chamado-form" (ngSubmit)="submitForm()"
+            *ngIf="chamadoAtual && !isStatusInvalid">
 
-          <!-- 3. DESCRIÇÃO -->
-          <div class="form-row">
-              <div class="form-field full">
-                  <mat-form-field appearance="outline" class="full-width-field">
-                      <mat-label>Descrição Detalhada</mat-label>
-                      <textarea
-                          matInput
-                          formControlName="descricao"
-                          rows="5"
-                          placeholder="Descreva o problema em detalhes..."
-                      ></textarea>
-                      <mat-error *ngIf="f['descricao'].hasError('required')">A descrição é obrigatória.</mat-error>
-                      <mat-error *ngIf="f['descricao'].hasError('minlength')">Mínimo de 10 caracteres.</mat-error>
-                      <mat-error *ngIf="f['descricao'].hasError('maxlength')">Máximo de 2000 caracteres.</mat-error>
-                  </mat-form-field>
-              </div>
-          </div>
+            <!-- 1. TÍTULO -->
+            <div class="form-row">
+                <div class="form-col full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Título do Chamado</mat-label>
+                        <input matInput formControlName="titulo" placeholder="Ex: Problema com o sistema X" />
+                        <mat-error *ngIf="f['titulo'].hasError('required')">O título é obrigatório.</mat-error>
+                        <mat-error *ngIf="f['titulo'].hasError('minlength')">Mínimo de 5 caracteres.</mat-error>
+                        <mat-error *ngIf="f['titulo'].hasError('maxlength')">Máximo de 100 caracteres.</mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
 
-          <!-- 4. ANEXOS EXISTENTES -->
-          <div class="form-row" *ngIf="anexosExistentes.length > 0">
-              <div class="form-field full">
-                  <label class="label">Anexos Já Enviados</label>
-                  <div class="anexos-chips-container existing-container">
-                      <div *ngFor="let anexo of anexosExistentes; let i = index" class="anexo-chip existing-chip">
-                          <mat-icon class="anexo-icon">{{ getFileIcon(anexo.tipo) }}</mat-icon>
-                          <span class="anexo-info">
-                              <span class="anexo-name" title="{{ anexo.nomeArquivo }}">{{ anexo.nomeArquivo }}</span>
-                              <span class="anexo-size">Salvo</span>
-                          </span>
-                          <!-- Botão de remover para anexos existentes -->
-                          <button type="button" class="btn-remove-chip" (click)="removerAnexoExistente(i)" title="Remover este anexo">
-                              <mat-icon>close</mat-icon>
-                          </button>
-                      </div>
-                  </div>
-              </div>
-          </div>
+            <!-- 2. PRIORIDADE -->
+            <div class="form-row">
+                <div class="form-col small">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Prioridade</mat-label>
+                        <mat-select formControlName="prioridade">
+                            <mat-option value="">Selecione a Prioridade</mat-option>
+                            <mat-option *ngFor="let p of prioridades" [value]="p"
+                                [ngClass]="'prioridade-chip-' + p.toLowerCase()">
+                                <span class="prioridade-option-label">
+                                    <span [ngClass]="'prioridade-dot-' + p.toLowerCase()"></span>
+                                    {{ p | lowercase | titlecase }}
+                                </span>
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="f['prioridade'].hasError('required')">A prioridade é obrigatória.</mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="form-col small"></div>
+            </div>
 
-          <!-- 5. NOVOS ANEXOS (Drag & Drop) -->
-          <div class="form-row">
-              <div 
-                  class="form-field full drop-zone" 
-                  [class.dragging]="isDragging"
-                  (drop)="onDrop($event)" 
-                  (dragover)="onDragOver($event)"
-                  (dragleave)="onDragLeave($event)"
-              >
-                  <label class="label">Anexar Novos Arquivos (Opcional)</label>
+            <!-- 3. DESCRIÇÃO -->
+            <div class="form-row">
+                <div class="form-col full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Descrição Detalhada</mat-label>
+                        <textarea matInput formControlName="descricao" rows="5"
+                            placeholder="Descreva o problema em detalhes..."></textarea>
+                        <mat-error *ngIf="f['descricao'].hasError('required')">A descrição é obrigatória.</mat-error>
+                        <mat-error *ngIf="f['descricao'].hasError('minlength')">Mínimo de 10 caracteres.</mat-error>
+                        <mat-error *ngIf="f['descricao'].hasError('maxlength')">Máximo de 2000 caracteres.</mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
 
-                  <div class="file-input-wrapper">
-                      <input
-                          type="file"
-                          multiple
-                          class="hidden-file-input"
-                          (change)="onFileSelected($event)"
-                          #fileInput
-                      />
-                      <button
-                          type="button"
-                          class="btn btn-ghost file-upload-btn"
-                          (click)="fileInput.click()"
-                      >
-                          <mat-icon>attachment</mat-icon> Selecionar Arquivos
-                      </button>
-                      <span class="file-input-info" *ngIf="novosAnexosSelecionados.length === 0">
-                          Arraste ou clique para selecionar
-                      </span>
-                  </div>
+            <!-- 4. ANEXOS EXISTENTES (ATUALIZADO PARA NOVO LAYOUT) -->
+            <div class="form-row" *ngIf="anexosExistentes.length > 0">
+                <div class="form-col full">
+                    <label class="label">Anexos Já Enviados</label>
 
-                  <p class="text-muted small-text">
-                      Formatos: PDF, DOCX, PNG, JPG, ZIP (Máx 50MB)
-                  </p>
+                    <div class="anexos-chips-container existing-container">
+                        <div *ngFor="let anexo of anexosExistentes; let i = index" class="anexo-chip existing-chip">
+                            
+                            <!-- Ícone -->
+                            <div class="icon-wrapper">
+                                <mat-icon>{{ getFileIcon(anexo.tipo) }}</mat-icon>
+                            </div>
 
-                  <div *ngIf="novosAnexosSelecionados.length > 0" class="anexos-chips-container">
-                      <div *ngFor="let anexo of novosAnexosSelecionados; let i = index" class="anexo-chip">
-                          <mat-icon class="anexo-icon">{{ getFileIcon(anexo.tipo) }}</mat-icon>
-                          <span class="anexo-info">
-                              <span class="anexo-name" title="{{ anexo.nomeArquivo }}">
-                                  {{ anexo.nomeArquivo }}
-                              </span>
-                              <span class="anexo-size">
-                                  ({{ anexo.tamanhoBytes / 1024 / 1024 | number : "1.2-2" }} MB)
-                              </span>
-                          </span>
-                          <button type="button" class="btn-remove-chip" (click)="removeNovoAnexo(i)" title="Remover anexo">
-                              <mat-icon>close</mat-icon>
-                          </button>
-                      </div>
-                  </div>
-              </div>
-          </div>
+                            <!-- Info -->
+                            <div class="anexo-info">
+                                <span class="anexo-name" title="{{ anexo.nomeArquivo }}">
+                                    {{ anexo.nomeArquivo }}
+                                </span>
+                                <span class="status-badge">
+                                    <mat-icon class="tiny-icon">check</mat-icon> Salvo
+                                </span>
+                            </div>
 
-          <p style="margin-top: var(--space-md)" class="text-muted">
-              * Campos obrigatórios
-          </p>
+                            <!-- Botão Remover -->
+                            <button type="button" class="btn-remove-chip" (click)="removerAnexoExistente(i)"
+                                title="Remover este anexo">
+                                <mat-icon>delete_outline</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-          <!-- AÇÕES -->
-          <div class="actions">
-              <button class="btn btn-ghost" type="button" (click)="cancelar()" [disabled]="isLoading">
-                  Cancelar
-              </button>
-              <!-- Botão com estilo desabilitado correto -->
-              <button
-                  class="btn btn-primary"
-                  type="submit"
-                  [disabled]="formChamado.invalid || isLoading"
-              >
-                  <span *ngIf="!isLoading">Salvar Alterações</span>
-                  <span *ngIf="isLoading" class="spinner-container">
-                      <span class="spinner"></span> Salvando...
-                  </span>
-              </button>
-          </div>
-      </form>
-  </div>
+            <!-- 5. NOVOS ANEXOS (Drag & Drop) -->
+            <div class="form-row">
+                <div class="form-col full drop-zone" [class.dragging]="isDragging" (drop)="onDrop($event)"
+                    (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+
+                    <label class="label">Anexar Novos Arquivos (Opcional)</label>
+
+                    <div class="file-input-wrapper">
+                        <input type="file" multiple class="hidden-file-input" (change)="onFileSelected($event)"
+                            #fileInput />
+                        <button type="button" class="btn btn-ghost file-upload-btn" (click)="fileInput.click()">
+                            <mat-icon>attachment</mat-icon> Selecionar Arquivos
+                        </button>
+                        <span class="file-input-info" *ngIf="novosAnexosSelecionados.length === 0">
+                            Nenhum arquivo novo selecionado
+                        </span>
+                    </div>
+
+                    <p class="text-muted small-text">
+                        Formatos: PDF, DOCX, PNG, JPG, ZIP (Máx 50MB/arq • Total 500MB • Máx 20 arquivos)
+                    </p>
+
+                    <!-- Barra de Progresso -->
+                    <div class="storage-indicator" *ngIf="totalSizeUsed > 0">
+                        <div class="storage-header">
+                            <span class="storage-label">Armazenamento Utilizado</span>
+                            <span class="storage-values">
+                                <strong>{{ totalSizeUsed / 1024 / 1024 | number:'1.2-2' }} MB</strong>
+                                / {{ maxTotalMB }} MB
+                            </span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" [style.width.%]="percentageUsed"
+                                [ngClass]="getProgressColorClass()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chips de Novos Arquivos -->
+                    <div *ngIf="novosAnexosSelecionados.length > 0" class="anexos-chips-container">
+                        <div *ngFor="let anexo of novosAnexosSelecionados; let i = index" class="anexo-chip">
+                            
+                            <mat-icon class="anexo-icon">{{ getFileIcon(anexo.tipo) }}</mat-icon>
+                            
+                            <div class="anexo-info">
+                                <!-- Removido o PIPE slice, o CSS agora cuida da responsividade -->
+                                <span class="anexo-name" title="{{ anexo.nomeArquivo }}">
+                                    {{ anexo.nomeArquivo }}
+                                </span>
+                                <span class="anexo-size">
+                                    ({{ anexo.tamanhoBytes / 1024 / 1024 | number : "1.2-2" }} MB)
+                                </span>
+                            </div>
+
+                            <button type="button" class="btn-remove-chip" (click)="removeNovoAnexo(i)"
+                                title="Remover anexo">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-muted small-text" style="margin-top: var(--space-sm);">* Campos obrigatórios</p>
+
+            <div class="form-actions">
+                <button class="btn btn-ghost" type="button" (click)="cancelar()">Cancelar</button>
+                <button class="btn btn-primary" type="submit" [disabled]="formChamado.invalid || isLoading">
+                    <span *ngIf="!isLoading">Salvar Alterações</span>
+                    <span *ngIf="isLoading" class="spinner-container">
+                        <span class="spinner"></span> Salvando...
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
 </div>

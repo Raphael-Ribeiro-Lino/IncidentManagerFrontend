@@ -1,26 +1,13 @@
-.chamado-page {
-  background: var(--bg-0);
-  padding: var(--space-xl) 0;
-  display: flex;
-  justify-content: center;
-}
-
-.chamado-card {
-  width: 100%;
-  max-width: 700px;
-  background: var(--bg-1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: var(--space-xl);
-  box-shadow: var(--shadow-sm);
-}
-
+/* =========================================
+   ESTILOS ESPECÍFICOS DESTA TELA
+   (Layout principal vem do styles.css global)
+   ========================================= */
 /* Header Flex para alinhar título e protocolo */
 .header-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-lg);
 }
 
 .chamado-title {
@@ -45,338 +32,352 @@
 }
 
 .protocolo-tag {
-    background: #e6f0ff;
-    color: var(--primary-color);
-    font-family: 'Roboto Mono', monospace;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-size: 0.9rem;
-    white-space: nowrap;
+  background: #e6f0ff;
+  color: var(--primary-color);
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.9rem;
 }
 
-/* --- Card de Bloqueio de Status (Melhoria Visual) --- */
-.status-lock-card {
-    display: flex;
-    gap: 20px;
-    background-color: #fff8e1; /* Amarelo suave */
-    border: 1px solid #ffe0b2;
-    color: #e65100;
-    padding: 25px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    align-items: flex-start;
-    animation: fadeIn 0.3s ease-in-out;
-}
-.lock-icon-area mat-icon {
-    font-size: 40px;
-    height: 40px;
-    width: 40px;
-    color: #fb8c00;
-}
-.lock-content h3 {
-    margin: 0 0 10px 0;
-    font-weight: 700;
-    color: #ef6c00;
-}
-.lock-content p {
-    margin: 0 0 20px 0;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: #5d4037;
-}
-.btn-lock-action {
-    background-color: #ef6c00;
-    border: none;
-}
-.btn-lock-action:hover {
-    background-color: #e65100;
-}
-/* ------------------------------------------------ */
-
-.chamado-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.form-row {
-  display: flex;
-  gap: var(--space-md);
-  flex-wrap: wrap;
-}
-
-.form-field {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  position: relative;
-  margin-bottom: var(--space-xs, 4px);
-}
-
-.form-field.full { flex: 1 1 100%; }
-.form-field.small { flex: 1 1 48%; }
-.full-width-field { width: 100%; }
-
-.label {
-  font-weight: var(--fw-semibold, 500);
-  color: var(--text-2);
-  margin-bottom: 4px;
-}
-
-/* --- Prioridades --- */
-.prioridade-dot-baixa { background-color: #2ecc71; }
-.prioridade-dot-media { background-color: #f39c12; }
-.prioridade-dot-alta { background-color: #e67e22; }
-.prioridade-dot-critica { background-color: #e74c3c; }
-
+/* --- Prioridades (Cores dos Chips) --- */
 .prioridade-option-label {
   display: flex;
   align-items: center;
   gap: 8px;
   font-weight: 500;
 }
+
 .prioridade-option-label span:first-child {
   display: inline-block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
 }
-.prioridade-chip-baixa { background-color: rgba(46, 204, 113, 0.2); }
-.prioridade-chip-media { background-color: rgba(243, 156, 18, 0.2); }
-.prioridade-chip-alta { background-color: rgba(230, 126, 34, 0.2); }
-.prioridade-chip-critica { background-color: rgba(231, 76, 60, 0.2); }
 
-/* --- Mensagens --- */
-.error-message {
-  margin-bottom: var(--space-md);
-  padding: var(--space-sm);
-  border-left: 4px solid var(--color-error, #e63946);
-  background-color: rgba(230, 57, 70, 0.08);
-  border-radius: var(--radius-md, 8px);
+/* Cores das Bolinhas */
+.prioridade-dot-baixa {
+  background-color: #2ecc71;
 }
-.error {
-  color: var(--color-error, #e63946);
-  font-size: var(--fs-sm, 0.875rem);
-  margin-top: 4px;
-  font-weight: 500;
+.prioridade-dot-media {
+  background-color: #f39c12;
 }
-.success {
-  color: var(--color-success, #2ecc71);
+.prioridade-dot-alta {
+  background-color: #e67e22;
+}
+.prioridade-dot-critica {
+  background-color: #e74c3c;
+}
+
+/* Cores de Fundo (Chips) */
+.prioridade-chip-baixa {
   background-color: rgba(46, 204, 113, 0.1);
-  border-left: 4px solid var(--color-success, #2ecc71);
-  padding: var(--space-sm);
-  border-radius: var(--radius-md, 8px);
-  margin-bottom: var(--space-md);
-  font-weight: 500;
+}
+.prioridade-chip-media {
+  background-color: rgba(243, 156, 18, 0.1);
+}
+.prioridade-chip-alta {
+  background-color: rgba(230, 126, 34, 0.1);
+}
+.prioridade-chip-critica {
+  background-color: rgba(231, 76, 60, 0.1);
 }
 
-.small-text {
-  font-size: 0.8rem;
-  color: var(--text-3, #666);
-  margin-top: 4px;
+/* --- Área de Upload (Drag & Drop) --- */
+.drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  transition: all var(--transition-medium);
+  background-color: var(--bg-0);
 }
 
-/* --- Ações --- */
-.actions {
-  margin-top: var(--space-lg);
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-md);
-  flex-wrap: wrap;
+.drop-zone.dragging {
+  border-color: var(--color-cta);
+  background-color: rgba(63, 114, 175, 0.05);
 }
-
-.btn-primary {
-  background-color: var(--color-cta, #007bff);
-  color: white;
-  border: none;
-  font-weight: var(--fw-semibold, 600);
-  padding: 10px 20px;
-  border-radius: var(--radius-sm);
-  transition: background-color 0.2s;
-}
-.btn-primary:hover { background-color: var(--color-cta-hover); }
-
-.btn-ghost {
-  background: none;
-  border: 1px solid var(--border, #ccc);
-  color: var(--text-2, #333);
-  padding: 10px 20px;
-  border-radius: var(--radius-sm);
-  transition: all 0.2s;
-}
-.btn-ghost:hover {
-  background-color: var(--bg-0, #f8f8f8);
-  border-color: var(--color-cta, #007bff);
-}
-
-/* --- BOTÃO DESATIVADO (Estilo do Cadastro) --- */
-button:disabled {
-  background-color: #ccc !important;
-  color: #fff !important;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none !important;
-}
-
-.spinner-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-.spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 1s ease-in-out infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* --- Upload e Anexos --- */
-.hidden-file-input { display: none; }
 
 .file-input-wrapper {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
   flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.hidden-file-input {
+  display: none;
 }
 
 .file-upload-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  background-color: var(--color-secondary);
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  background-color: #fff;
 }
-.file-upload-btn:hover { background-color: var(--color-cta-hover); }
 
 .file-input-info {
-  font-size: var(--fs-md);
-  color: var(--text-muted, #666);
+  font-size: 0.9rem;
+  color: var(--text-2);
 }
 
-/* Container de Chips */
+/* ==========================================================================
+   --- Chips de Arquivos (NOVOS E EXISTENTES) - CORRIGIDO ---
+   ========================================================================== */
+
+/* Container Genérico */
 .anexos-chips-container {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);
-  margin-top: var(--space-sm);
-  padding: var(--space-sm);
-  border: 1px solid var(--border, #ddd);
-  border-radius: var(--radius-sm, 4px);
-  background-color: var(--bg-0, #f8f8f8);
-  
-  /* CORREÇÃO: Garante que o container não estoure */
-  max-width: 100%;
-  box-sizing: border-box;
+  margin-top: var(--space-md);
+  width: 100%; /* Garante largura total */
 }
 
-/* Estilo para container de existentes */
+/* --- ESTILO NOVO: Container para Arquivos Já Salvos (Grid Responsivo) --- */
 .existing-container {
-    background-color: #f0f4f8;
-    border-style: dashed;
+  background-color: #f8fafc; /* Fundo levemente cinza/azul */
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+
+  /* O Grid Mágico: Cria colunas de no min 250px. Se não couber, quebra linha */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+  margin-bottom: var(--space-lg);
 }
 
+/* Chip Base (Usado para novos e existentes) */
 .anexo-chip {
-  display: inline-flex;
+  display: flex; /* Mudado de inline-flex para flex para controlar largura interna */
   align-items: center;
-  background-color: var(--bg-1, #e0e0e0);
-  border: 1px solid var(--border, #ccc);
-  border-radius: var(--radius-lg, 16px);
-  padding: 4px 8px;
-  font-size: var(--fs-sm, 0.875rem);
-  color: var(--text-2, #333);
-  
-  /* CORREÇÃO: Limita a largura máxima do chip e evita estouro */
+  background-color: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px; /* Borda mais quadrada para layout moderno */
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  box-shadow: var(--shadow-sm);
+
+  /* CRÍTICO: Previne quebra de layout com nomes longos */
   max-width: 100%;
-  white-space: nowrap;
-  box-sizing: border-box;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
 }
 
+/* --- ESTILO NOVO: Chip Específico para Arquivos Salvos --- */
 .existing-chip {
-    background-color: #e3f2fd; /* Azul claro para existentes */
-    color: #1565c0;
-    border-color: #bbdefb;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  /* Borda lateral verde para indicar "Salvo" */
+  border-left: 4px solid #2ecc71;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.anexo-chip .anexo-icon {
-  font-size: 1.2rem;
-  margin-right: 4px;
+.existing-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Ícone do Arquivo */
+.anexo-icon {
+  font-size: 1.4rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-right: 10px;
   color: var(--color-cta);
+  flex-shrink: 0; /* Impede o ícone de ser esmagado */
 }
 
-.anexo-chip .anexo-info {
+/* Área de Texto (Nome + Tamanho/Status) */
+.anexo-info {
   display: flex;
   flex-direction: column;
-  /* CORREÇÃO CRÍTICA: Permite que o flex-item encolha abaixo do conteúdo */
-  min-width: 0; 
-  margin: 0 6px;
   line-height: 1.2;
+  margin-right: 8px;
+
+  /* CRÍTICO: Permite que o texto seja cortado dentro do Flexbox */
+  min-width: 0;
+  flex: 1;
 }
 
-.anexo-chip .anexo-name {
-  font-weight: var(--fw-semibold, 500);
-  /* CORREÇÃO: Garante o efeito de reticências (...) */
+/* Nome do Arquivo com Truncagem (...) */
+.anexo-name {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--text-1);
+
+  /* Trindade do corte de texto CSS */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
   display: block;
 }
-.anexo-chip .anexo-size {
-  font-size: 0.75rem;
-  color: var(--text-muted, #666);
+
+.anexo-size {
+  font-size: 0.7rem;
+  color: var(--text-2);
 }
 
+/* Badge "Salvo" (Para arquivos existentes) */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: #16a34a; /* Verde escuro */
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.tiny-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+/* Botão Remover */
 .btn-remove-chip {
   background: none;
   border: none;
   cursor: pointer;
-  margin-left: 4px;
-  padding: 0;
-  line-height: 1;
-  color: var(--text-muted, #666);
-  transition: color 0.2s;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  margin-left: auto;
 }
-.btn-remove-chip:hover { color: var(--color-error, #e63946); }
-.btn-remove-chip mat-icon { font-size: 1rem; height: 1rem; width: 1rem; }
 
-.drop-zone.dragging {
-  border: 2px dashed var(--color-cta, #007bff);
-  background-color: rgba(0, 123, 255, 0.05);
+.btn-remove-chip:hover {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: var(--color-danger);
+}
+
+.btn-remove-chip mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* --- Alertas --- */
+.alert-box {
+  padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-sm);
+  margin-bottom: var(--space-md);
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.loading-skeleton {
-    text-align: center;
-    padding: 60px;
-    color: var(--text-muted);
-    font-size: 1.1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+.alert-box.error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
 }
 
-/* --- Responsividade --- */
-@media (max-width: 768px) {
-  .form-field.small { flex: 1 1 100%; }
-  .actions { flex-direction: column-reverse; align-items: stretch; }
-  .actions button { width: 100%; }
-  .chamado-card { padding: var(--space-lg); }
-  .chamado-title { font-size: 1.5rem; }
-  .header-flex { flex-direction: column; gap: 10px; }
+.alert-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
+.btn-close-alert {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #c62828;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  opacity: 0.7;
+}
+
+.btn-close-alert:hover {
+  background-color: rgba(198, 40, 40, 0.1);
+  opacity: 1;
+}
+
+.btn-close-alert mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* --- Indicador de Armazenamento --- */
+.storage-indicator {
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.storage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+}
+
+.storage-label {
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.storage-values {
+  color: var(--text-1);
+}
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease-in-out, background-color 0.4s ease;
+}
+
+/* Cores Dinâmicas */
+.progress-success {
+  background-color: #2ecc71;
+}
+.progress-warning {
+  background-color: #f39c12;
+}
+.progress-danger {
+  background-color: #e74c3c;
+}
+
+/* --- Responsividade Mobile (Ajuste Fino) --- */
 @media (max-width: 480px) {
-  .anexo-chip { padding: 3px 6px; font-size: 0.8rem; }
-  .anexo-chip .anexo-icon { font-size: 1rem; }
+  .existing-container {
+    /* No mobile, força 1 coluna para garantir legibilidade total */
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+  .anexo-name {
+    font-size: 0.8rem;
+  }
+
+  .header-flex {
+    flex-direction: column;
+    gap: 10px;
+  }
 }

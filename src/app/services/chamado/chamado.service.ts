@@ -22,19 +22,28 @@ export class ChamadoService {
     formData.append('descricao', chamado.descricao);
     formData.append('prioridade', chamado.prioridade);
 
+    // Se a lista estiver vazia, o loop não roda e nada é enviado.
+    // O backend vai receber null ou lista vazia dependendo da configuração do Jackson.
     if (chamado.anexos && chamado.anexos.length > 0) {
       chamado.anexos.forEach((anexo: AnexoInput, index: number) => {
-        formData.append(
-          `anexos[${index}].arquivo`,
-          anexo.arquivo,
-          anexo.arquivo.name
-        );
+        // 1. DADOS OBRIGATÓRIOS PARA O SEU MATCHING NO BACKEND
+        // O seu backend compara: Nome + Tamanho + Tipo. Se isso faltar, ele deleta o anexo.
         formData.append(`anexos[${index}].nomeArquivo`, anexo.nomeArquivo);
         formData.append(
           `anexos[${index}].tamanhoBytes`,
           anexo.tamanhoBytes.toString()
         );
         formData.append(`anexos[${index}].tipo`, anexo.tipo);
+
+        // 2. O BINÁRIO (SÓ SE FOR NOVO UPLOAD)
+        // Aqui corrigimos o erro 'Cannot read properties of null'
+        if (anexo.arquivo) {
+          formData.append(
+            `anexos[${index}].arquivo`,
+            anexo.arquivo,
+            anexo.arquivo.name
+          );
+        }
       });
     }
 
@@ -91,7 +100,7 @@ export class ChamadoService {
     });
   }
 
-    alterar(
+  alterar(
     token: string,
     id: number,
     chamadoInput: ChamadoInput
