@@ -56,4 +56,33 @@ export class EmpresaService {
       params,
     });
   }
+
+  buscarPorId(token: string, id: number): Observable<EmpresaOutput> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+
+    return this.httpClient.get<EmpresaOutput>(API_URL + `/${id}`, {
+      headers,
+    });
+  }
+
+  alterar(
+    token: string,
+    id: number,
+    empresaInput: EmpresaInput
+  ): Observable<EmpresaOutput> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+    return this.httpClient.put<EmpresaOutput>(
+      API_URL + `/${id}/alterar-dados`,
+      empresaInput,
+      {
+        headers,
+      }
+    );
+  }
 }

@@ -18,6 +18,7 @@ import { ListarChamadosComponent } from './pages/chamado/listar-chamados/listar-
 import { CadastrarChamadoComponent } from './pages/chamado/cadastrar-chamado/cadastrar-chamado.component';
 import { ExibirDetalhesComponent } from './pages/chamado/exibir-detalhes/exibir-detalhes.component';
 import { AlterarChamadoComponent } from './pages/chamado/alterar-chamado/alterar-chamado.component';
+import { AlterarEmpresaComponent } from './pages/empresa/alterar-empresa/alterar-empresa.component';
 
 export const routes: Routes = [
   // Public routes
@@ -41,6 +42,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'listar', pathMatch: 'full' },
       { path: 'cadastrar', component: CadastrarEmpresaComponent },
       { path: 'listar', component: ListarEmpresasComponent },
+      {path: ':id/editar', component: AlterarEmpresaComponent}
     ],
   },
   {

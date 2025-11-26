@@ -1,0 +1,134 @@
+<div class="page-container">
+    <div class="content-card">
+        <h1 class="section-title">Editar Empresa</h1>
+
+        <div *ngIf="errorMessages.length > 0" class="alert-box error">
+            <span class="alert-msg" *ngFor="let msg of errorMessages">{{ msg }}</span>
+        </div>
+        
+        <div *ngIf="successMessage" class="alert-box success">
+            {{ successMessage }}
+        </div>
+
+        <div *ngIf="isLoading && !formEmpresa.get('nome')?.value" class="state-container">
+            <mat-spinner diameter="50"></mat-spinner>
+            <p>Carregando dados...</p>
+        </div>
+
+        <form [formGroup]="formEmpresa" class="standard-form" (ngSubmit)="submitForm()" *ngIf="!isLoading || formEmpresa.get('nome')?.value">
+
+            <div class="form-row">
+                <div class="form-col full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Nome da Organização</mat-label>
+                        <input matInput formControlName="nome" />
+                        <mat-error *ngIf="formEmpresa.get('nome')?.hasError('required')">Obrigatório.</mat-error>
+                        <mat-error *ngIf="formEmpresa.get('nome')?.hasError('minlength')">Mínimo 2 caracteres.</mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col small">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>CNPJ</mat-label>
+                        <input matInput formControlName="cnpj" appMask="cnpj" placeholder="00.000.000/0000-00" />
+                        <mat-error *ngIf="formEmpresa.get('cnpj')?.hasError('required')">Obrigatório.</mat-error>
+                        <mat-error *ngIf="formEmpresa.get('cnpj')?.hasError('invalidCnpj')">CNPJ inválido.</mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div class="form-col small" style="justify-content: center;">
+                    <mat-checkbox 
+                        formControlName="ativo" 
+                        color="primary"
+                        (change)="verificarDesativacao($event)">
+                        Empresa Ativa
+                    </mat-checkbox>
+                </div>
+            </div>
+
+            <div class="form-section-divider">Endereço</div>
+
+            <div class="form-row">
+                <div class="form-col small">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>CEP</mat-label>
+                        <input matInput formControlName="cep" appMask="cep" maxlength="9" />
+                        <mat-icon matSuffix *ngIf="!isLoading">location_on</mat-icon>
+                        <mat-spinner matSuffix *ngIf="isLoading" diameter="20"></mat-spinner>
+                        <mat-error *ngIf="formEmpresa.get('cep')?.hasError('required')">Obrigatório.</mat-error>
+                        <mat-error *ngIf="formEmpresa.get('cep')?.hasError('cepNaoEncontrado')">CEP não encontrado.</mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Rua / Logradouro</mat-label>
+                        <input matInput formControlName="rua" />
+                        <mat-error *ngIf="formEmpresa.get('rua')?.hasError('required')">Obrigatório.</mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div class="form-col x-small">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Nº</mat-label>
+                        <input matInput formControlName="numero" />
+                        <mat-error *ngIf="formEmpresa.get('numero')?.hasError('required')">Obrigatório.</mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Complemento</mat-label>
+                        <input matInput formControlName="complemento" />
+                    </mat-form-field>
+                </div>
+
+                <div class="form-col full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Bairro</mat-label>
+                        <input matInput formControlName="bairro" />
+                        <mat-error *ngIf="formEmpresa.get('bairro')?.hasError('required')">Obrigatório.</mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col full">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>Cidade</mat-label>
+                        <input matInput formControlName="cidade" />
+                        <mat-error *ngIf="formEmpresa.get('cidade')?.hasError('required')">Obrigatório.</mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div class="form-col small">
+                    <mat-form-field appearance="outline" class="full-width-field">
+                        <mat-label>UF</mat-label>
+                        <input matInput formControlName="estado" maxlength="2" appMask="uf" />
+                        <mat-error *ngIf="formEmpresa.get('estado')?.hasError('required')">Obrigatório.</mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-ghost" type="button" (click)="cancelar()">
+                    Cancelar
+                </button>
+
+                <button class="btn btn-primary" type="submit" [disabled]="formEmpresa.invalid || isLoading">
+                    <span *ngIf="!isLoading">Salvar Empresa</span>
+                    <span *ngIf="isLoading" class="spinner-container">
+                        <span class="spinner"></span> Salvando...
+                    </span>
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
