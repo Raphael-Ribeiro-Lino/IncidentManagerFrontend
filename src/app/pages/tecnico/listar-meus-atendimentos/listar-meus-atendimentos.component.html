@@ -1,0 +1,175 @@
+<div class="chamado-list-page">
+  <div class="page-header">
+    <h1 class="page-title">Meus atendimentos</h1>
+    <p class="page-subtitle">
+      Gerencie seus atendimentos prioritários e acompanhe solicitações
+      pendentes.
+    </p>
+  </div>
+
+  <div class="action-bar-container">
+    <div class="filters-container">
+      <div class="filter-inputs">
+        <mat-form-field
+          appearance="outline"
+          class="search-field"
+          subscriptSizing="dynamic"
+        >
+          <mat-label>Buscar Protocolo ou Título</mat-label>
+          <input
+            matInput
+            [ngModel]="busca"
+            (ngModelChange)="onSearchInput($event)"
+            placeholder="Ex: Erro Impressora"
+          />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="outline"
+          class="priority-field"
+          subscriptSizing="dynamic"
+        >
+          <mat-label>Prioridade</mat-label>
+          <mat-select
+            [(ngModel)]="prioridadeSelecionada"
+            (selectionChange)="filtrar()"
+          >
+            <mat-option value="">Todas</mat-option>
+            <mat-option value="BAIXA">Baixa</mat-option>
+            <mat-option value="MEDIA">Média</mat-option>
+            <mat-option value="ALTA">Alta</mat-option>
+            <mat-option value="CRITICA">Crítica</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="action-button">
+      <mat-icon class="icon-small">list_alt</mat-icon>
+      {{ totalElementos }} pendências
+    </div>
+  </div>
+
+  <div class="error-card" *ngIf="loadingFailed && !isLoading">
+    <mat-icon class="error-icon">sentiment_dissatisfied</mat-icon>
+    <div class="error-content">
+      <h3>Ops! Algo deu errado.</h3>
+      <p *ngFor="let msg of errorMessages">{{ msg }}</p>
+      <button class="btn-error-retry" (click)="carregarChamados()">
+        <mat-icon>refresh</mat-icon> Tentar Novamente
+      </button>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <p>Carregando seus chamados...</p>
+  </div>
+
+  <div
+    class="state-container"
+    *ngIf="!isLoading && !loadingFailed && chamados.length === 0"
+  >
+    <mat-icon class="state-icon">
+      {{
+        busca || prioridadeSelecionada ? "search_off" : "assignment_turned_in"
+      }}
+    </mat-icon>
+
+    <h3>
+      {{
+        busca || prioridadeSelecionada
+          ? "Nenhum chamado encontrado"
+          : "Tudo limpo por aqui!"
+      }}
+    </h3>
+
+    <p *ngIf="busca">Não encontramos nada para "{{ busca }}".</p>
+
+    <p *ngIf="!busca && prioridadeSelecionada">
+      Não há chamados com a prioridade selecionada.
+    </p>
+
+    <p *ngIf="!busca && !prioridadeSelecionada">
+      Você não possui atendimentos pendentes no momento.
+    </p>
+  </div>
+
+  <div
+    class="chamado-list-container"
+    *ngIf="!isLoading && !loadingFailed && chamados.length > 0"
+  >
+    <div
+      class="chamado-row priority-border-{{ c.prioridade | lowercase }}"
+      *ngFor="let c of chamados"
+    >
+      <div class="row-main-content">
+        <div class="row-header-meta">
+          <div class="protocolo-display" matTooltip="{{ c.protocolo }}">
+            <mat-icon class="icon-small">tag</mat-icon>
+            <strong>{{ c.protocolo }}</strong>
+          </div>
+
+          <div class="date-time-display" matTooltip="Última Atualização">
+            <mat-icon class="icon-small">update</mat-icon>
+            <span>{{ c.dataUltimaAtualizacao | date : "dd/MM/yyyy" }}</span>
+            <span class="time-part"
+              >às {{ c.dataUltimaAtualizacao | date : "HH:mm" }}</span
+            >
+          </div>
+
+          <div
+            class="mini-priority priority-text-{{ c.prioridade | lowercase }}" matTooltip="Prioridade definida"
+          >
+            {{ prioridadeLabels[c.prioridade] || c.prioridade }}
+          </div>
+
+          <div class="status-badge-inline status-{{ c.status | lowercase }}" [matTooltip]="'Status: ' + c.status">
+            {{ c.status }}
+          </div>
+        </div>
+
+        <h3 class="row-title" matTooltip="{{ c.titulo }}">{{ c.titulo }}</h3>
+
+        <p class="row-description">{{ c.descricao }}</p>
+
+        <div class="row-tech-info" matTooltip="Solicitante">
+          <mat-icon class="icon-small">person</mat-icon>
+          <span
+            >Solicitado por <strong>{{ c.solicitante.nome }}</strong></span
+          >
+        </div>
+      </div>
+
+      <div class="row-actions-side">
+        <div class="button-group">
+          <button class="btn-custom btn-details" (click)="verDetalhes(c.id)">
+            <mat-icon>visibility</mat-icon>
+            Detalhes
+          </button>
+
+          <button
+            class="btn-custom btn-yellow"
+            *ngIf="podeTransferir(c.status)"
+            (click)="abrirModalTransferencia(c)"
+          >
+            <mat-icon>forward</mat-icon>
+            Transferir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="pagination-container"
+    *ngIf="!isLoading && !loadingFailed && chamados.length > 0"
+  >
+    <app-pagination
+      [pageNumber]="page"
+      [totalPages]="totalPages"
+      (pageChange)="paginar($event)"
+    >
+    </app-pagination>
+  </div>
+</div>

@@ -19,6 +19,7 @@ import { CadastrarChamadoComponent } from './pages/chamado/cadastrar-chamado/cad
 import { ExibirDetalhesComponent } from './pages/chamado/exibir-detalhes/exibir-detalhes.component';
 import { AlterarChamadoComponent } from './pages/chamado/alterar-chamado/alterar-chamado.component';
 import { AlterarEmpresaComponent } from './pages/empresa/alterar-empresa/alterar-empresa.component';
+import { ListarMeusAtendimentosComponent } from './pages/tecnico/listar-meus-atendimentos/listar-meus-atendimentos.component';
 
 export const routes: Routes = [
   // Public routes
@@ -77,6 +78,16 @@ export const routes: Routes = [
       { path: ':id/detalhes', component: ExibirDetalhesComponent },
       { path: ':id/editar', component: AlterarChamadoComponent },
     ],
+  },
+
+  {
+    path: 'tecnico',
+    canActivate: [authGuard],
+    data: { roles: ['TECNICO_TI'] },
+    children: [
+      {path: '', redirectTo: 'meus-atendimentos', pathMatch: 'full'},
+      {path: 'meus-atendimentos', component: ListarMeusAtendimentosComponent },
+    ]
   },
 
   // 404 page

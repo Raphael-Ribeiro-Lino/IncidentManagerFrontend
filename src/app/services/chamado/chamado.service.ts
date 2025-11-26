@@ -113,4 +113,23 @@ export class ChamadoService {
       headers,
     });
   }
+
+  listarMeusAtendimentos(
+    token: string,
+    page: number = 0,
+    busca: string = '',
+    prioridade: string = ''
+  ): Observable<PaginationOutput<ChamadoOutput>> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    let params = new HttpParams().set('page', page.toString());
+    if (busca) params = params.set('busca', busca);
+    if (prioridade) params = params.set('prioridade', prioridade);
+    return this.httpClient.get<PaginationOutput<ChamadoOutput>>(
+      API_URL + '/tecnico',
+      {
+        headers,
+        params,
+      }
+    );
+  }
 }
