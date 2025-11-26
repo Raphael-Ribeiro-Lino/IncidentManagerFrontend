@@ -133,7 +133,7 @@ export class ListarMeusAtendimentosComponent implements OnInit {
   // --- Navegação e Ações ---
 
   verDetalhes(id: number): void {
-    this.router.navigate([`/chamado/${id}/detalhes`]);
+    this.router.navigate([`/tecnico/atendimento/${id}/detalhes`]);
   }
 
   // --- Regras de Negócio ---

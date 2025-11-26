@@ -20,6 +20,7 @@ import { ExibirDetalhesComponent } from './pages/chamado/exibir-detalhes/exibir-
 import { AlterarChamadoComponent } from './pages/chamado/alterar-chamado/alterar-chamado.component';
 import { AlterarEmpresaComponent } from './pages/empresa/alterar-empresa/alterar-empresa.component';
 import { ListarMeusAtendimentosComponent } from './pages/tecnico/listar-meus-atendimentos/listar-meus-atendimentos.component';
+import { ExibirDetalhesAtendimentoComponent } from './pages/tecnico/exibir-detalhes-atendimento/exibir-detalhes-atendimento.component';
 
 export const routes: Routes = [
   // Public routes
@@ -81,12 +82,13 @@ export const routes: Routes = [
   },
 
   {
-    path: 'tecnico',
+    path: 'tecnico/atendimento',
     canActivate: [authGuard],
     data: { roles: ['TECNICO_TI'] },
     children: [
-      {path: '', redirectTo: 'meus-atendimentos', pathMatch: 'full'},
-      {path: 'meus-atendimentos', component: ListarMeusAtendimentosComponent },
+      {path: '', redirectTo: 'listar', pathMatch: 'full'},
+      {path: 'listar', component: ListarMeusAtendimentosComponent },
+      { path: ':id/detalhes', component: ExibirDetalhesAtendimentoComponent },
     ]
   },
 

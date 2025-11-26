@@ -6,6 +6,7 @@ import { AnexoInput } from '../../models/anexo/anexoInput';
 import { Observable } from 'rxjs';
 import { ChamadoOutput } from '../../models/chamado/chamadoOutput';
 import { PaginationOutput } from '../../models/pagination/paginationOutput';
+import { ChamadoDetalhadoOutput } from '../../models/chamado/chamadoDetalhadoOutput';
 
 const API_URL = environment.URL_API + '/chamado';
 
@@ -129,6 +130,22 @@ export class ChamadoService {
       {
         headers,
         params,
+      }
+    );
+  }
+
+  buscarAtendimentoPorId(
+    token: string,
+    id: number
+  ): Observable<ChamadoDetalhadoOutput> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    return this.httpClient.get<ChamadoDetalhadoOutput>(
+      API_URL + `/${id}/tecnico`,
+      {
+        headers,
       }
     );
   }
