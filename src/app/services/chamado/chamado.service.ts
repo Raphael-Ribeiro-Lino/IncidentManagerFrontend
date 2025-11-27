@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { ChamadoOutput } from '../../models/chamado/chamadoOutput';
 import { PaginationOutput } from '../../models/pagination/paginationOutput';
 import { ChamadoDetalhadoOutput } from '../../models/chamado/chamadoDetalhadoOutput';
+import { NotaInternaInput } from '../../models/chamado/notaInternaInput';
 
 const API_URL = environment.URL_API + '/chamado';
 
@@ -139,11 +140,30 @@ export class ChamadoService {
     id: number
   ): Observable<ChamadoDetalhadoOutput> {
     const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
 
     return this.httpClient.get<ChamadoDetalhadoOutput>(
       API_URL + `/${id}/tecnico`,
+      {
+        headers,
+      }
+    );
+  }
+
+  adicionarNotaInterna(
+    token: string,
+    id: number,
+    notaInternaInput: NotaInternaInput
+  ) {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+
+    return this.httpClient.post<void>(
+      API_URL + `/${id}/nota-interna`,
+      notaInternaInput,
       {
         headers,
       }

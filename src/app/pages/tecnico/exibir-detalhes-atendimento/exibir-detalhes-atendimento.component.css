@@ -672,6 +672,12 @@
   padding: 16px;
   position: relative;
   top: -4px;
+
+  /* Adições Importantes para evitar overflow */
+  min-width: 0; /* Permite que o flex item encolha */
+  overflow-wrap: break-word; /* Quebra palavras longas */
+  word-wrap: break-word; /* Fallback */
+  word-break: break-word; /* Quebra forçada se necessário */
 }
 .timeline-item.internal-note .timeline-content {
   background-color: #fffbf0;
@@ -686,6 +692,18 @@
   flex-wrap: wrap;
   gap: 8px;
 }
+
+.timeline-body p {
+  margin: 0;
+  color: #444;
+  line-height: 1.5;
+  white-space: pre-wrap; /* Mantém quebras de linha do usuário */
+
+  /* Garante que o texto respeite a largura do container */
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
 .author-name {
   font-weight: 700;
   color: #333;
@@ -752,8 +770,7 @@
 }
 
 @media (max-width: 600px) {
-
-  .mat-icon{
+  .mat-icon {
     overflow: visible;
   }
   .chamado-detalhes-page {
@@ -785,5 +802,53 @@
   .btn-action {
     flex: 1;
     justify-content: center;
+  }
+
+  .timeline-header {
+    flex-direction: column;
+    align-items: flex-start; /* Alinha tudo à esquerda */
+    gap: 12px; /* Espaço entre o bloco do autor e o bloco da data */
+  }
+
+  /* Ajusta o bloco do Autor para empilhar itens (Nome em cima, cargo embaixo) */
+  .author-box {
+    display: flex;
+    flex-direction: column; /* Um embaixo do outro */
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+  }
+
+  /* Remove margem esquerda que existia antes no desktop */
+  .role-badge {
+    margin-left: 0;
+    margin-top: 2px;
+    font-size: 0.75rem;
+    align-self: flex-start;
+  }
+
+  /* Ajusta o bloco de Meta (Data e cadeado) para empilhar */
+  .meta-box {
+    display: flex;
+    flex-direction: column; /* Um embaixo do outro */
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+
+    /* Adiciona uma borda ou separação sutil se quiser */
+    padding-top: 8px;
+    border-top: 1px dashed #eee;
+  }
+
+  .event-date {
+    font-size: 0.8rem;
+    color: #888;
+  }
+
+  /* Garante que o texto da mensagem não estoure */
+  .timeline-content {
+    padding: 12px;
+    width: 100%; /* Garante largura total disponível */
+    box-sizing: border-box;
   }
 }

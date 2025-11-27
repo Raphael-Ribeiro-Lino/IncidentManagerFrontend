@@ -1,0 +1,83 @@
+/* Container Principal */
+.modal-container {
+  /* Garante que o padding não some ao tamanho total */
+  box-sizing: border-box; 
+  padding: 10px;
+  
+  /* Em desktop tenta ser 400px, mas nunca maior que a tela */
+  width: 100%; 
+  max-width: 500px; /* Limite máximo para não ficar gigante em telas grandes */
+  min-width: 300px; /* Um mínimo seguro */
+}
+
+/* Título */
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #333a56;
+  font-size: 1.4rem;
+  margin: 0 0 10px 0; /* Reset de margem do Material */
+  padding: 0; /* Garante que não tenha padding extra empurrando */
+  
+  /* Evita que o ícone suma se o texto for longo */
+  flex-wrap: nowrap; 
+}
+
+/* Se o título for muito longo em celular minúsculo, o texto quebra, mas o ícone fica */
+h2[mat-dialog-title] span {
+  white-space: normal;
+  font-size: 1.2rem; /* Reduz levemente a fonte se necessário */
+}
+
+.title-icon {
+  color: #ffb300;
+  /* Impede que o ícone encolha ou amasse */
+  flex-shrink: 0; 
+  min-width: 24px;
+}
+
+.modal-description {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Ajuste nos inputs do Material para não estourarem */
+mat-form-field {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Botões */
+.btn-cancel {
+  color: #666;
+}
+
+.btn-confirm {
+  background-color: #3f72af !important;
+  color: white !important;
+}
+.btn-confirm:disabled {
+  background-color: #ccc !important;
+  color: #fff !important;
+}
+
+/* --- MOBILE --- */
+@media(max-width: 600px) {
+  .modal-container {
+    padding: 0; /* Remove padding extra do wrapper, deixa o padding nativo do dialog agir */
+    min-width: auto; /* Reseta largura mínima */
+    width: 100%;
+  }
+
+  /* Reduz um pouco o tamanho da fonte do título no celular */
+  h2[mat-dialog-title] {
+    font-size: 1.2rem;
+  }
+}

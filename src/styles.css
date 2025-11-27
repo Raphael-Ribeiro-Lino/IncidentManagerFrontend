@@ -934,3 +934,16 @@ mat-icon.state-icon {
         gap: 8px;
     }
 }
+
+/* Estilos personalizados para o SnackBar */
+/* Verde para sucesso */
+.snack-success {
+  --mdc-snackbar-container-color: #2e7d32;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #ffffff;
+}
+.snack-error {
+  --mdc-snackbar-container-color: #c62828;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #ffffff;
+}

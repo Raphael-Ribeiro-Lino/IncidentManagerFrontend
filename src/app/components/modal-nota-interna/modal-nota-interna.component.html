@@ -1,0 +1,33 @@
+<div class="modal-container">
+  <h2 mat-dialog-title>
+    <mat-icon class="title-icon">lock</mat-icon> Adicionar Nota Interna
+  </h2>
+
+  <mat-dialog-content>
+    <p class="modal-description">
+      Esta nota será visível <strong>apenas para a equipe interna</strong>. O cliente não terá acesso.
+    </p>
+
+    <form [formGroup]="form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Escreva sua observação...</mat-label>
+        <textarea matInput formControlName="texto" rows="6" placeholder="Detalhes técnicos, lembretes ou aprovações internas..."></textarea>
+        <mat-hint align="end">{{ form.get('texto')?.value?.length || 0 }}/2000</mat-hint>
+        
+        <mat-error *ngIf="form.get('texto')?.hasError('required')">
+          O texto é obrigatório.
+        </mat-error>
+        <mat-error *ngIf="form.get('texto')?.hasError('maxlength')">
+          O limite é de 2000 caracteres.
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cancelar()" class="btn-cancel">Cancelar</button>
+    <button mat-raised-button (click)="confirmar()" [disabled]="form.invalid" class="btn-confirm">
+      Adicionar Nota
+    </button>
+  </mat-dialog-actions>
+</div>
