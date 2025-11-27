@@ -4,5 +4,6 @@ export type StatusEnum =
   | 'EM_ATENDIMENTO'
   | 'AGUARDANDO_CLIENTE'
   | 'AGUARDANDO_PECA'
+  | 'RESOLVIDO'
   | 'CONCLUIDO'
   | 'REABERTO';

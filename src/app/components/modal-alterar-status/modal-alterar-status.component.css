@@ -1,0 +1,98 @@
+/* Container Principal */
+.modal-container {
+  box-sizing: border-box; /* Essencial */
+  padding: 10px;
+  width: 100%;
+  max-width: 500px;
+  /* Removemos o min-width fixo global para evitar travamento em telas < 320px */
+}
+
+/* Título */
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #333a56;
+  font-size: 1.4rem;
+  margin: 0 0 10px 0;
+  padding: 0;
+  
+  /* Permite que o texto quebre linha se necessário, sem estourar a largura */
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.title-icon {
+  color: #3f72af; 
+  flex-shrink: 0; /* Impede que o ícone seja esmagado */
+  width: 24px;
+  height: 24px;
+}
+
+.modal-description {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  /* Garante que o texto se ajuste */
+  word-wrap: break-word; 
+}
+
+/* Campos de Formulário */
+.full-width {
+  width: 100%;
+  margin-bottom: 8px;
+  display: block; /* Garante comportamento de bloco */
+}
+
+/* Garante que o mat-form-field não estoure */
+mat-form-field {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Checkbox container */
+.checkbox-wrapper {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* Garante largura total */
+}
+
+.checkbox-hint {
+  font-size: 0.75rem;
+  color: #888;
+  margin-left: 0; /* Ajustado para alinhar melhor no mobile */
+  margin-top: 4px;
+  white-space: normal; /* Permite que a dica quebre linha */
+}
+
+/* Botões */
+mat-dialog-actions {
+  /* Garante wrap nos botões em telas minúsculas */
+  flex-wrap: wrap; 
+  gap: 8px;
+  padding-bottom: 0;
+}
+
+.btn-cancel { color: #666; }
+.btn-confirm { background-color: #3f72af !important; color: white !important; }
+.btn-confirm:disabled { background-color: #ccc !important; color: #fff !important; }
+
+/* --- AJUSTES MOBILE --- */
+@media (max-width: 600px) {
+  .modal-container {
+    padding: 0; /* Remove padding extra pois o dialog já tem */
+    min-width: auto; /* Remove limite mínimo */
+    width: 100%; 
+  }
+
+  h2[mat-dialog-title] {
+    font-size: 1.2rem;
+    gap: 8px;
+  }
+  
+  /* Ajuste fino para telas muito pequenas (ex: iPhone 5/SE - 320px) */
+  mat-dialog-content {
+    max-height: 70vh; /* Evita que o teclado cubra tudo */
+  }
+}

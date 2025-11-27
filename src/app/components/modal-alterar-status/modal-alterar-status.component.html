@@ -1,0 +1,50 @@
+<div class="modal-container">
+  <h2 mat-dialog-title>
+    <mat-icon class="title-icon">edit_note</mat-icon> Atualizar Status
+  </h2>
+
+  <mat-dialog-content>
+    <p class="modal-description">
+      Selecione o novo status e justifique a alteração.
+    </p>
+
+    <form [formGroup]="form">
+      
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Novo Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option *ngFor="let st of listaStatus" [value]="st.value">
+            {{ st.label }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('status')?.hasError('required')">
+          O status é obrigatório.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Observação / Justificativa</mat-label>
+        <textarea matInput formControlName="observacao" rows="4" placeholder="Descreva o motivo da mudança..."></textarea>
+        <mat-hint align="end">{{ form.get('observacao')?.value?.length || 0 }}/2000</mat-hint>
+        <mat-error *ngIf="form.get('observacao')?.hasError('required')">
+          A observação é obrigatória.
+        </mat-error>
+      </mat-form-field>
+
+      <div class="checkbox-wrapper">
+        <mat-checkbox formControlName="visivelCliente" color="primary">
+          Visível para o Cliente?
+        </mat-checkbox>
+        <mat-hint class="checkbox-hint">Se desmarcado, a observação será interna.</mat-hint>
+      </div>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cancelar()" class="btn-cancel">Cancelar</button>
+    <button mat-raised-button (click)="confirmar()" [disabled]="form.invalid" class="btn-confirm">
+      Salvar Alteração
+    </button>
+  </mat-dialog-actions>
+</div>

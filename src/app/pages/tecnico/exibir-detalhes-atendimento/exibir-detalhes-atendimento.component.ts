@@ -11,6 +11,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { NotaInternaInput } from '../../../models/chamado/notaInternaInput';
 import { ModalNotaInternaComponent } from '../../../components/modal-nota-interna/modal-nota-interna.component';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ModalAlterarStatusComponent } from '../../../components/modal-alterar-status/modal-alterar-status.component';
+import { AlteraStatusChamadoInput } from '../../../models/chamado/alteraStatusChamadoInput';
 
 @Component({
   selector: 'app-exibir-detalhes-atendimento',
@@ -188,7 +190,39 @@ export class ExibirDetalhesAtendimentoComponent implements OnInit {
   }
 
   mudarStatus(): void {
-    console.log('Abrir modal de status...');
+    const dialogRef = this.dialog.open(ModalAlterarStatusComponent, {
+      width: '500px',
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((dadosFormulario: AlteraStatusChamadoInput) => {
+      
+      // Se tiver dados, o usuário confirmou
+      if (dadosFormulario) {
+        // Não ativa isLoading global para não piscar a tela
+        
+        this.chamadoService
+          .atualizarStatus(this.token, this.chamadoId, dadosFormulario)
+          .subscribe({
+            next: (chamadoAtualizado) => {
+              this.snackBar.open('Status atualizado com sucesso!', 'OK', {
+                duration: 4000,
+                panelClass: ['snack-success'],
+              });
+
+              // Recarrega os dados (Timeline e Cabeçalho mudarão) e faz scroll
+              this.carregarChamado(() => this.scrollToTimeline(), false);
+            },
+            error: (err) => {
+              console.error(err);
+              this.snackBar.open('Erro ao atualizar status.', 'Fechar', {
+                duration: 4000,
+                panelClass: ['snack-error'],
+              });
+            }
+          });
+      }
+    });
   }
 
   scrollToTimeline(): void {

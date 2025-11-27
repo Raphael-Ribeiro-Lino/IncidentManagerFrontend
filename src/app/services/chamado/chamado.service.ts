@@ -8,6 +8,7 @@ import { ChamadoOutput } from '../../models/chamado/chamadoOutput';
 import { PaginationOutput } from '../../models/pagination/paginationOutput';
 import { ChamadoDetalhadoOutput } from '../../models/chamado/chamadoDetalhadoOutput';
 import { NotaInternaInput } from '../../models/chamado/notaInternaInput';
+import { AlteraStatusChamadoInput } from '../../models/chamado/alteraStatusChamadoInput';
 
 const API_URL = environment.URL_API + '/chamado';
 
@@ -167,6 +168,23 @@ export class ChamadoService {
       {
         headers,
       }
+    );
+  }
+
+  atualizarStatus(
+    token: string,
+    id: number,
+    input: AlteraStatusChamadoInput
+  ): Observable<ChamadoOutput> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+
+    return this.httpClient.patch<ChamadoOutput>(
+      `${API_URL}/${id}/status`,
+      input,
+      { headers }
     );
   }
 }
