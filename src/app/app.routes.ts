@@ -21,6 +21,7 @@ import { AlterarChamadoComponent } from './pages/chamado/alterar-chamado/alterar
 import { AlterarEmpresaComponent } from './pages/empresa/alterar-empresa/alterar-empresa.component';
 import { ListarMeusAtendimentosComponent } from './pages/tecnico/listar-meus-atendimentos/listar-meus-atendimentos.component';
 import { ExibirDetalhesAtendimentoComponent } from './pages/tecnico/exibir-detalhes-atendimento/exibir-detalhes-atendimento.component';
+import { ListarTransferenciasPendentesComponent } from './pages/tecnico/listar-transferencias-pendentes/listar-transferencias-pendentes.component';
 
 export const routes: Routes = [
   // Public routes
@@ -44,7 +45,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'listar', pathMatch: 'full' },
       { path: 'cadastrar', component: CadastrarEmpresaComponent },
       { path: 'listar', component: ListarEmpresasComponent },
-      {path: ':id/editar', component: AlterarEmpresaComponent}
+      { path: ':id/editar', component: AlterarEmpresaComponent },
     ],
   },
   {
@@ -86,10 +87,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { roles: ['TECNICO_TI'] },
     children: [
-      {path: '', redirectTo: 'listar', pathMatch: 'full'},
-      {path: 'listar', component: ListarMeusAtendimentosComponent },
+      { path: '', redirectTo: 'listar', pathMatch: 'full' },
+      { path: 'listar', component: ListarMeusAtendimentosComponent },
       { path: ':id/detalhes', component: ExibirDetalhesAtendimentoComponent },
-    ]
+      {
+        path: 'transferencias-pendentes',
+        component: ListarTransferenciasPendentesComponent,
+      },
+    ],
   },
 
   // 404 page

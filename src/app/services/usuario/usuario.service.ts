@@ -137,9 +137,13 @@ export class UsuarioService {
 
   listarTecnicosParaTransferencia(token: string, search: string = ''): Observable<any> {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+     let params = new HttpParams();
+     if (search) {
+      params = params.set('search', search);
+    }
     return this.httpClient.get<any>(
-      `${API_URL}/tecnicos-disponiveis-transferencia?size=10&sort=nome,asc&search=${search}`, 
-      { headers }
+      `${API_URL}/tecnicos-disponiveis-transferencia`, 
+      { headers, params }
     );
   }
 }

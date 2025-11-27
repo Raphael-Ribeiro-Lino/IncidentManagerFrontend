@@ -1,0 +1,310 @@
+:host {
+  display: block;
+  --primary-color: #007bff;
+  --bg-card: #ffffff;
+  --border-color: #e0e0e0;
+  --text-main: #333;
+  --text-muted: #666;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  /* Cores específicas para ações */
+  --green-text: #2e7d32;
+  --green-border: #a5d6a7;
+  --green-bg-hover: #e8f5e9;
+
+  --red-text: #c62828;
+  --red-border: #ef9a9a;
+  --red-bg-hover: #ffebee;
+}
+
+.pendencias-container {
+  padding: 20px 0;
+  max-width: 1150px; /* Alinhado com a largura da tela principal */
+  margin: 0 auto;
+}
+
+/* Filtro */
+.filter-bar {
+  margin-bottom: 24px;
+}
+.search-field {
+  width: 100%;
+}
+
+/* --- CARD PADRONIZADO (Igual ao Listar Atendimentos) --- */
+.chamado-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chamado-row {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-left: 6px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.chamado-row:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Conteúdo Principal */
+.row-main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-right: 24px;
+  min-width: 0;
+}
+
+/* Meta Header */
+.row-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.protocolo-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  background-color: #e6f0ff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+
+.date-time-display {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f5f5f5;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.time-part {
+  font-weight: 500;
+  color: var(--text-main);
+  margin-left: 4px;
+}
+
+/* Badges de Prioridade */
+.mini-priority {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background-color: #f0f0f0;
+  color: var(--text-main);
+}
+.priority-text-baixa {
+  color: #27ae60;
+  background-color: #eaf7ed;
+}
+.priority-text-media {
+  color: #d35400;
+  background-color: #fff4e6;
+}
+.priority-text-alta {
+  color: #e67e22;
+  background-color: #fdf2e9;
+}
+.priority-text-critica {
+  color: #c0392b;
+  background-color: #fbeced;
+}
+
+/* Bordas Laterais */
+.priority-border-baixa {
+  border-left-color: #27ae60;
+}
+.priority-border-media {
+  border-left-color: #d35400;
+}
+.priority-border-alta {
+  border-left-color: #e67e22;
+}
+.priority-border-critica {
+  border-left-color: #c0392b;
+}
+
+/* Título e Ícones */
+.icon-small {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+}
+.tiny-icon-link {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  color: #999;
+  vertical-align: middle;
+}
+
+.row-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 10px 0;
+  cursor: pointer;
+}
+.row-title:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+/* Motivo (Destaque desta tela) */
+.row-reason-box {
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0 0 12px 0;
+  font-style: italic;
+  background: #fff8e1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 3px solid #ffb74d;
+  display: inline-block;
+  width: fit-content;
+}
+.reason-label {
+  font-weight: 700;
+  color: #e65100;
+  font-style: normal;
+  margin-right: 4px;
+}
+
+/* Info Técnico */
+.row-tech-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  background: #f9fafb;
+  padding: 6px 12px;
+  border-radius: 6px;
+  width: fit-content;
+  border: 1px solid #eee;
+}
+
+/* --- AÇÕES LATERAIS --- */
+.row-actions-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 160px;
+  padding-left: 20px;
+  border-left: 1px dashed #eee;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.btn-custom {
+  width: 100%;
+  height: 38px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background-color: #fff;
+  outline: none;
+}
+.btn-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+.btn-custom mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+/* Botão Aceitar (Verde) */
+.btn-accept {
+  color: var(--green-text);
+  border: 1px solid var(--green-border);
+}
+.btn-accept:hover {
+  background-color: var(--green-bg-hover);
+}
+
+/* Botão Recusar (Vermelho) */
+.btn-reject {
+  color: var(--red-text);
+  border: 1px solid var(--red-border);
+}
+.btn-reject:hover {
+  background-color: var(--red-bg-hover);
+}
+
+/* Estados */
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+}
+.empty-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .chamado-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    border-left-width: 5px;
+  }
+  .row-main-content {
+    margin-right: 0;
+    width: 100%;
+  }
+  .row-actions-side {
+    width: 100%;
+    border-left: none;
+    border-top: 1px dashed #eee;
+    padding-left: 0;
+    padding-top: 16px;
+  }
+  .button-group {
+    flex-direction: row;
+  }
+  .row-reason-box {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

@@ -1,0 +1,94 @@
+<div class="pendencias-container">
+  
+  <!-- Barra de Filtro Interna (Mantida simples, mas estilizada) -->
+  <div class="filter-bar">
+    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+      <mat-label>Buscar nas pendências...</mat-label>
+      <input matInput [ngModel]="busca" (ngModelChange)="onSearchInput($event)" 
+             placeholder="Protocolo, título ou remetente">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="isLoading">
+    <p>Atualizando solicitações...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && transferencias.length === 0">
+    <mat-icon class="empty-icon">inbox</mat-icon>
+    <h3>Tudo limpo!</h3>
+    <p>Nenhuma transferência pendente para você.</p>
+  </div>
+
+  <!-- Lista de Cards (Estrutura IDÊNTICA à Lista de Atendimentos) -->
+  <div class="chamado-list-container" *ngIf="!isLoading && transferencias.length > 0">
+    
+    <div class="chamado-row priority-border-{{ t.chamado.prioridade | lowercase }}" 
+         *ngFor="let t of transferencias">
+      
+      <!-- Conteúdo Principal -->
+      <div class="row-main-content">
+        
+        <!-- Meta Dados (Protocolo, Data, Prioridade) -->
+        <div class="row-header-meta">
+          <div class="protocolo-display" matTooltip="{{ t.chamado.protocolo }}">
+            <mat-icon class="icon-small">tag</mat-icon>
+            <strong>{{ t.chamado.protocolo }}</strong>
+          </div>
+
+          <div class="date-time-display" matTooltip="Data da Solicitação">
+            <mat-icon class="icon-small">event</mat-icon>
+            <span>{{ t.dataSolicitacao | date:'dd/MM/yyyy' }}</span>
+            <span class="time-part">às {{ t.dataSolicitacao | date:'HH:mm' }}</span>
+          </div>
+
+          <div class="mini-priority priority-text-{{ t.chamado.prioridade | lowercase }}">
+            {{ t.chamado.prioridade | titlecase }}
+          </div>
+        </div>
+
+        <!-- Título -->
+        <h3 class="row-title" (click)="verChamado(t.chamado.id)" matTooltip="Ver detalhes em nova aba">
+          {{ t.chamado.titulo }} <mat-icon class="tiny-icon-link">open_in_new</mat-icon>
+        </h3>
+
+        <!-- Motivo (No lugar da descrição) -->
+        <div class="row-reason-box">
+          <span class="reason-label">Motivo:</span> "{{ t.motivo }}"
+        </div>
+
+        <!-- Quem enviou -->
+        <div class="row-tech-info" matTooltip="Técnico de Origem">
+          <mat-icon class="icon-small">person_outline</mat-icon>
+          <span>Enviado por <strong>{{ t.chamado.tecnicoResponsavel.nome }}</strong></span>
+        </div>
+      </div>
+
+      <!-- Ações Laterais -->
+      <div class="row-actions-side">
+        <div class="button-group">
+          
+          <button class="btn-custom btn-accept" (click)="aceitar(t)">
+            <mat-icon>check_circle</mat-icon>
+            Aceitar
+          </button>
+
+          <button class="btn-custom btn-reject" (click)="recusar(t)">
+            <mat-icon>cancel</mat-icon>
+            Recusar
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Paginação -->
+  <div class="paginator-wrapper" *ngIf="!isLoading && totalElementos > 0">
+    <app-pagination [pageNumber]="page" [totalPages]="totalPages" (pageChange)="paginar($event)"></app-pagination>
+  </div>
+
+</div>
