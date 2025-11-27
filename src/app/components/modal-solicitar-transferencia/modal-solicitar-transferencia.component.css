@@ -1,0 +1,74 @@
+/* Container Principal */
+.modal-container {
+  box-sizing: border-box;
+  padding: 10px;
+  width: 100%;
+  max-width: 500px;
+  /* Sem min-width fixo */
+}
+
+/* Título */
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #333a56;
+  font-size: 1.4rem;
+  margin: 0 0 10px 0;
+  padding: 0;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.title-icon {
+  color: #3f72af; 
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.modal-description {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  word-wrap: break-word; 
+}
+
+/* Campos */
+.full-width {
+  width: 100%;
+  margin-bottom: 8px;
+  display: block;
+}
+
+mat-icon[matSuffix] {
+  color: #999;
+  margin-right: 5px;
+}
+
+mat-form-field {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Botões */
+mat-dialog-actions {
+  flex-wrap: wrap; 
+  gap: 8px;
+  padding-bottom: 0;
+}
+
+.btn-cancel { color: #666; }
+.btn-confirm { background-color: #3f72af !important; color: white !important; }
+.btn-confirm:disabled { background-color: #ccc !important; color: #fff !important; }
+
+/* Mobile */
+@media (max-width: 600px) {
+  .modal-container {
+    padding: 0;
+    width: 100%; 
+  }
+  h2[mat-dialog-title] {
+    font-size: 1.2rem;
+  }
+}

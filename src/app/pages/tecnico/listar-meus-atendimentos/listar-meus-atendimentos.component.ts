@@ -16,6 +16,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { PaginationComponent } from '../../../components/pagination/pagination.component';
 import { ChamadoOutput } from '../../../models/chamado/chamadoOutput';
 import { ChamadoService } from '../../../services/chamado/chamado.service';
+import { ModalSolicitarTransferenciaComponent } from '../../../components/modal-solicitar-transferencia/modal-solicitar-transferencia.component';
+import { SolicitarTransferenciaInput } from '../../../models/chamado/solicitarTransferenciaInput';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-listar-meus-atendimentos',
@@ -31,6 +35,8 @@ import { ChamadoService } from '../../../services/chamado/chamado.service';
     MatTooltipModule,
     PaginationComponent,
     DatePipe,
+    MatDialogModule,
+    MatSnackBarModule
   ],
   templateUrl: './listar-meus-atendimentos.component.html',
   styleUrl: './listar-meus-atendimentos.component.css',
@@ -67,7 +73,9 @@ export class ListarMeusAtendimentosComponent implements OnInit {
 
   constructor(
     private chamadoService: ChamadoService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
     // Configura o Debounce: espera 300ms após parar de digitar para buscar
     this.searchSubject.pipe(debounceTime(300)).subscribe((term) => {
@@ -152,6 +160,38 @@ export class ListarMeusAtendimentosComponent implements OnInit {
   }
 
   abrirModalTransferencia(chamado: ChamadoOutput): void {
-    console.log('Abrir Modal Transferência para:', chamado.protocolo);
+    const dialogRef = this.dialog.open(ModalSolicitarTransferenciaComponent, {
+      width: '500px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((dados: SolicitarTransferenciaInput) => {
+      if (dados) {
+        // isLoading para bloquear interações enquanto processa
+        this.isLoading = true;
+
+        this.chamadoService.solicitarTransferencia(this.token, chamado.id, dados)
+          .subscribe({
+            next: () => {
+              this.snackBar.open('Transferência solicitada com sucesso!', 'OK', {
+                duration: 4000,
+                panelClass: ['snack-success'] // Certifique-se que está no styles.css global
+              });
+              
+              // dependendo da regra de negócio (se fica pendente ou sai direto)
+              this.carregarChamados();
+            },
+            error: (err) => {
+              console.error(err);
+              const msg = err.error?.message || 'Erro ao solicitar transferência.';
+              this.snackBar.open(msg, 'Fechar', {
+                duration: 5000,
+                panelClass: ['snack-error']
+              });
+              this.isLoading = false; // Tira o loading em caso de erro
+            }
+          });
+      }
+    });
   }
 }

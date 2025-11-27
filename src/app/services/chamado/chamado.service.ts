@@ -9,6 +9,7 @@ import { PaginationOutput } from '../../models/pagination/paginationOutput';
 import { ChamadoDetalhadoOutput } from '../../models/chamado/chamadoDetalhadoOutput';
 import { NotaInternaInput } from '../../models/chamado/notaInternaInput';
 import { AlteraStatusChamadoInput } from '../../models/chamado/alteraStatusChamadoInput';
+import { SolicitarTransferenciaInput } from '../../models/chamado/solicitarTransferenciaInput';
 
 const API_URL = environment.URL_API + '/chamado';
 
@@ -183,6 +184,19 @@ export class ChamadoService {
 
     return this.httpClient.patch<ChamadoOutput>(
       `${API_URL}/${id}/status`,
+      input,
+      { headers }
+    );
+  }
+
+  solicitarTransferencia(token: string, id: number, input: SolicitarTransferenciaInput): Observable<void> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+
+    return this.httpClient.post<void>(
+      `${API_URL}/${id}/solicitar-transferencia`,
       input,
       { headers }
     );

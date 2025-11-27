@@ -1,0 +1,82 @@
+<div class="modal-container">
+  <h2 mat-dialog-title>
+    <mat-icon class="title-icon">swap_horiz</mat-icon> Solicitar Transferência
+  </h2>
+
+  <mat-dialog-content>
+    <p class="modal-description">
+      Pesquise o técnico para quem deseja transferir este chamado.
+    </p>
+
+    <form [formGroup]="form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Pesquisar Técnico</mat-label>
+
+        <input
+          type="text"
+          matInput
+          [formControl]="searchControl"
+          [matAutocomplete]="auto"
+          (blur)="verificarSelecao()"
+          placeholder="Digite o nome (ex: João)..."
+        />
+
+        <!-- Ícone muda para spinner se estiver buscando -->
+        <mat-icon matSuffix *ngIf="!isLoadingSearch">search</mat-icon>
+        <mat-icon matSuffix *ngIf="isLoadingSearch" class="spinner-icon"
+          >sync</mat-icon
+        >
+
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+          <mat-option
+            *ngFor="let tec of tecnicosFiltrados | async"
+            [value]="tec"
+          >
+            {{ tec.nome }}
+          </mat-option>
+
+          <mat-option
+            *ngIf="
+              !isLoadingSearch && (tecnicosFiltrados | async)?.length === 0
+            "
+            disabled
+          >
+            Nenhum técnico encontrado
+          </mat-option>
+        </mat-autocomplete>
+
+        <mat-error *ngIf="searchControl.hasError('required')">
+          Selecione um técnico da lista.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Motivo da Transferência</mat-label>
+        <textarea
+          matInput
+          formControlName="motivo"
+          rows="4"
+          placeholder="Ex: Não tenho conhecimento técnico para..."
+        ></textarea>
+        <mat-hint align="end"
+          >{{ form.get("motivo")?.value?.length || 0 }}/2000</mat-hint
+        >
+        <mat-error *ngIf="form.get('motivo')?.hasError('required')">
+          O motivo é obrigatório.
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cancelar()" class="btn-cancel">Cancelar</button>
+    <button
+      mat-raised-button
+      (click)="confirmar()"
+      class="btn-confirm"
+      [disabled]="form.invalid"
+    >
+      Solicitar
+    </button>
+  </mat-dialog-actions>
+</div>
