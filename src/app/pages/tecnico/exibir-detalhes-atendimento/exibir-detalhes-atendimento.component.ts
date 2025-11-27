@@ -48,6 +48,13 @@ export class ExibirDetalhesAtendimentoComponent implements OnInit{
     REABERTO: 'Reaberto',
   };
 
+    prioridadeLabels: Record<string, string> = {
+    'BAIXA': 'Baixa',
+    'MEDIA': 'Média',
+    'ALTA': 'Alta',
+    'CRITICA': 'Crítica'
+  };
+
   constructor(
     private chamadoService: ChamadoService,
     private router: Router,
@@ -132,11 +139,15 @@ export class ExibirDetalhesAtendimentoComponent implements OnInit{
     if (this.prioridadeDeRetorno) queryParams['priority'] = this.prioridadeDeRetorno;
 
     // Redireciona para a lista do técnico
-    this.router.navigate(['/tecnico/meus-atendimentos'], { queryParams });
+    this.router.navigate(['/tecnico/atendimento/listar'], { queryParams });
   }
 
   acessarChat(): void {
     console.log('Navegar para chat...');
+  }
+
+  podeMudarStatus(status: string): boolean {
+    return status !== 'RESOLVIDO';
   }
 
   mudarStatus(): void {

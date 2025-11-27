@@ -139,7 +139,7 @@ export class ListarMeusAtendimentosComponent implements OnInit {
   // --- Regras de Negócio ---
 
   podeTransferir(status: string): boolean {
-    return status === 'ABERTO';
+    return status === 'ABERTO' || status === 'REABERTO';
   }
 
   podeMudarStatus(status: string): boolean {

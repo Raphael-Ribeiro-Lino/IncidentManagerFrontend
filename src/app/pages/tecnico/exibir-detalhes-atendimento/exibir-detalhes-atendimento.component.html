@@ -1,8 +1,7 @@
 <div class="page-container">
   
   <div class="loading-state" *ngIf="isLoading">
-    <mat-spinner diameter="40"></mat-spinner>
-    <p>Carregando detalhes...</p>
+    <p>Carregando detalhes do atendimento...</p>
   </div>
 
   <div class="error-card" *ngIf="!isLoading && errorMessages.length > 0">
@@ -15,7 +14,7 @@
           <mat-icon>refresh</mat-icon> Tentar Novamente
         </button>
         <button class="btn-error-back" (click)="voltarParaLista()">
-          <mat-icon>arrow_back</mat-icon> Voltar
+          <mat-icon>arrow_back</mat-icon> Voltar para Lista
         </button>
       </div>
     </div>
@@ -25,21 +24,19 @@
 
     <div class="page-header-row">
       <div class="page-header-content">
-        <div class="breadcrumbs">
-          <span (click)="voltarParaLista()">Meus Atendimentos</span>
-          <mat-icon>chevron_right</mat-icon>
-          <span>Detalhes</span>
-        </div>
-        <h1 class="page-title">Detalhes do Chamado</h1>
+        <h1 class="page-title">Detalhes do Atendimento</h1>
+        <p class="page-subtitle">Gerencie o chamado e interaja com o solicitante</p>
       </div>
 
       <div class="header-actions">
-        <button class="btn-action btn-back" (click)="voltarParaLista()" matTooltip="Voltar para lista">
-          <mat-icon>arrow_back</mat-icon> Voltar
+        <button class="btn-action btn-back" (click)="voltarParaLista()" matTooltip="Voltar para a listagem">
+          <mat-icon>arrow_back</mat-icon>
+          Voltar
         </button>
         
-        <button class="btn-action btn-status" (click)="mudarStatus()" matTooltip="Alterar status atual">
-          <mat-icon>edit_note</mat-icon> Mudar Status
+        <button class="btn-action btn-status" (click)="mudarStatus()" matTooltip="Alterar status atual" *ngIf="podeMudarStatus(chamado.status)">
+          <mat-icon>edit_note</mat-icon>
+          Mudar Status
         </button>
       </div>
     </div>
@@ -50,16 +47,19 @@
         
         <div class="card-header-line">
           <h2 class="card-title">
-              <mat-icon class="title-icon">info</mat-icon> Resumo
+              <mat-icon class="title-icon">info</mat-icon> 
+              Resumo do Chamado
           </h2>
+          
           <div class="protocolo-badge">
-              <mat-icon class="icon-tiny">tag</mat-icon>
+              <mat-icon class="icon-small">tag</mat-icon>
               <strong>{{ chamado.protocolo }}</strong>
           </div>
         </div>
 
         <div class="unified-content-wrapper">
-          <div class="info-section left-col">
+          
+          <div class="info-section">
               <h3 class="chamado-titulo-principal">{{ chamado.titulo }}</h3>
               
               <div class="info-grid">
@@ -77,21 +77,21 @@
                       </div>
                   </div>
 
-                  <div class="info-item dates-row">
-                      <div>
-                        <span class="label">Criado em</span>
-                        <div class="text-display date-text">
-                            <mat-icon class="icon-tiny">event</mat-icon>
-                            {{ chamado.dataCriacao | date : "dd/MM/yyyy HH:mm" }}
-                        </div>
+                  <div class="info-item date-item">
+                      <span class="label">Abertura</span>
+                      <div class="date-display">
+                          <mat-icon class="icon-tiny">calendar_today</mat-icon>
+                          <span>{{ chamado.dataCriacao | date : "dd/MM/yyyy" }}</span>
+                          <span class="time">{{ chamado.dataCriacao | date : "HH:mm" }}</span>
                       </div>
-                      
-                      <div>
-                        <span class="label">Atualizado em</span>
-                        <div class="text-display date-text">
-                            <mat-icon class="icon-tiny">update</mat-icon>
-                            {{ chamado.dataUltimaAtualizacao | date : "dd/MM/yyyy HH:mm" }}
-                        </div>
+                  </div>
+
+                  <div class="info-item date-item">
+                      <span class="label">Atualização</span>
+                      <div class="date-display">
+                          <mat-icon class="icon-tiny">update</mat-icon>
+                          <span>{{ chamado.dataUltimaAtualizacao | date : "dd/MM/yyyy" }}</span>
+                          <span class="time">{{ chamado.dataUltimaAtualizacao | date : "HH:mm" }}</span>
                       </div>
                   </div>
               </div>
@@ -99,68 +99,79 @@
 
           <div class="vertical-divider"></div>
 
-          <div class="user-section right-col">
-              <h3 class="section-subtitle">Solicitante</h3>
+          <div class="tech-section">
+              <h3 class="card-internal-title">
+                  <mat-icon class="title-icon">person</mat-icon> 
+                  Solicitante
+              </h3>
               
-              <div class="user-profile">
-                  <div class="user-avatar">
+              <div class="tech-profile">
+                  <div class="tech-avatar">
                       {{ chamado.solicitante.nome | slice : 0 : 1 }}
                   </div>
-                  <div class="user-info">
-                      <strong class="user-name">{{ chamado.solicitante.nome }}</strong>
-                      <span class="user-email">{{ chamado.solicitante.email }}</span>
-                      <span class="user-phone" *ngIf="chamado.solicitante.telefone">
-                        <mat-icon class="icon-micro">phone</mat-icon> {{ chamado.solicitante.telefone }}
-                      </span>
-                      <span class="user-company" *ngIf="chamado.solicitante.empresa">
-                        <mat-icon class="icon-micro">business</mat-icon> {{ chamado.solicitante.empresa.nome }}
-                      </span>
+                  <div class="tech-info">
+                      <strong class="tech-name">{{ chamado.solicitante.nome }}</strong>
+                      <span class="tech-email">{{ chamado.solicitante.email }}</span>
                   </div>
               </div>
 
-              <button class="btn-chat-large" (click)="acessarChat()">
-                <mat-icon>forum</mat-icon> Abrir Chat com Solicitante
+              <button class="btn-chat-large" 
+                      (click)="acessarChat()" 
+                      *ngIf="['EM_ATENDIMENTO', 'AGUARDANDO_CLIENTE', 'AGUARDANDO_PECA', 'REABERTO', 'CONCLUIDO'].includes(chamado.status)">
+                <mat-icon>forum</mat-icon> Acessar chat
               </button>
           </div>
+
         </div>
       </div>
 
-      <div class="card-detalhes description-card">
+      <div class="card-detalhes description-card status-border-{{ chamado.status | lowercase }}">
         <h2 class="card-title">
-          <mat-icon class="title-icon">subject</mat-icon> Descrição e Anexos
+          <mat-icon class="title-icon">subject</mat-icon> 
+          Descrição do Problema
         </h2>
         
         <div class="description-content">
           <p>{{ chamado.descricao }}</p>
         </div>
 
-        <div class="attachments-section" *ngIf="chamado.anexos && chamado.anexos.length > 0">
-          <h3 class="internal-label">
-            <mat-icon class="icon-tiny">attach_file</mat-icon> Anexos ({{ chamado.anexos.length }})
+        <div class="attachments-container">
+          <h3 class="attachments-header card-internal-title">
+            <mat-icon class="title-icon">attach_file</mat-icon> 
+            Anexos ({{ chamado.anexos.length }})
           </h3>
-          <div class="anexos-grid">
-              <div *ngFor="let anexo of chamado.anexos" class="anexo-item-card" (click)="baixarAnexo(anexo.storagePath)">
+
+          <div class="anexos-grid" *ngIf="chamado.anexos.length > 0; else noAnexos">
+              <div *ngFor="let anexo of chamado.anexos" class="anexo-item-card">
                 <mat-icon class="anexo-icon">{{ getFileIcon(anexo.nomeArquivo) }}</mat-icon>
-                <span class="file-name" title="{{anexo.nomeArquivo}}">{{ anexo.nomeArquivo }}</span>
-                <mat-icon class="download-icon">download</mat-icon>
+                <div class="anexo-meta">
+                  <span class="file-name" title="{{ anexo.nomeArquivo }}">{{ anexo.nomeArquivo }}</span>
+                </div>
+                <button class="btn-download-icon" (click)="baixarAnexo(anexo.storagePath)" matTooltip="Baixar">
+                  <mat-icon>download</mat-icon>
+                </button>
               </div>
           </div>
+
+          <ng-template #noAnexos>
+            <p class="text-muted">Nenhum anexo disponível.</p>
+          </ng-template>
         </div>
       </div>
 
-      <div class="card-detalhes timeline-card">
+      <div class="card-detalhes timeline-card status-border-{{ chamado.status | lowercase }}">
         <div class="card-header-line">
             <h2 class="card-title">
-              <mat-icon class="title-icon">history</mat-icon> Linha do Tempo
+              <mat-icon class="title-icon">history</mat-icon> 
+              Linha do Tempo
             </h2>
             
             <button class="btn-note-action" (click)="adicionarNotaInterna()">
-                <mat-icon>note_add</mat-icon> Adicionar Nota Interna
+                <mat-icon>sticky_note_2</mat-icon> Adicionar Nota Interna
             </button>
         </div>
 
         <div class="timeline-container">
-            
             <div class="timeline-item" *ngFor="let evento of chamado.historicoEventos" 
                  [class.internal-note]="!evento.visivelCliente">
                 
@@ -198,7 +209,6 @@
                 <span class="dot"></span>
                 <span>Início do Chamado</span>
             </div>
-
         </div>
       </div>
 
