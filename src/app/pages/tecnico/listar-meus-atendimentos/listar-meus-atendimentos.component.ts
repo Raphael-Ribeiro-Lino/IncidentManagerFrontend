@@ -45,13 +45,12 @@ import { ListarTransferenciasEnviadasComponent } from '../listar-transferencias-
     PaginationComponent,
     DatePipe,
     ListarTransferenciasPendentesComponent,
-    ListarTransferenciasEnviadasComponent
+    ListarTransferenciasEnviadasComponent,
   ],
   templateUrl: './listar-meus-atendimentos.component.html',
   styleUrl: './listar-meus-atendimentos.component.css',
 })
 export class ListarMeusAtendimentosComponent implements OnInit {
-  
   // --- ABA 1: MEUS CHAMADOS (Variáveis existentes) ---
   chamados: ChamadoOutput[] = [];
   page: number = 0;
@@ -67,9 +66,14 @@ export class ListarMeusAtendimentosComponent implements OnInit {
 
   // --- ABA 2: CONTADOR DE PENDÊNCIAS ---
   pendenciasCount: number = 0;
+  // --- ABA 3: CONTADOR DE ENVIADAS
+  enviadasCount: number = 0;
 
   prioridadeLabels: Record<string, string> = {
-    'BAIXA': 'Baixa', 'MEDIA': 'Média', 'ALTA': 'Alta', 'CRITICA': 'Crítica'
+    BAIXA: 'Baixa',
+    MEDIA: 'Média',
+    ALTA: 'Alta',
+    CRITICA: 'Crítica',
   };
 
   constructor(
@@ -88,20 +92,29 @@ export class ListarMeusAtendimentosComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregarChamados();
-    this.atualizarCountPendencias(); // Busca o número da bolinha vermelha
+    this.atualizarCountPendencias();
+    this.atualizarCountEnviadas(); // Busca o número da bolinha vermelha
   }
 
   // --- LÓGICA DA ABA 1 ---
-  onSearchInput(term: string) { this.searchSubject.next(term); }
+  onSearchInput(term: string) {
+    this.searchSubject.next(term);
+  }
 
   carregarChamados(): void {
     this.isLoading = true;
     this.loadingFailed = false;
-    
-    this.chamadoService.listarMeusAtendimentos(this.token, this.page, this.busca, this.prioridadeSelecionada)
+
+    this.chamadoService
+      .listarMeusAtendimentos(
+        this.token,
+        this.page,
+        this.busca,
+        this.prioridadeSelecionada
+      )
       .subscribe({
         next: (response) => {
-          this.chamados = response.content; 
+          this.chamados = response.content;
           this.totalPages = response.page.totalPages;
           this.totalElementos = response.page.totalElements;
           this.isLoading = false;
@@ -109,64 +122,96 @@ export class ListarMeusAtendimentosComponent implements OnInit {
         error: (err) => {
           this.isLoading = false;
           this.loadingFailed = true;
-          this.errorMessages = [err.error?.message || 'Erro ao carregar.'];
-        }
+          this.errorMessages = [
+            err.error?.message ||
+              'Não foi possível carregar os atendimentos. Verifique sua conexão ou tente novamente mais tarde.',
+          ];
+        },
       });
   }
 
-  filtrar(): void { this.page = 0; this.carregarChamados(); }
-  
-  paginar(event: number): void { 
-    this.page = event; 
-    this.carregarChamados(); 
-    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+  filtrar(): void {
+    this.page = 0;
+    this.carregarChamados();
   }
-  
-  verDetalhes(id: number): void { 
-    this.router.navigate([`/tecnico/atendimento/${id}/detalhes`]); 
+
+  paginar(event: number): void {
+    this.page = event;
+    this.carregarChamados();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  
+
+  verDetalhes(id: number): void {
+    this.router.navigate([`/tecnico/atendimento/${id}/detalhes`]);
+  }
+
   // Regra do Backend: Só transfere se ABERTO
-  podeTransferir(status: string): boolean { 
-    return status === 'ABERTO'; 
+  podeTransferir(status: string): boolean {
+    return status === 'ABERTO';
   }
 
   // --- LÓGICA DA ABA 2 (Atualização do Badge) ---
-  
+
   atualizarCountPendencias(): void {
     // Busca apenas 1 item para ser leve, só queremos o 'totalElements'
-    this.transferenciaService.listarMinhasPendencias(this.token, 0, '').subscribe({
+    this.transferenciaService
+      .listarMinhasPendencias(this.token, 0, '')
+      .subscribe({
         next: (page) => {
-            this.pendenciasCount = page.page.totalElements;
-            
-            // Se o count mudou (ex: aceitou um chamado), ele vem pra lista principal,
-            // então recarregamos a aba 1 para refletir a mudança
-            this.carregarChamados(); 
+          this.pendenciasCount = page.page.totalElements;
+
+          // Se o count mudou (ex: aceitou um chamado), ele vem pra lista principal,
+          // então recarregamos a aba 1 para refletir a mudança
+          this.carregarChamados();
         },
         error: () => {
-            // Silencioso em caso de erro no count
-        }
-    });
+          // Silencioso em caso de erro no count
+        },
+      });
+  }
+
+  atualizarCountEnviadas(): void {
+    // Busca uma página pequena (size=1) apenas para ler o totalElements no metadata
+    this.transferenciaService
+      .listarMinhasSolicitacoes(this.token, 0, '')
+      .subscribe({
+        next: (page) => {
+          this.enviadasCount = page.page.totalElements;
+          this.carregarChamados();
+        },
+        error: () => {
+          /* Silencioso */
+        },
+      });
   }
 
   // --- AÇÃO DE TRANSFERIR (Envia para outro) ---
   abrirModalTransferencia(chamado: ChamadoOutput): void {
     const dialogRef = this.dialog.open(ModalSolicitarTransferenciaComponent, {
-      width: '500px', disableClose: true
+      width: '500px',
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((dados: SolicitarTransferenciaInput) => {
       if (dados) {
         this.isLoading = true;
-        this.chamadoService.solicitarTransferencia(this.token, chamado.id, dados).subscribe({
+        this.chamadoService
+          .solicitarTransferencia(this.token, chamado.id, dados)
+          .subscribe({
             next: () => {
-              this.snackBar.open('Transferência solicitada!', 'OK', { duration: 4000, panelClass: ['snack-success'] });
+              this.snackBar.open('Transferência solicitada!', 'OK', {
+                duration: 4000,
+                panelClass: ['snack-success'],
+              });
               this.carregarChamados(); // Remove da minha lista
             },
             error: (err) => {
               this.isLoading = false;
-              this.snackBar.open(err.error?.message || 'Erro.', 'Fechar', { duration: 5000, panelClass: ['snack-error'] });
-            }
+              this.snackBar.open(err.error?.message || 'Erro.', 'Fechar', {
+                duration: 5000,
+                panelClass: ['snack-error'],
+              });
+            },
           });
       }
     });

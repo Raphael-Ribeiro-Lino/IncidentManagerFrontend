@@ -91,14 +91,41 @@
           class="state-container"
           *ngIf="!isLoading && !loadingFailed && chamados.length === 0"
         >
-          <mat-icon class="state-icon">assignment_turned_in</mat-icon>
-          <h3>Nenhum chamado encontrado</h3>
-          <p>
-            Sua lista de trabalho está vazia ou não encontramos resultados para
-            sua busca.
+          <!-- Ícone muda: Se tem filtro (lupa cortada) ou se está limpo (check) -->
+          <mat-icon class="state-icon">
+            {{
+              busca || prioridadeSelecionada
+                ? "filter_list_off"
+                : "assignment_turned_in"
+            }}
+          </mat-icon>
+
+          <h3>
+            {{
+              busca || prioridadeSelecionada
+                ? "Nenhum resultado encontrado"
+                : "Tudo limpo!"
+            }}
+          </h3>
+
+          <!-- CENÁRIO 1: Filtro por Texto -->
+          <p *ngIf="busca">
+            Não encontramos chamados com o termo "<strong>{{ busca }}</strong
+            >".
+          </p>
+
+          <!-- CENÁRIO 2: Filtro por Prioridade (Sem texto) -->
+          <p *ngIf="!busca && prioridadeSelecionada">
+            Não há atendimentos com prioridade
+            <strong>{{ prioridadeLabels[prioridadeSelecionada] }}</strong
+            >.
+          </p>
+
+          <!-- CENÁRIO 3: Sem filtros (Inbox Zero) -->
+          <p *ngIf="!busca && !prioridadeSelecionada">
+            Sua lista de trabalho está vazia. Bom trabalho!
           </p>
         </div>
-
         <div
           class="chamado-list-container"
           *ngIf="!isLoading && !loadingFailed && chamados.length > 0"
@@ -199,11 +226,20 @@
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon outbox-icon">outbox</mat-icon>
         Enviados
+
+        <!-- NOVO: Badge do Contador (Cinza pois é histórico, não alerta) -->
+        <span class="tab-badge-grey" *ngIf="enviadasCount > 0">
+          {{ enviadasCount }}
+        </span>
       </ng-template>
 
       <div class="tab-content">
         <!-- O COMPONENTE NOVO ENTRA AQUI -->
-        <app-listar-transferencias-enviadas></app-listar-transferencias-enviadas>
+        <!-- Adicionado o bind (listaAtualizada) -->
+        <app-listar-transferencias-enviadas
+          (listaAtualizada)="atualizarCountEnviadas()"
+        >
+        </app-listar-transferencias-enviadas>
       </div>
     </mat-tab>
   </mat-tab-group>

@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -36,6 +36,8 @@ import { ConfirmationDialogComponent } from '../../../components/confirmation-di
   styleUrl: './listar-transferencias-enviadas.component.css',
 })
 export class ListarTransferenciasEnviadasComponent implements OnInit {
+  @Output() listaAtualizada = new EventEmitter<void>();
+  
   transferencias: TransferenciaDetalhadaOutput[] = [];
 
   page: number = 0;
@@ -92,10 +94,6 @@ export class ListarTransferenciasEnviadasComponent implements OnInit {
           this.errorMessages = [
             'Não foi possível carregar o histórico de transferências. Verifique sua conexão ou tente novamente mais tarde.',
           ];
-          this.snackBar.open('Erro ao carregar histórico.', 'Fechar', {
-            duration: 3000,
-            panelClass: ['snack-error'],
-          });
         },
       });
   }
@@ -112,7 +110,7 @@ export class ListarTransferenciasEnviadasComponent implements OnInit {
       dataSolicitacao: transferencia.dataSolicitacao,
       status: transferencia.status,
       tecnicoDestino: { nome: transferencia.tecnicoDestinoNome },
-      
+
       // Reconstrói o objeto 'chamado' que o modal exige
       chamado: {
         id: transferencia.chamadoId,
@@ -122,17 +120,17 @@ export class ListarTransferenciasEnviadasComponent implements OnInit {
         prioridade: transferencia.chamadoPrioridade,
         status: transferencia.chamadoStatus,
         dataCriacao: transferencia.chamadoDataCriacao,
-        
+
         // Simula o técnico responsável (que no caso de enviadas, é o usuário logado/origem)
-        tecnicoResponsavel: { 
-          nome: 'Você', 
-          email: '' 
-        }
+        tecnicoResponsavel: {
+          nome: 'Você',
+          email: '',
+        },
       },
       // Simula a origem para o modal não quebrar
-      tecnicoOrigem: { 
-        nome: 'Você' 
-      }
+      tecnicoOrigem: {
+        nome: 'Você',
+      },
     };
 
     this.dialog.open(ModalVisualizarChamadoComponent, {
@@ -140,7 +138,7 @@ export class ListarTransferenciasEnviadasComponent implements OnInit {
       maxWidth: '95vw',
       maxHeight: '90vh',
       data: dadosParaModal, // Passamos o objeto adaptado
-      autoFocus: false
+      autoFocus: false,
     });
   }
 
@@ -153,33 +151,35 @@ export class ListarTransferenciasEnviadasComponent implements OnInit {
         titulo: 'Cancelar Solicitação',
         mensagem: `Tem certeza que deseja cancelar o envio do chamado ${t.chamadoProtocolo}?\n\nEle voltará para sua lista de atendimentos.`,
         icone: 'delete_forever', // Ícone de lixeira
-        corBotao: 'warn',        // Vermelho
+        corBotao: 'warn', // Vermelho
         textoConfirmar: 'Sim, Cancelar',
-        textoCancelar: 'Voltar'
-      }
+        textoCancelar: 'Voltar',
+      },
     });
-    
+
     dialogRef.afterClosed().subscribe((confirmado: boolean) => {
       if (confirmado) {
         this.isLoading = true; // Mostra loading enquanto processa
 
-        this.transferenciaService.cancelarTransferencia(this.token, t.id).subscribe({
+        this.transferenciaService
+          .cancelarTransferencia(this.token, t.id)
+          .subscribe({
             next: () => {
-                this.snackBar.open('Solicitação cancelada com sucesso.', 'OK', { 
-                  duration: 4000, 
-                  panelClass: ['snack-success'] 
-                });
-                this.carregarEnviadas(); // Recarrega a lista
+              this.snackBar.open('Solicitação cancelada com sucesso.', 'OK', {
+                duration: 4000,
+                panelClass: ['snack-success'],
+              });
+              this.carregarEnviadas(); // Recarrega a lista
             },
             error: (err) => {
-                this.isLoading = false;
-                const msg = err.error?.message || 'Erro ao cancelar solicitação.';
-                this.snackBar.open(msg, 'Fechar', { 
-                  duration: 4000, 
-                  panelClass: ['snack-error'] 
-                });
-            }
-        });
+              this.isLoading = false;
+              const msg = err.error?.message || 'Erro ao cancelar solicitação.';
+              this.snackBar.open(msg, 'Fechar', {
+                duration: 4000,
+                panelClass: ['snack-error'],
+              });
+            },
+          });
       }
     });
   }

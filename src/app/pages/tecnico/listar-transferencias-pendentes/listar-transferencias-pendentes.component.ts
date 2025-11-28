@@ -106,10 +106,6 @@ export class ListarTransferenciasPendentesComponent implements OnInit {
           this.errorMessages = [
             'Não foi possível carregar as solicitações. Verifique sua conexão ou tente novamente mais tarde.',
           ];
-          this.snackBar.open('Erro ao carregar transferências.', 'Fechar', {
-            duration: 3000,
-            panelClass: ['snack-error'],
-          });
         },
       });
   }
