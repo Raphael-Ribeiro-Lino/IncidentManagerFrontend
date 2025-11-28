@@ -65,7 +65,7 @@
             </div>
           </div>
 
-          <!-- CORREÇÃO: Contador restaurado aqui -->
+          <!-- Contador -->
           <div class="action-button">
             <mat-icon class="icon-small">list_alt</mat-icon>
             {{ totalElementos }} atendimentos
@@ -91,7 +91,6 @@
           class="state-container"
           *ngIf="!isLoading && !loadingFailed && chamados.length === 0"
         >
-          <!-- Ícone muda: Se tem filtro (lupa cortada) ou se está limpo (check) -->
           <mat-icon class="state-icon">
             {{
               busca || prioridadeSelecionada
@@ -108,24 +107,23 @@
             }}
           </h3>
 
-          <!-- CENÁRIO 1: Filtro por Texto -->
           <p *ngIf="busca">
             Não encontramos chamados com o termo "<strong>{{ busca }}</strong
             >".
           </p>
 
-          <!-- CENÁRIO 2: Filtro por Prioridade (Sem texto) -->
           <p *ngIf="!busca && prioridadeSelecionada">
             Não há atendimentos com prioridade
             <strong>{{ prioridadeLabels[prioridadeSelecionada] }}</strong
             >.
           </p>
 
-          <!-- CENÁRIO 3: Sem filtros (Inbox Zero) -->
           <p *ngIf="!busca && !prioridadeSelecionada">
             Sua lista de trabalho está vazia. Bom trabalho!
           </p>
         </div>
+
+        <!-- LISTA DE CARDS (COM TOOLTIPS ADICIONADOS) -->
         <div
           class="chamado-list-container"
           *ngIf="!isLoading && !loadingFailed && chamados.length > 0"
@@ -135,50 +133,83 @@
             *ngFor="let c of chamados"
           >
             <div class="row-main-content">
+              <!-- Meta Dados -->
               <div class="row-header-meta">
-                <div class="protocolo-display" matTooltip="{{ c.protocolo }}">
+                <div
+                  class="protocolo-display"
+                  matTooltip="Protocolo: {{ c.protocolo }}"
+                >
                   <mat-icon class="icon-small">tag</mat-icon>
                   <strong>{{ c.protocolo }}</strong>
                 </div>
-                <div class="date-time-display">
+
+                <div
+                  class="date-time-display"
+                  matTooltip="Última atualização: {{
+                    c.dataUltimaAtualizacao | date : 'dd/MM/yyyy HH:mm'
+                  }}"
+                >
                   <mat-icon class="icon-small">update</mat-icon>
                   {{ c.dataUltimaAtualizacao | date : "dd/MM/yyyy HH:mm" }}
                 </div>
+
                 <div
                   class="mini-priority priority-text-{{
                     c.prioridade | lowercase
                   }}"
+                  matTooltip="Prioridade: {{
+                    prioridadeLabels[c.prioridade] || c.prioridade
+                  }}"
                 >
                   {{ prioridadeLabels[c.prioridade] || c.prioridade }}
                 </div>
+
                 <div
                   class="status-badge-inline status-{{ c.status | lowercase }}"
+                  matTooltip="Status Atual: {{ c.status }}"
                 >
                   {{ c.status }}
                 </div>
               </div>
 
-              <h3 class="row-title">{{ c.titulo }}</h3>
-              <p class="row-description">{{ c.descricao }}</p>
+              <!-- Título -->
+              <h3 class="row-title" matTooltip="Título do chamado">
+                {{ c.titulo }}
+              </h3>
 
-              <div class="row-tech-info">
+              <!-- Descrição -->
+              <p class="row-description" matTooltip="Descrição do chamado">
+                {{ c.descricao }}
+              </p>
+
+              <!-- Solicitante -->
+              <div
+                class="row-tech-info"
+                matTooltip="Solicitante: {{ c.solicitante.nome }} ({{
+                  c.solicitante.email
+                }})"
+              >
                 <mat-icon class="icon-small">person</mat-icon> Solicitado por
                 <strong>{{ c.solicitante.nome }}</strong>
               </div>
             </div>
 
+            <!-- Ações -->
             <div class="row-actions-side">
               <div class="button-group">
                 <button
                   class="btn-custom btn-details"
                   (click)="verDetalhes(c.id)"
+                  matTooltip="Detalhes do chamado"
                 >
                   <mat-icon>visibility</mat-icon> Detalhes
                 </button>
+
                 <button
                   class="btn-custom btn-yellow"
                   *ngIf="podeTransferir(c.status)"
                   (click)="abrirModalTransferencia(c)"
+                  matTooltip="Solicitar transferência para outro técnico"
                 >
                   <mat-icon>forward</mat-icon> Transferir
                 </button>
@@ -220,22 +251,18 @@
     </mat-tab>
 
     <!-- ============================================= -->
-    <!-- ABA 3: ENVIADOS (Histórico) - NOVO -->
+    <!-- ABA 3: ENVIADOS (Histórico) -->
     <!-- ============================================= -->
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon outbox-icon">outbox</mat-icon>
         Enviados
-
-        <!-- NOVO: Badge do Contador (Cinza pois é histórico, não alerta) -->
         <span class="tab-badge-grey" *ngIf="enviadasCount > 0">
           {{ enviadasCount }}
         </span>
       </ng-template>
 
       <div class="tab-content">
-        <!-- O COMPONENTE NOVO ENTRA AQUI -->
-        <!-- Adicionado o bind (listaAtualizada) -->
         <app-listar-transferencias-enviadas
           (listaAtualizada)="atualizarCountEnviadas()"
         >
