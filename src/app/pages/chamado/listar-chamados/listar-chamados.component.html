@@ -168,6 +168,14 @@
             <mat-icon>visibility</mat-icon>
             Detalhes
           </button>
+
+          <button
+            class="btn-custom btn-avaliar"
+            *ngIf="chamado.status === 'RESOLVIDO'"
+            (click)="avaliarChamado(chamado)"
+          >
+            <mat-icon>stars</mat-icon> Avaliar e Concluir
+          </button>
         </div>
       </div>
     </div>

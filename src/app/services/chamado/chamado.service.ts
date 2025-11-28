@@ -10,6 +10,7 @@ import { ChamadoDetalhadoOutput } from '../../models/chamado/chamadoDetalhadoOut
 import { NotaInternaInput } from '../../models/chamado/notaInternaInput';
 import { AlteraStatusChamadoInput } from '../../models/chamado/alteraStatusChamadoInput';
 import { SolicitarTransferenciaInput } from '../../models/chamado/solicitarTransferenciaInput';
+import { AvaliacaoInput } from '../../models/chamado/avaliacaoInput';
 
 const API_URL = environment.URL_API + '/chamado';
 
@@ -189,7 +190,11 @@ export class ChamadoService {
     );
   }
 
-  solicitarTransferencia(token: string, id: number, input: SolicitarTransferenciaInput): Observable<void> {
+  solicitarTransferencia(
+    token: string,
+    id: number,
+    input: SolicitarTransferenciaInput
+  ): Observable<void> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -198,6 +203,22 @@ export class ChamadoService {
     return this.httpClient.post<void>(
       `${API_URL}/${id}/solicitar-transferencia`,
       input,
+      { headers }
+    );
+  }
+
+  avaliarChamado(
+    token: string,
+    id: number,
+    avaliacao: AvaliacaoInput
+  ): Observable<ChamadoOutput> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+      return this.httpClient.post<ChamadoOutput>(
+      `${API_URL}/${id}/avaliar`,
+      avaliacao,
       { headers }
     );
   }

@@ -1,0 +1,88 @@
+<div class="modal-container">
+  <h2 mat-dialog-title>
+    <mat-icon class="title-icon">thumb_up</mat-icon> Confirmar Solução
+  </h2>
+
+  <mat-dialog-content>
+    <!-- MUDANÇA AQUI: Transformei em DIV para conter os parágrafos -->
+    <div class="modal-description">
+      <p>O técnico marcou este chamado como resolvido!</p>
+      <p>Por favor, avalie o atendimento para encerrar o chamado.</p>
+    </div>
+
+    <form [formGroup]="form">
+      <div
+        class="star-rating-container"
+        [class.error-border]="
+          form.get('nota')?.touched && form.get('nota')?.invalid
+        "
+      >
+        <div class="rating-header">
+          <span class="rating-label"
+            >Sua Nota <span class="required-asterisk">*</span></span
+          >
+          <span class="rating-value" *ngIf="rating > 0">{{ rating }}/5</span>
+        </div>
+
+        <div class="stars">
+          <mat-icon
+            *ngFor="let star of stars"
+            (click)="setRating(star)"
+            [class.filled]="star <= rating"
+            class="star-icon"
+          >
+            {{ star <= rating ? "star" : "star_border" }}
+          </mat-icon>
+        </div>
+
+        <div class="rating-feedback">
+          <mat-error
+            *ngIf="
+              form.get('nota')?.touched && form.get('nota')?.invalid;
+              else instruction
+            "
+          >
+            <mat-icon class="tiny-icon">error</mat-icon> Selecione de 1 a 5
+            estrelas
+          </mat-error>
+          <ng-template #instruction>
+            <span class="instruction-text" *ngIf="rating === 0"
+              >Toque nas estrelas para avaliar</span
+            >
+            <span class="instruction-text success" *ngIf="rating > 0"
+              >Obrigado pela avaliação!</span
+            >
+          </ng-template>
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Comentário (Opcional)</mat-label>
+        <textarea
+          matInput
+          formControlName="comentario"
+          rows="4"
+          placeholder="Deixe um elogio, sugestão ou observação..."
+        ></textarea>
+        <mat-hint align="end"
+          >{{ form.get("comentario")?.value?.length || 0 }}/1000</mat-hint
+        >
+        <mat-error *ngIf="form.get('comentario')?.hasError('maxlength')">
+          O limite é de 1000 caracteres.
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cancelar()" class="btn-cancel">Cancelar</button>
+    <button
+      mat-raised-button
+      (click)="confirmar()"
+      [disabled]="form.invalid"
+      class="btn-confirm"
+    >
+      Avaliar e Concluir
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -11,6 +11,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { PaginationComponent } from '../../../components/pagination/pagination.component';
 import { ChamadoService } from '../../../services/chamado/chamado.service';
 import { ChamadoOutput } from '../../../models/chamado/chamadoOutput';
+import { ModalAvaliacaoComponent } from '../../../components/modal-avaliacao/modal-avaliacao.component';
+import { AvaliacaoInput } from '../../../models/chamado/avaliacaoInput';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-listar-chamados',
@@ -65,7 +69,9 @@ export class ListarChamadosComponent implements OnInit {
   constructor(
     private chamadoService: ChamadoService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -76,7 +82,11 @@ export class ListarChamadosComponent implements OnInit {
       const pageParam = params.get('page');
       if (pageParam !== null) {
         const pageNumber = Number(pageParam);
-        if (isNaN(pageNumber) || !Number.isInteger(pageNumber) || pageNumber < 0) {
+        if (
+          isNaN(pageNumber) ||
+          !Number.isInteger(pageNumber) ||
+          pageNumber < 0
+        ) {
           shouldRedirect = true;
         } else {
           this.currentPage = pageNumber;
@@ -127,7 +137,12 @@ export class ListarChamadosComponent implements OnInit {
 
     // Certifique-se de atualizar seu ChamadoService para aceitar 'status' em vez de 'prioridade'
     this.chamadoService
-      .listar(this.token, this.currentPage, this.searchTerm, this.selectedStatus)
+      .listar(
+        this.token,
+        this.currentPage,
+        this.searchTerm,
+        this.selectedStatus
+      )
       .subscribe({
         next: (pageData) => {
           this.chamadosExibidos = pageData.content;
@@ -183,5 +198,37 @@ export class ListarChamadosComponent implements OnInit {
 
   reabrir(id: number): void {
     this.router.navigate([`/chamado/${id}/reabrir`]);
+  }
+
+  avaliarChamado(chamado: ChamadoOutput): void {
+    const dialogRef = this.dialog.open(ModalAvaliacaoComponent, {
+      width: '500px',
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((avaliacao: AvaliacaoInput) => {
+      if (avaliacao) {
+        this.isLoading = true;
+
+        this.chamadoService
+          .avaliarChamado(this.token, chamado.id, avaliacao)
+          .subscribe({
+            next: () => {
+              this.snackBar.open('Chamado avaliado e concluído!', 'OK', {
+                duration: 5000,
+                panelClass: ['snack-success'],
+              });
+              this.buscarChamados(); // Recarrega a lista para atualizar status
+            },
+            error: (err) => {
+              this.isLoading = false;
+              this.snackBar.open('Erro ao avaliar.', 'Fechar', {
+                duration: 4000,
+                panelClass: ['snack-error'],
+              });
+            },
+          });
+      }
+    });
   }
 }
