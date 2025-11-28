@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { TransferenciaOutput } from '../../models/transferencia/transferenciaOutput';
 import { PaginationOutput } from '../../models/pagination/paginationOutput';
 import { ResponderTransferenciaInput } from '../../models/transferencia/responderTransferenciaInput';
+import { TransferenciaDetalhadaOutput } from '../../models/transferencia/transferenciaDetalhadaOutput';
 
 const API_URL = environment.URL_API + '/transferencia';
 @Injectable({
@@ -35,7 +36,7 @@ export class TransferenciaService {
     token: string,
     page: number = 0,
     search: string = ''
-  ): Observable<PaginationOutput<TransferenciaOutput>> {
+  ): Observable<PaginationOutput<TransferenciaDetalhadaOutput>> {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     let params = new HttpParams().set('page', page.toString());
 
@@ -43,7 +44,7 @@ export class TransferenciaService {
       params = params.set('search', search);
     }
 
-    return this.httpClient.get<PaginationOutput<TransferenciaOutput>>(
+    return this.httpClient.get<PaginationOutput<TransferenciaDetalhadaOutput>>(
       `${API_URL}/enviadas`,
       { headers, params }
     );
@@ -62,5 +63,14 @@ export class TransferenciaService {
     return this.httpClient.post<void>(`${API_URL}/${id}/responder`, input, {
       headers,
     });
+  }
+
+  cancelarTransferencia(token: string, id: number): Observable<void> {
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.httpClient.post<void>(
+      `${API_URL}/${id}/cancelar`,
+      {},
+      { headers }
+    );
   }
 }

@@ -13,6 +13,8 @@ import { TransferenciaOutput } from '../../../models/transferencia/transferencia
 import { TransferenciaService } from '../../../services/transferencia/transferencia.service';
 import { debounceTime, Subject } from 'rxjs';
 import { ModalVisualizarChamadoComponent } from '../../../components/modal-visualizar-chamado/modal-visualizar-chamado.component';
+import { TransferenciaDetalhadaOutput } from '../../../models/transferencia/transferenciaDetalhadaOutput';
+import { ConfirmationDialogComponent } from '../../../components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-listar-transferencias-enviadas',
@@ -34,7 +36,7 @@ import { ModalVisualizarChamadoComponent } from '../../../components/modal-visua
   styleUrl: './listar-transferencias-enviadas.component.css',
 })
 export class ListarTransferenciasEnviadasComponent implements OnInit {
-  transferencias: TransferenciaOutput[] = [];
+  transferencias: TransferenciaDetalhadaOutput[] = [];
 
   page: number = 0;
   totalPages: number = 0;
@@ -45,6 +47,9 @@ export class ListarTransferenciasEnviadasComponent implements OnInit {
 
   isLoading: boolean = false;
   token = localStorage.getItem('token')!;
+
+  loadingFailed: boolean = false;
+  errorMessages: string[] = [];
 
   constructor(
     private transferenciaService: TransferenciaService,
@@ -68,6 +73,8 @@ export class ListarTransferenciasEnviadasComponent implements OnInit {
 
   carregarEnviadas(): void {
     this.isLoading = true;
+    this.loadingFailed = false;
+    this.errorMessages = [];
 
     this.transferenciaService
       .listarMinhasSolicitacoes(this.token, this.page, this.busca)
@@ -81,6 +88,10 @@ export class ListarTransferenciasEnviadasComponent implements OnInit {
         error: (err) => {
           console.error(err);
           this.isLoading = false;
+          this.loadingFailed = true;
+          this.errorMessages = [
+            'Não foi possível carregar o histórico de transferências. Verifique sua conexão ou tente novamente mais tarde.',
+          ];
           this.snackBar.open('Erro ao carregar histórico.', 'Fechar', {
             duration: 3000,
             panelClass: ['snack-error'],
@@ -94,38 +105,82 @@ export class ListarTransferenciasEnviadasComponent implements OnInit {
     this.carregarEnviadas();
   }
 
-  verChamado(transferencia: TransferenciaOutput): void {
+  verChamado(transferencia: TransferenciaDetalhadaOutput): void {
+    const dadosParaModal = {
+      id: transferencia.id,
+      motivo: transferencia.motivo,
+      dataSolicitacao: transferencia.dataSolicitacao,
+      status: transferencia.status,
+      tecnicoDestino: { nome: transferencia.tecnicoDestinoNome },
+      
+      // Reconstrói o objeto 'chamado' que o modal exige
+      chamado: {
+        id: transferencia.chamadoId,
+        protocolo: transferencia.chamadoProtocolo, // O erro acontecia aqui
+        titulo: transferencia.chamadoTitulo,
+        descricao: transferencia.chamadoDescricao,
+        prioridade: transferencia.chamadoPrioridade,
+        status: transferencia.chamadoStatus,
+        dataCriacao: transferencia.chamadoDataCriacao,
+        
+        // Simula o técnico responsável (que no caso de enviadas, é o usuário logado/origem)
+        tecnicoResponsavel: { 
+          nome: 'Você', 
+          email: '' 
+        }
+      },
+      // Simula a origem para o modal não quebrar
+      tecnicoOrigem: { 
+        nome: 'Você' 
+      }
+    };
+
     this.dialog.open(ModalVisualizarChamadoComponent, {
       width: '900px',
       maxWidth: '95vw',
       maxHeight: '90vh',
-      data: transferencia,
-      autoFocus: false,
+      data: dadosParaModal, // Passamos o objeto adaptado
+      autoFocus: false
     });
   }
 
-  // Opcional: Implementar cancelamento se estiver pendente
-  cancelar(t: TransferenciaOutput): void {
-    // if (
-    //   !confirm(
-    //     'Deseja cancelar esta solicitação? O chamado voltará para sua lista.'
-    //   )
-    // )
-    //   return;
+  cancelar(t: TransferenciaDetalhadaOutput): void {
+    // Abre o Dialog de Confirmação Personalizado
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      disableClose: true,
+      data: {
+        titulo: 'Cancelar Solicitação',
+        mensagem: `Tem certeza que deseja cancelar o envio do chamado ${t.chamadoProtocolo}?\n\nEle voltará para sua lista de atendimentos.`,
+        icone: 'delete_forever', // Ícone de lixeira
+        corBotao: 'warn',        // Vermelho
+        textoConfirmar: 'Sim, Cancelar',
+        textoCancelar: 'Voltar'
+      }
+    });
+    
+    dialogRef.afterClosed().subscribe((confirmado: boolean) => {
+      if (confirmado) {
+        this.isLoading = true; // Mostra loading enquanto processa
 
-    // this.transferenciaService
-    //   .cancelarTransferencia(this.token, t.id)
-    //   .subscribe({
-    //     next: () => {
-    //       this.snackBar.open('Solicitação cancelada.', 'OK', {
-    //         panelClass: ['snack-success'],
-    //       });
-    //       this.carregarEnviadas();
-    //     },
-    //     error: () =>
-    //       this.snackBar.open('Erro ao cancelar.', 'Fechar', {
-    //         panelClass: ['snack-error'],
-    //       }),
-    //   });
+        this.transferenciaService.cancelarTransferencia(this.token, t.id).subscribe({
+            next: () => {
+                this.snackBar.open('Solicitação cancelada com sucesso.', 'OK', { 
+                  duration: 4000, 
+                  panelClass: ['snack-success'] 
+                });
+                this.carregarEnviadas(); // Recarrega a lista
+            },
+            error: (err) => {
+                this.isLoading = false;
+                const msg = err.error?.message || 'Erro ao cancelar solicitação.';
+                this.snackBar.open(msg, 'Fechar', { 
+                  duration: 4000, 
+                  panelClass: ['snack-error'] 
+                });
+            }
+        });
+      }
+    });
   }
 }

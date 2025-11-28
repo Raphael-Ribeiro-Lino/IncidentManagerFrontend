@@ -27,28 +27,61 @@
     <p>Carregando histórico...</p>
   </div>
 
-  <div class="empty-state" *ngIf="!isLoading && transferencias.length === 0">
-    <mat-icon class="empty-icon">history</mat-icon>
-    <h3>Histórico vazio</h3>
-    <p>Você ainda não solicitou nenhuma transferência.</p>
+  <div class="error-card" *ngIf="loadingFailed && !isLoading">
+    <mat-icon class="error-icon">sentiment_dissatisfied</mat-icon>
+    <div class="error-content">
+      <h3>Ops! Algo deu errado.</h3>
+      <p *ngFor="let msg of errorMessages">{{ msg }}</p>
+      <button class="btn-error-retry" (click)="carregarEnviadas()">
+        <mat-icon>refresh</mat-icon> Tentar Novamente
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="empty-state"
+    *ngIf="!isLoading && !loadingFailed && transferencias.length === 0"
+  >
+    <ng-container *ngIf="busca; else semHistorico">
+      <mat-icon class="empty-icon">search_off</mat-icon>
+      <h3>Nenhum resultado encontrado</h3>
+      <p>
+        Não encontramos transferências com o termo "<strong>{{ busca }}</strong
+        >".
+      </p>
+    </ng-container>
+
+    <ng-template #semHistorico>
+      <mat-icon class="empty-icon">history</mat-icon>
+      <h3>Histórico vazio</h3>
+      <p>Você ainda não solicitou nenhuma transferência.</p>
+    </ng-template>
   </div>
 
   <div
     class="chamado-list-container"
-    *ngIf="!isLoading && transferencias.length > 0"
+    *ngIf="!isLoading && !loadingFailed && transferencias.length > 0"
   >
     <div
-      class="chamado-row priority-border-{{ t.chamado.prioridade | lowercase }}"
+      class="chamado-row status-transfer-border-{{ t.status | lowercase }}"
       *ngFor="let t of transferencias"
     >
       <div class="row-main-content">
         <div class="row-header-meta">
-          <div class="protocolo-display" matTooltip="{{ t.chamado.protocolo }}">
+          <div
+            class="protocolo-display"
+            matTooltip="Protocolo: {{ t.chamadoProtocolo }}"
+          >
             <mat-icon class="icon-small">tag</mat-icon>
-            <strong>{{ t.chamado.protocolo }}</strong>
+            <strong>{{ t.chamadoProtocolo }}</strong>
           </div>
 
-          <div class="date-time-display">
+          <div
+            class="date-time-display"
+            matTooltip="Solicitado em: {{
+              t.dataSolicitacao | date : 'dd/MM/yyyy HH:mm'
+            }}"
+          >
             <mat-icon class="icon-small">event</mat-icon>
             <span>{{ t.dataSolicitacao | date : "dd/MM/yyyy" }}</span>
             <span class="time-part"
@@ -56,37 +89,92 @@
             >
           </div>
 
-          <!-- STATUS DA TRANSFERÊNCIA (Destaque desta tela) -->
           <div
             class="transfer-status-badge status-transfer-{{
               t.status | lowercase
             }}"
+            matTooltip="Status atual da transferência"
           >
             {{ t.status }}
           </div>
         </div>
 
-        <h3 class="row-title" (click)="verChamado(t)" matTooltip="Ver detalhes">
-          {{ t.chamado.titulo }}
-          <mat-icon class="tiny-icon-link">visibility</mat-icon>
+        <!-- Título (Sem link, apenas visualização) -->
+        <h3
+          class="row-title"
+          matTooltip="Título do Chamado: {{ t.chamadoTitulo }}"
+        >
+          {{ t.chamadoTitulo }}
         </h3>
 
-        <div class="row-tech-info">
+        <!-- Motivo -->
+        <div class="row-reason-box" matTooltip="Motivo da Solicitação">
+          <span class="reason-label">Motivo:</span> "{{ t.motivo }}"
+        </div>
+
+        <!-- Feedback da Resposta -->
+        <div
+          class="transfer-outcome-box outcome-{{ t.status | lowercase }}"
+          *ngIf="t.status !== 'PENDENTE' && t.dataResposta"
+          matTooltip="Detalhes da Resposta"
+        >
+          <ng-container *ngIf="t.status === 'ACEITA'">
+            <mat-icon class="outcome-icon">check_circle</mat-icon>
+            <div class="outcome-content">
+              <span class="outcome-title">Solicitação Aceita</span>
+              <span class="outcome-date"
+                >Respondido em
+                {{ t.dataResposta | date : "dd/MM/yyyy 'às' HH:mm" }}</span
+              >
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="t.status === 'RECUSADA'">
+            <mat-icon class="outcome-icon">cancel</mat-icon>
+            <div class="outcome-content">
+              <span class="outcome-title">Solicitação Recusada</span>
+              <span class="outcome-date"
+                >Respondido em
+                {{ t.dataResposta | date : "dd/MM/yyyy 'às' HH:mm" }}</span
+              >
+              <p class="outcome-reason">
+                <strong>Motivo:</strong> {{ t.motivoRecusa }}
+              </p>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="t.status === 'CANCELADA'">
+            <mat-icon class="outcome-icon">block</mat-icon>
+            <div class="outcome-content">
+              <span class="outcome-title">Solicitação Cancelada</span>
+              <span class="outcome-date"
+                >Em {{ t.dataResposta | date : "dd/MM/yyyy 'às' HH:mm" }}</span
+              >
+              <p class="outcome-reason" *ngIf="t.motivoRecusa">
+                {{ t.motivoRecusa }}
+              </p>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Destinatário -->
+        <div class="row-tech-info" matTooltip="Enviado para este técnico">
           <mat-icon class="icon-small">forward</mat-icon>
           <span
             >Enviado para:
-            <strong>{{ t.chamado.tecnicoResponsavel.nome }}</strong></span
+            <strong>{{ t.tecnicoDestinoNome || "Sistema" }}</strong></span
           >
         </div>
-
-        <!-- Motivo menorzinho aqui, pois é histórico -->
-        <p class="motivo-text">"{{ t.motivo }}"</p>
       </div>
 
-      <!-- Ações (Apenas Cancelar se Pendente) -->
+      <!-- Ações -->
       <div class="row-actions-side">
         <div class="button-group">
-          <button class="btn-custom btn-details" (click)="verChamado(t)">
+          <button
+            class="btn-custom btn-details"
+            (click)="verChamado(t)"
+            matTooltip="Dados do chamado"
+          >
             <mat-icon>visibility</mat-icon> Detalhes
           </button>
 
@@ -94,6 +182,7 @@
             class="btn-custom btn-cancel"
             *ngIf="t.status === 'PENDENTE'"
             (click)="cancelar(t)"
+            matTooltip="Cancelar envio e recuperar chamado"
           >
             <mat-icon>delete_forever</mat-icon> Cancelar
           </button>
@@ -102,7 +191,10 @@
     </div>
   </div>
 
-  <div class="paginator-wrapper" *ngIf="!isLoading && totalElementos > 0">
+  <div
+    class="paginator-wrapper"
+    *ngIf="!isLoading && !loadingFailed && totalElementos > 0"
+  >
     <app-pagination
       [pageNumber]="page"
       [totalPages]="totalPages"
