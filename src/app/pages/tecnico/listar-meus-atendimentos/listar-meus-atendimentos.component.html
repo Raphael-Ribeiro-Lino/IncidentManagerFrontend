@@ -1,5 +1,4 @@
 <div class="chamado-list-page">
-  
   <div class="page-header">
     <h1 class="page-title">Painel de Atendimentos</h1>
     <p class="page-subtitle">
@@ -8,8 +7,12 @@
   </div>
 
   <!-- SISTEMA DE ABAS -->
-  <mat-tab-group animationDuration="0ms" class="custom-tabs" mat-stretch-tabs="false" mat-align-tabs="start">
-    
+  <mat-tab-group
+    animationDuration="0ms"
+    class="custom-tabs"
+    mat-stretch-tabs="false"
+    mat-align-tabs="start"
+  >
     <!-- ============================================= -->
     <!-- ABA 1: MEUS CHAMADOS -->
     <!-- ============================================= -->
@@ -18,23 +21,40 @@
         <mat-icon class="tab-icon">assignment</mat-icon>
         Meus Atendimentos
         <!-- Badge do Contador na Aba -->
-        <span class="tab-badge-grey" *ngIf="totalElementos > 0">{{ totalElementos }}</span>
+        <span class="tab-badge-grey" *ngIf="totalElementos > 0">{{
+          totalElementos
+        }}</span>
       </ng-template>
 
       <div class="tab-content">
-        
         <div class="action-bar-container">
           <div class="filters-container">
             <div class="filter-inputs">
-              <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+              <mat-form-field
+                appearance="outline"
+                class="search-field"
+                subscriptSizing="dynamic"
+              >
                 <mat-label>Buscar Protocolo ou Título</mat-label>
-                <input matInput [ngModel]="busca" (ngModelChange)="onSearchInput($event)" placeholder="Ex: Erro Impressora" />
+                <input
+                  matInput
+                  [ngModel]="busca"
+                  (ngModelChange)="onSearchInput($event)"
+                  placeholder="Ex: Erro Impressora"
+                />
                 <mat-icon matSuffix>search</mat-icon>
               </mat-form-field>
 
-              <mat-form-field appearance="outline" class="priority-field" subscriptSizing="dynamic">
+              <mat-form-field
+                appearance="outline"
+                class="priority-field"
+                subscriptSizing="dynamic"
+              >
                 <mat-label>Prioridade</mat-label>
-                <mat-select [(ngModel)]="prioridadeSelecionada" (selectionChange)="filtrar()">
+                <mat-select
+                  [(ngModel)]="prioridadeSelecionada"
+                  (selectionChange)="filtrar()"
+                >
                   <mat-option value="">Todas</mat-option>
                   <mat-option value="BAIXA">Baixa</mat-option>
                   <mat-option value="MEDIA">Média</mat-option>
@@ -57,54 +77,82 @@
         </div>
 
         <div class="error-card" *ngIf="loadingFailed && !isLoading">
-           <mat-icon class="error-icon">sentiment_dissatisfied</mat-icon>
-           <div class="error-content">
-             <h3>Ops! Algo deu errado.</h3>
-             <p *ngFor="let msg of errorMessages">{{ msg }}</p>
-             <button class="btn-error-retry" (click)="carregarChamados()">
-               <mat-icon>refresh</mat-icon> Tentar Novamente
-             </button>
-           </div>
+          <mat-icon class="error-icon">sentiment_dissatisfied</mat-icon>
+          <div class="error-content">
+            <h3>Ops! Algo deu errado.</h3>
+            <p *ngFor="let msg of errorMessages">{{ msg }}</p>
+            <button class="btn-error-retry" (click)="carregarChamados()">
+              <mat-icon>refresh</mat-icon> Tentar Novamente
+            </button>
+          </div>
         </div>
 
-        <div class="state-container" *ngIf="!isLoading && !loadingFailed && chamados.length === 0">
+        <div
+          class="state-container"
+          *ngIf="!isLoading && !loadingFailed && chamados.length === 0"
+        >
           <mat-icon class="state-icon">assignment_turned_in</mat-icon>
           <h3>Nenhum chamado encontrado</h3>
-          <p>Sua lista de trabalho está vazia ou não encontramos resultados para sua busca.</p>
+          <p>
+            Sua lista de trabalho está vazia ou não encontramos resultados para
+            sua busca.
+          </p>
         </div>
 
-        <div class="chamado-list-container" *ngIf="!isLoading && !loadingFailed && chamados.length > 0">
-          <div class="chamado-row priority-border-{{ c.prioridade | lowercase }}" *ngFor="let c of chamados">
+        <div
+          class="chamado-list-container"
+          *ngIf="!isLoading && !loadingFailed && chamados.length > 0"
+        >
+          <div
+            class="chamado-row priority-border-{{ c.prioridade | lowercase }}"
+            *ngFor="let c of chamados"
+          >
             <div class="row-main-content">
               <div class="row-header-meta">
                 <div class="protocolo-display" matTooltip="{{ c.protocolo }}">
-                  <mat-icon class="icon-small">tag</mat-icon> <strong>{{ c.protocolo }}</strong>
+                  <mat-icon class="icon-small">tag</mat-icon>
+                  <strong>{{ c.protocolo }}</strong>
                 </div>
                 <div class="date-time-display">
-                   <mat-icon class="icon-small">update</mat-icon> {{ c.dataUltimaAtualizacao | date : "dd/MM/yyyy HH:mm" }}
+                  <mat-icon class="icon-small">update</mat-icon>
+                  {{ c.dataUltimaAtualizacao | date : "dd/MM/yyyy HH:mm" }}
                 </div>
-                <div class="mini-priority priority-text-{{ c.prioridade | lowercase }}">
+                <div
+                  class="mini-priority priority-text-{{
+                    c.prioridade | lowercase
+                  }}"
+                >
                   {{ prioridadeLabels[c.prioridade] || c.prioridade }}
                 </div>
-                <div class="status-badge-inline status-{{ c.status | lowercase }}">
+                <div
+                  class="status-badge-inline status-{{ c.status | lowercase }}"
+                >
                   {{ c.status }}
                 </div>
               </div>
 
               <h3 class="row-title">{{ c.titulo }}</h3>
               <p class="row-description">{{ c.descricao }}</p>
-              
+
               <div class="row-tech-info">
-                 <mat-icon class="icon-small">person</mat-icon> Solicitado por <strong>{{ c.solicitante.nome }}</strong>
+                <mat-icon class="icon-small">person</mat-icon> Solicitado por
+                <strong>{{ c.solicitante.nome }}</strong>
               </div>
             </div>
 
             <div class="row-actions-side">
               <div class="button-group">
-                <button class="btn-custom btn-details" (click)="verDetalhes(c.id)">
+                <button
+                  class="btn-custom btn-details"
+                  (click)="verDetalhes(c.id)"
+                >
                   <mat-icon>visibility</mat-icon> Detalhes
                 </button>
-                <button class="btn-custom btn-yellow" *ngIf="podeTransferir(c.status)" (click)="abrirModalTransferencia(c)">
+                <button
+                  class="btn-custom btn-yellow"
+                  *ngIf="podeTransferir(c.status)"
+                  (click)="abrirModalTransferencia(c)"
+                >
                   <mat-icon>forward</mat-icon> Transferir
                 </button>
               </div>
@@ -112,10 +160,16 @@
           </div>
         </div>
 
-        <div class="pagination-container" *ngIf="!isLoading && chamados.length > 0">
-          <app-pagination [pageNumber]="page" [totalPages]="totalPages" (pageChange)="paginar($event)"></app-pagination>
+        <div
+          class="pagination-container"
+          *ngIf="!isLoading && chamados.length > 0"
+        >
+          <app-pagination
+            [pageNumber]="page"
+            [totalPages]="totalPages"
+            (pageChange)="paginar($event)"
+          ></app-pagination>
         </div>
-
       </div>
     </mat-tab>
 
@@ -126,11 +180,15 @@
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon inbox-icon">move_to_inbox</mat-icon>
         Recebidos
-        <span class="tab-badge-alert" *ngIf="pendenciasCount > 0">{{ pendenciasCount }}</span>
+        <span class="tab-badge-alert" *ngIf="pendenciasCount > 0">{{
+          pendenciasCount
+        }}</span>
       </ng-template>
 
       <div class="tab-content">
-        <app-listar-transferencias-pendentes (listaAtualizada)="atualizarCountPendencias()"></app-listar-transferencias-pendentes>
+        <app-listar-transferencias-pendentes
+          (listaAtualizada)="atualizarCountPendencias()"
+        ></app-listar-transferencias-pendentes>
       </div>
     </mat-tab>
 
@@ -143,12 +201,10 @@
         Enviados
       </ng-template>
 
-      <div class="tab-content empty-tab">
-        <mat-icon class="state-icon">outbox</mat-icon>
-        <p>A lista de transferências enviadas será implementada aqui em breve.</p>
-        <!-- Futuramente: <app-listar-transferencias-enviadas></app-listar-transferencias-enviadas> -->
+      <div class="tab-content">
+        <!-- O COMPONENTE NOVO ENTRA AQUI -->
+        <app-listar-transferencias-enviadas></app-listar-transferencias-enviadas>
       </div>
     </mat-tab>
-
   </mat-tab-group>
 </div>

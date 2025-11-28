@@ -1,0 +1,38 @@
+<div class="modal-container">
+  <h2 mat-dialog-title class="modal-title">
+    <mat-icon class="icon-warn">warning</mat-icon> Recusar Transferência
+  </h2>
+
+  <mat-dialog-content>
+    <p class="desc">
+      Por favor, informe o motivo da recusa para o técnico solicitante.
+    </p>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Motivo da Recusa</mat-label>
+      <textarea
+        matInput
+        [formControl]="motivoControl"
+        rows="4"
+        placeholder="Ex: Não tenho conhecimento sobre este sistema..."
+      ></textarea>
+      <mat-error *ngIf="motivoControl.hasError('required')"
+        >O motivo é obrigatório.</mat-error
+      > <mat-error *ngIf="motivoControl.hasError('minlength')"
+        >O motivo deve ter no mínimo 5 caracteres.</mat-error
+      >
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cancelar()">Cancelar</button>
+    <button
+      mat-raised-button
+      color="warn"
+      (click)="confirmar()"
+      [disabled]="motivoControl.invalid"
+    >
+      Confirmar Recusa
+    </button>
+  </mat-dialog-actions>
+</div>

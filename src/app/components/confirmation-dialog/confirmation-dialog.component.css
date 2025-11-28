@@ -1,119 +1,163 @@
-/* Container Geral - Centraliza tudo para foco total */
+/* Container Geral */
 .dialog-container {
-  padding: var(--space-lg) var(--space-md);
-  background: var(--bg-1);
-  border-radius: var(--radius-md);
+  padding: 32px 24px;
+  background: #ffffff;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centraliza horizontalmente */
-  text-align: center;  /* Alinha textos ao centro */
+  align-items: center;
+  text-align: center;
+  max-width: 420px;
+  margin: 0 auto;
 }
 
-/* --- Ícone de Destaque --- */
+/* Ícone */
 .dialog-icon-wrapper {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: var(--space-md);
-  /* Animação suave de entrada */
+  margin-bottom: 24px;
   animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .dialog-icon-wrapper mat-icon {
-  font-size: 28px;
-  width: 28px;
-  height: 28px;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
 }
 
-/* Cores do Ícone (Fundo Suave + Ícone Forte) */
-/* Primary (Azul) */
+/* Cores do Ícone */
 .dialog-icon-wrapper.primary {
-  background-color: rgba(63, 114, 175, 0.1); /* --color-cta com 10% opacity */
-  color: var(--color-cta);
+  background-color: #e3f2fd;
+  color: #1565c0;
 }
-
-/* Warn (Vermelho - Excluir/Perigo) */
 .dialog-icon-wrapper.warn {
-  background-color: rgba(229, 57, 53, 0.1); /* --color-danger com 10% opacity */
-  color: var(--color-danger);
+  background-color: #ffebee;
+  color: #c62828;
 }
-
-/* Accent/Success (Verde) */
 .dialog-icon-wrapper.accent {
-  background-color: rgba(76, 175, 80, 0.1); /* --color-success com 10% opacity */
-  color: var(--color-success);
+  background-color: #e8f5e9;
+  color: #2e7d32;
 }
 
-/* --- Título --- */
+/* Título */
 .dialog-title {
-  font-family: var(--font-display);
-  color: var(--text-1); /* Título escuro */
-  font-weight: 600;
-  font-size: 1.25rem;
-  margin: 0 0 var(--space-xs) 0;
+  font-family: "Roboto", sans-serif;
+  color: #333;
+  font-weight: 700;
+  font-size: 1.35rem;
+  margin: 0 0 16px 0;
   width: 100%;
+  line-height: 1.3;
 }
 
-/* --- Mensagem --- */
+/* Conteúdo/Mensagem */
 .dialog-content {
   margin: 0;
   padding: 0 !important;
-  max-width: 380px; /* Limite para não ficar muito largo em desktop */
+  width: 100%;
 }
 
 .dialog-message {
-  font-family: var(--font-sans);
-  color: var(--color-secondary); /* Cinza mais suave para descrição */
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin-bottom: var(--space-lg);
+  font-family: "Roboto", sans-serif;
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 32px;
+  padding: 0 8px;
+
+  /* --- MUDANÇA PRINCIPAL AQUI --- */
+  /* Permite que o \n quebre a linha e cria parágrafos */
+  white-space: pre-wrap;
 }
 
-/* --- Ações --- */
+/* Ações */
 .dialog-actions {
   padding: 0 !important;
   margin: 0 !important;
   display: flex;
-  justify-content: center; /* Botões centralizados ou stretch */
+  justify-content: center;
   width: 100%;
-  gap: var(--space-md);
+  gap: 16px;
 }
 
 /* Botões */
 button.btn {
-  min-width: 110px;
+  min-width: 120px;
+  height: 42px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
   justify-content: center;
 }
 
-/* Botão de Perigo (Adicionar se não existir no global) */
-.btn-danger {
-  background-color: var(--color-danger);
+/* Estilos de Botão */
+.btn-ghost {
+  background-color: transparent;
+  border: 1px solid #ccc;
+  color: #666;
+}
+.btn-ghost:hover {
+  background-color: #f5f5f5;
+  color: #333;
+  border-color: #bbb;
+}
+
+.btn-primary {
+  background-color: #007bff;
   color: white;
-  border: none;
-  transition: background 0.2s;
+}
+.btn-primary:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
 }
 
+.btn-danger {
+  background-color: #d32f2f;
+  color: white;
+}
 .btn-danger:hover {
-  background-color: #d32f2f; /* Darker red */
+  background-color: #b71c1c;
+  box-shadow: 0 4px 8px rgba(211, 47, 47, 0.2);
 }
 
-/* Responsividade Mobile: Botões empilhados */
-@media (max-width: 480px) {
-  .dialog-actions {
-    flex-direction: column-reverse; /* Cancelar embaixo */
-    width: 100%;
+.btn-accent {
+  background-color: #2e7d32;
+  color: white;
+}
+.btn-accent:hover {
+  background-color: #1b5e20;
+  box-shadow: 0 4px 8px rgba(46, 125, 50, 0.2);
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
   }
-  
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .dialog-container {
+    padding: 24px 16px;
+  }
+  .dialog-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
   button.btn {
     width: 100%;
   }
-}
-
-/* Animação do Ícone */
-@keyframes scaleIn {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
 }

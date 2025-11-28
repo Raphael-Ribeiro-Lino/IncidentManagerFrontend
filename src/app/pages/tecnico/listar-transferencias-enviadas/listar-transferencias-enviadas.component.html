@@ -1,0 +1,112 @@
+<div class="enviadas-container">
+  <div class="action-bar-container">
+    <div class="filters-container">
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Buscar no histórico...</mat-label>
+        <input
+          matInput
+          [ngModel]="busca"
+          (ngModelChange)="onSearchInput($event)"
+          placeholder="Protocolo ou nome do técnico"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <div class="action-button">
+      <mat-icon class="icon-small">outbox</mat-icon>
+      {{ totalElementos }} enviadas
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <p>Carregando histórico...</p>
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading && transferencias.length === 0">
+    <mat-icon class="empty-icon">history</mat-icon>
+    <h3>Histórico vazio</h3>
+    <p>Você ainda não solicitou nenhuma transferência.</p>
+  </div>
+
+  <div
+    class="chamado-list-container"
+    *ngIf="!isLoading && transferencias.length > 0"
+  >
+    <div
+      class="chamado-row priority-border-{{ t.chamado.prioridade | lowercase }}"
+      *ngFor="let t of transferencias"
+    >
+      <div class="row-main-content">
+        <div class="row-header-meta">
+          <div class="protocolo-display" matTooltip="{{ t.chamado.protocolo }}">
+            <mat-icon class="icon-small">tag</mat-icon>
+            <strong>{{ t.chamado.protocolo }}</strong>
+          </div>
+
+          <div class="date-time-display">
+            <mat-icon class="icon-small">event</mat-icon>
+            <span>{{ t.dataSolicitacao | date : "dd/MM/yyyy" }}</span>
+            <span class="time-part"
+              >às {{ t.dataSolicitacao | date : "HH:mm" }}</span
+            >
+          </div>
+
+          <!-- STATUS DA TRANSFERÊNCIA (Destaque desta tela) -->
+          <div
+            class="transfer-status-badge status-transfer-{{
+              t.status | lowercase
+            }}"
+          >
+            {{ t.status }}
+          </div>
+        </div>
+
+        <h3 class="row-title" (click)="verChamado(t)" matTooltip="Ver detalhes">
+          {{ t.chamado.titulo }}
+          <mat-icon class="tiny-icon-link">visibility</mat-icon>
+        </h3>
+
+        <div class="row-tech-info">
+          <mat-icon class="icon-small">forward</mat-icon>
+          <span
+            >Enviado para:
+            <strong>{{ t.chamado.tecnicoResponsavel.nome }}</strong></span
+          >
+        </div>
+
+        <!-- Motivo menorzinho aqui, pois é histórico -->
+        <p class="motivo-text">"{{ t.motivo }}"</p>
+      </div>
+
+      <!-- Ações (Apenas Cancelar se Pendente) -->
+      <div class="row-actions-side">
+        <div class="button-group">
+          <button class="btn-custom btn-details" (click)="verChamado(t)">
+            <mat-icon>visibility</mat-icon> Detalhes
+          </button>
+
+          <button
+            class="btn-custom btn-cancel"
+            *ngIf="t.status === 'PENDENTE'"
+            (click)="cancelar(t)"
+          >
+            <mat-icon>delete_forever</mat-icon> Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="paginator-wrapper" *ngIf="!isLoading && totalElementos > 0">
+    <app-pagination
+      [pageNumber]="page"
+      [totalPages]="totalPages"
+      (pageChange)="paginar($event)"
+    ></app-pagination>
+  </div>
+</div>

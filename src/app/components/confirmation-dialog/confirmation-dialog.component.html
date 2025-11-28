@@ -1,6 +1,9 @@
 <div class="dialog-container">
-  
-  <div class="dialog-icon-wrapper" [ngClass]="data.corBotao || 'primary'" *ngIf="data.icone">
+  <div
+    class="dialog-icon-wrapper"
+    [ngClass]="data.corBotao || 'primary'"
+    *ngIf="data.icone"
+  >
     <mat-icon>{{ data.icone }}</mat-icon>
   </div>
 
@@ -13,21 +16,27 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="dialog-actions">
-    <button 
-      *ngIf="data.mostrarCancelar !== false" 
-      type="button" 
-      class="btn btn-ghost" 
-      (click)="onNoClick()">
-      {{ data.textoCancelar || 'Cancelar' }}
+    <button
+      *ngIf="data.mostrarCancelar !== false"
+      type="button"
+      class="btn btn-ghost"
+      (click)="onNoClick()"
+    >
+      {{ data.textoCancelar || "Cancelar" }}
     </button>
 
-    <button 
-      type="button" 
+    <button
+      type="button"
       class="btn"
-      [ngClass]="data.corBotao === 'warn' ? 'btn-danger' : 'btn-primary'"
-      [mat-dialog-close]="true" 
-      cdkFocusInitial>
-      {{ data.textoConfirmar || 'Confirmar' }}
+      [ngClass]="{
+        'btn-danger': data.corBotao === 'warn',
+        'btn-primary': data.corBotao === 'primary' || !data.corBotao,
+        'btn-accent': data.corBotao === 'accent'
+      }"
+      [mat-dialog-close]="true"
+      cdkFocusInitial
+    >
+      {{ data.textoConfirmar || "Confirmar" }}
     </button>
   </mat-dialog-actions>
 </div>

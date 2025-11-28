@@ -1,6 +1,5 @@
 :host {
   display: block;
-  /* Variáveis Globais */
   --bg-card: #ffffff;
   --border-color: #e0e0e0;
   --text-main: #333;
@@ -8,25 +7,17 @@
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
   --primary-color: #007bff;
   --primary-light: #e3f2fd;
-
-  /* Cores de Ação */
-  --green-text: #2e7d32;
-  --green-border: #a5d6a7;
-  --green-bg-hover: #e8f5e9;
-
-  --red-text: #c62828;
-  --red-border: #ef9a9a;
-  --red-bg-hover: #ffebee;
 }
 
-.pendencias-container {
-  /* Adicionado padding lateral para não colar na borda da tela em monitores grandes */
+.enviadas-container {
+  padding: 20px 0; /* Padding vertical apenas, lateral o pai resolve */
   max-width: 1150px;
   margin: 0 auto;
-  box-sizing: border-box; /* Garante que o padding não estoure a largura */
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* --- BARRA DE AÇÃO --- */
+/* Action Bar */
 .action-bar-container {
   display: flex;
   flex-wrap: wrap;
@@ -39,17 +30,14 @@
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
   justify-content: space-between;
-
-  /* CORREÇÃO PRINCIPAL DO SCROLL HORIZONTAL */
   width: 100%;
-  box-sizing: border-box; /* Faz o padding ficar DENTRO dos 100% */
+  box-sizing: border-box;
 }
 
 .filters-container {
   flex: 1;
-  min-width: 280px; /* Mantém em desktop */
+  min-width: 280px;
 }
-
 .search-field {
   width: 100%;
 }
@@ -65,13 +53,12 @@
   font-size: 0.95rem;
 }
 
-/* --- CARD DO CHAMADO --- */
+/* Cards */
 .chamado-list-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: 100%; /* Garante largura */
-  box-sizing: border-box;
+  width: 100%;
 }
 
 .chamado-row {
@@ -86,24 +73,21 @@
   border-left: 6px solid var(--border-color);
   transition: all 0.2s ease;
   width: 100%;
-  box-sizing: border-box; /* Garante responsividade do card */
+  box-sizing: border-box;
 }
-
 .chamado-row:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
 }
 
-/* Conteúdo Principal */
 .row-main-content {
   display: flex;
   flex-direction: column;
   flex: 1;
   margin-right: 24px;
-  min-width: 0; /* Permite encolher o texto (flexbox trick) */
+  min-width: 0;
 }
 
-/* Header do Card (Meta Dados) */
 .row-header-meta {
   display: flex;
   align-items: center;
@@ -141,34 +125,37 @@
   margin-left: 4px;
 }
 
-/* Badges de Prioridade */
-.mini-priority {
+/* STATUS DA TRANSFERÊNCIA */
+.transfer-status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 4px 12px;
-  border-radius: 20px;
-  background-color: #f0f0f0;
-  color: var(--text-main);
+  letter-spacing: 0.5px;
 }
-.priority-text-baixa {
-  color: #27ae60;
-  background-color: #eaf7ed;
+.status-transfer-pendente {
+  background: #fff8e1;
+  color: #f57c00;
+  border: 1px solid #ffe0b2;
 }
-.priority-text-media {
-  color: #d35400;
-  background-color: #fff4e6;
+.status-transfer-aceita {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
 }
-.priority-text-alta {
-  color: #e67e22;
-  background-color: #fdf2e9;
+.status-transfer-recusada {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
 }
-.priority-text-critica {
-  color: #c0392b;
-  background-color: #fbeced;
+.status-transfer-cancelada {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ccc;
 }
 
-/* Bordas de Prioridade */
+/* Bordas Laterais do Card (Baseado na Prio do Chamado) */
 .priority-border-baixa {
   border-left-color: #27ae60;
 }
@@ -179,41 +166,22 @@
   border-left-color: #e67e22;
 }
 .priority-border-critica {
-  border-left-color: #c0392b;
+  border-left-color: #c62828;
 }
 
-/* Título */
 .row-title {
   font-size: 1.35rem;
   font-weight: 700;
   color: var(--text-main);
   margin: 0 0 10px 0;
-  word-wrap: break-word; /* Evita quebra de layout */
+  cursor: pointer;
+  word-wrap: break-word;
+}
+.row-title:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
 }
 
-/* Destaque do Motivo (Amarelo) */
-.row-reason-box {
-  font-size: 0.95rem;
-  color: #555;
-  margin: 0 0 12px 0;
-  font-style: italic;
-  background: #fff8e1;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border-left: 3px solid #ffb74d;
-  display: inline-block;
-  width: fit-content;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-.reason-label {
-  font-weight: 700;
-  color: #e65100;
-  margin-right: 4px;
-  font-style: normal;
-}
-
-/* Info Técnico */
 .row-tech-info {
   display: flex;
   align-items: center;
@@ -227,9 +195,22 @@
   border: 1px solid #eee;
   max-width: 100%;
   box-sizing: border-box;
+  margin-bottom: 8px;
 }
 
-/* --- AÇÕES LATERAIS --- */
+.motivo-text {
+  font-size: 0.9rem;
+  color: #777;
+  font-style: italic;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Botões */
 .row-actions-side {
   display: flex;
   flex-direction: column;
@@ -239,7 +220,6 @@
   padding-left: 20px;
   border-left: 1px dashed #eee;
 }
-
 .button-group {
   display: flex;
   flex-direction: column;
@@ -271,26 +251,18 @@
 .btn-details {
   color: var(--primary-color);
   border: 1px solid var(--primary-color);
-  margin-bottom: 4px;
 }
 .btn-details:hover {
   background-color: var(--primary-light);
 }
 
-.btn-accept {
-  color: var(--green-text);
-  border: 1px solid var(--green-border);
+.btn-cancel {
+  color: #666;
+  border: 1px solid #999;
 }
-.btn-accept:hover {
-  background-color: var(--green-bg-hover);
-}
-
-.btn-reject {
-  color: var(--red-text);
-  border: 1px solid var(--red-border);
-}
-.btn-reject:hover {
-  background-color: var(--red-bg-hover);
+.btn-cancel:hover {
+  background-color: #f5f5f5;
+  color: #333;
 }
 
 .icon-small {
@@ -320,28 +292,19 @@
   opacity: 0.5;
 }
 
-/* --- RESPONSIVIDADE --- */
+/* Responsividade */
 @media (max-width: 768px) {
-  /* Remove padding externo para ganhar espaço */
-  .pendencias-container {
-    padding: 16px;
-  }
-
   .action-bar-container {
     flex-direction: column;
     align-items: stretch;
-    padding: 16px; /* Reduz padding interno */
   }
-
-  /* CORREÇÃO DO FILTRO NO MOBILE */
-  .filters-container {
-    min-width: 0; /* Permite encolher abaixo de 280px */
-    width: 100%;
-  }
-
   .action-button {
     justify-content: flex-start;
     margin-top: 10px;
+  }
+  .filters-container {
+    min-width: 0;
+    width: 100%;
   }
 
   .chamado-row {
@@ -349,9 +312,8 @@
     align-items: flex-start;
     gap: 16px;
     border-left-width: 5px;
-    padding: 16px; /* Padding menor no card mobile */
+    padding: 16px;
   }
-
   .row-main-content {
     margin-right: 0;
     width: 100%;
@@ -364,80 +326,12 @@
     padding-left: 0;
     padding-top: 16px;
   }
-
   .button-group {
-    flex-direction: row; /* Botões lado a lado no mobile para economizar altura */
-    flex-wrap: wrap; /* Se não couber, quebra linha */
+    flex-direction: row;
+    flex-wrap: wrap;
   }
-
   .btn-custom {
-    flex: 1; /* Distribui espaço igual */
-    min-width: 120px; /* Garante tamanho clicável */
+    flex: 1;
+    min-width: 120px;
   }
-
-  .row-reason-box {
-    width: 100%;
-    box-sizing: border-box;
-  }
-}
-/* --- ERROR CARD (Novo) --- */
-.error-card {
-  background-color: #ffebee;
-  border: 1px solid #ffcdd2;
-  color: #c62828;
-  padding: 24px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-  box-shadow: var(--shadow-sm);
-}
-
-.error-icon {
-  font-size: 36px;
-  height: 36px;
-  width: 36px;
-  color: #d32f2f;
-}
-
-.error-content h3 {
-  margin: 0 0 8px 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.error-content p {
-  margin: 0 0 12px 0;
-  font-size: 0.95rem;
-}
-
-.btn-error-retry {
-  background-color: white;
-  border: 1px solid #d32f2f;
-  color: #d32f2f;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: background-color 0.2s;
-}
-
-.btn-error-retry:hover {
-  background-color: #ffebee;
-}
-
-/* --- AJUSTES NO EMPTY STATE --- */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text-muted);
-}
-
-.empty-state h3 {
-  margin: 10px 0;
-  color: var(--text-main);
 }

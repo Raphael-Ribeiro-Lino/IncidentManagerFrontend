@@ -1,106 +1,146 @@
 <div class="pendencias-container">
-
-  <!-- Barra de Ação Unificada -->
+  <!-- Barra de Ação -->
   <div class="action-bar-container">
     <div class="filters-container">
-      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        subscriptSizing="dynamic"
+      >
         <mat-label>Buscar nas pendências...</mat-label>
-        <input matInput [ngModel]="busca" (ngModelChange)="onSearchInput($event)"
-          placeholder="Protocolo, título ou remetente">
+        <input
+          matInput
+          [ngModel]="busca"
+          (ngModelChange)="onSearchInput($event)"
+          placeholder="Protocolo, título ou remetente"
+        />
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
     </div>
 
-    <!-- Contador -->
     <div class="action-button">
       <mat-icon class="icon-small">inbox</mat-icon>
       {{ totalElementos }} pendências
     </div>
   </div>
 
-  <!-- Loading -->
+  <!-- 1. LOADING -->
   <div class="loading-state" *ngIf="isLoading">
     <p>Atualizando solicitações...</p>
   </div>
 
-  <!-- Empty State -->
-  <div class="empty-state" *ngIf="!isLoading && transferencias.length === 0">
-    <mat-icon class="empty-icon">check_circle_outline</mat-icon>
-    <h3>Tudo limpo!</h3>
-    <p>Nenhuma transferência pendente para você no momento.</p>
+  <!-- 2. CARD DE ERRO (Igual à tela principal) -->
+  <div class="error-card" *ngIf="loadingFailed && !isLoading">
+    <mat-icon class="error-icon">sentiment_dissatisfied</mat-icon>
+    <div class="error-content">
+      <h3>Ops! Algo deu errado.</h3>
+      <p *ngFor="let msg of errorMessages">{{ msg }}</p>
+      <button class="btn-error-retry" (click)="carregarPendencias()">
+        <mat-icon>refresh</mat-icon> Tentar Novamente
+      </button>
+    </div>
   </div>
 
-  <!-- Lista de Cards -->
-  <div class="chamado-list-container" *ngIf="!isLoading && transferencias.length > 0">
+  <!-- 3. ESTADOS VAZIOS (Inteligente) -->
+  <div
+    class="empty-state"
+    *ngIf="!isLoading && !loadingFailed && transferencias.length === 0"
+  >
+    <!-- Caso A: Fez uma busca e não achou -->
+    <ng-container *ngIf="busca; else semPendencias">
+      <mat-icon class="empty-icon">search_off</mat-icon>
+      <h3>Nenhum resultado encontrado</h3>
+      <p>
+        Não encontramos solicitações com o termo "<strong>{{ busca }}</strong
+        >".
+      </p>
+    </ng-container>
 
-    <div class="chamado-row priority-border-{{ t.chamado.prioridade | lowercase }}" *ngFor="let t of transferencias">
+    <!-- Caso B: Realmente não tem nada (Inbox Zero) -->
+    <ng-template #semPendencias>
+      <mat-icon class="empty-icon">check_circle_outline</mat-icon>
+      <h3>Tudo limpo!</h3>
+      <p>Nenhuma transferência pendente para você no momento.</p>
+    </ng-template>
+  </div>
 
-      <!-- Conteúdo Principal -->
+  <!-- 4. LISTA DE CARDS -->
+  <div
+    class="chamado-list-container"
+    *ngIf="!isLoading && !loadingFailed && transferencias.length > 0"
+  >
+    <div
+      class="chamado-row priority-border-{{ t.chamado.prioridade | lowercase }}"
+      *ngFor="let t of transferencias"
+    >
+      <!-- ... CONTEÚDO DO CARD MANTIDO IGUAL ... -->
       <div class="row-main-content">
-
-        <!-- Meta Dados -->
         <div class="row-header-meta">
           <div class="protocolo-display" matTooltip="{{ t.chamado.protocolo }}">
             <mat-icon class="icon-small">tag</mat-icon>
             <strong>{{ t.chamado.protocolo }}</strong>
           </div>
-
           <div class="date-time-display" matTooltip="Data da Solicitação">
             <mat-icon class="icon-small">event</mat-icon>
-            <span>{{ t.dataSolicitacao | date:'dd/MM/yyyy' }}</span>
-            <span class="time-part">às {{ t.dataSolicitacao | date:'HH:mm' }}</span>
+            <span>{{ t.dataSolicitacao | date : "dd/MM/yyyy" }}</span>
+            <span class="time-part"
+              >às {{ t.dataSolicitacao | date : "HH:mm" }}</span
+            >
           </div>
-
-          <div class="mini-priority priority-text-{{ t.chamado.prioridade | lowercase }}">
+          <div
+            class="mini-priority priority-text-{{
+              t.chamado.prioridade | lowercase
+            }}"
+            matTooltip="Prioridade"
+          >
             {{ t.chamado.prioridade | titlecase }}
           </div>
         </div>
 
-        <!-- Título -->
-        <h3 class="row-title">
+        <h3 class="row-title" matTooltip="Título do chamado">
           {{ t.chamado.titulo }}
         </h3>
 
-        <!-- Destaque: Motivo da Transferência -->
-        <div class="row-reason-box">
+        <div class="row-reason-box" matTooltip="Motivo da Solicitação">
           <span class="reason-label">Motivo:</span> "{{ t.motivo }}"
         </div>
 
-        <!-- Quem enviou -->
         <div class="row-tech-info" matTooltip="Técnico de Origem">
           <mat-icon class="icon-small">person_outline</mat-icon>
-          <span>Enviado por <strong>{{ t.chamado.tecnicoResponsavel.nome || 'Sistema' }}</strong></span>
+          <span
+            >Enviado por
+            <strong>{{
+              t.chamado.tecnicoResponsavel.nome || "Sistema"
+            }}</strong></span
+          >
         </div>
       </div>
 
-      <!-- Ações Laterais -->
       <div class="row-actions-side">
         <div class="button-group">
-
-          <button class="btn-custom btn-details" (click)="verChamado(t)">
-            <mat-icon>visibility</mat-icon>
-            Detalhes
+          <button class="btn-custom btn-details" (click)="verChamado(t)" matTooltip="Detalhes do Chamado">
+            <mat-icon>visibility</mat-icon> Detalhes
           </button>
-
-          <button class="btn-custom btn-accept" (click)="aceitar(t)">
-            <mat-icon>check_circle</mat-icon>
-            Aceitar
+          <button class="btn-custom btn-accept" (click)="aceitar(t)" matTooltip="Aceitar Solicitação">
+            <mat-icon>check_circle</mat-icon> Aceitar
           </button>
-
-          <button class="btn-custom btn-reject" (click)="recusar(t)">
-            <mat-icon>cancel</mat-icon>
-            Recusar
+          <button class="btn-custom btn-reject" (click)="recusar(t)" matTooltip="Recusar Solicitação">
+            <mat-icon>cancel</mat-icon> Recusar
           </button>
-
         </div>
       </div>
-
     </div>
   </div>
 
   <!-- Paginação -->
-  <div class="paginator-wrapper" *ngIf="!isLoading && totalElementos > 0">
-    <app-pagination [pageNumber]="page" [totalPages]="totalPages" (pageChange)="paginar($event)"></app-pagination>
+  <div
+    class="paginator-wrapper"
+    *ngIf="!isLoading && !loadingFailed && totalElementos > 0"
+  >
+    <app-pagination
+      [pageNumber]="page"
+      [totalPages]="totalPages"
+      (pageChange)="paginar($event)"
+    ></app-pagination>
   </div>
-
 </div>

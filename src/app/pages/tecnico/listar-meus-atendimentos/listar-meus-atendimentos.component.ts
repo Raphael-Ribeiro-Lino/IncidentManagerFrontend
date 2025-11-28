@@ -25,6 +25,7 @@ import { SolicitarTransferenciaInput } from '../../../models/chamado/solicitarTr
 import { TransferenciaService } from '../../../services/transferencia/transferencia.service';
 import { ListarTransferenciasPendentesComponent } from '../listar-transferencias-pendentes/listar-transferencias-pendentes.component';
 import { ModalSolicitarTransferenciaComponent } from '../../../components/modal-solicitar-transferencia/modal-solicitar-transferencia.component';
+import { ListarTransferenciasEnviadasComponent } from '../listar-transferencias-enviadas/listar-transferencias-enviadas.component';
 
 @Component({
   selector: 'app-listar-meus-atendimentos',
@@ -43,7 +44,8 @@ import { ModalSolicitarTransferenciaComponent } from '../../../components/modal-
     MatSnackBarModule,
     PaginationComponent,
     DatePipe,
-    ListarTransferenciasPendentesComponent // <--- Adicionado o componente filho
+    ListarTransferenciasPendentesComponent,
+    ListarTransferenciasEnviadasComponent
   ],
   templateUrl: './listar-meus-atendimentos.component.html',
   styleUrl: './listar-meus-atendimentos.component.css',
