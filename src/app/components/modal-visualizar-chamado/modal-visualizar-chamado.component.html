@@ -1,0 +1,70 @@
+<div class="modal-wrapper">
+  
+  <!-- CABEÇALHO -->
+  <div class="modal-header-line">
+    <h2 class="modal-title">
+      <mat-icon class="title-icon">visibility</mat-icon> 
+      Detalhes do chamado
+    </h2>
+    
+    <div class="protocolo-badge">
+      <mat-icon class="icon-small">tag</mat-icon>
+      <strong class="protocolo-text">{{ data.chamado.protocolo }}</strong>
+    </div>
+  </div>
+
+  <mat-dialog-content class="modal-body">
+    
+    <div class="vertical-stack">
+      
+      <!-- 1. DATA DE ABERTURA -->
+      <div class="stack-item">
+        <span class="label">Data de Abertura</span>
+        <div class="date-display">
+          <mat-icon class="icon-tiny">calendar_today</mat-icon>
+          <span>{{ data.chamado.dataCriacao | date : "dd/MM/yyyy" }}</span>
+          <span class="time">às {{ data.chamado.dataCriacao | date : "HH:mm" }}</span>
+        </div>
+      </div>
+
+      <!-- 2. STATUS E PRIORIDADE (Lado a Lado) -->
+      <div class="stack-item flex-row gap-large">
+        <div class="info-group">
+          <span class="label">Status Atual</span>
+          <div class="status-badge-inline status-{{ data.chamado.status | lowercase }}">
+            {{ data.chamado.status }}
+          </div>
+        </div>
+        
+        <div class="info-group">
+          <span class="label">Prioridade</span>
+          <div class="mini-priority priority-text-{{ data.chamado.prioridade | lowercase }}">
+            {{ data.chamado.prioridade | titlecase }}
+          </div>
+        </div>
+      </div>
+      
+      <div class="divider"></div>
+
+      <!-- 3. TÍTULO DO CHAMADO -->
+      <div class="stack-item">
+        <span class="label">Título do Chamado</span>
+        <h3 class="chamado-titulo-main">{{ data.chamado.titulo }}</h3>
+      </div>
+
+      <!-- 4. DESCRIÇÃO -->
+      <div class="stack-item description-block">
+        <label class="label">Descrição do Problema</label>
+        <div class="description-box">
+          {{ data.chamado.descricao || 'Sem descrição.' }}
+        </div>
+      </div>
+
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="modal-footer">
+    <button mat-stroked-button (click)="fechar()">Fechar</button>
+  </mat-dialog-actions>
+</div>

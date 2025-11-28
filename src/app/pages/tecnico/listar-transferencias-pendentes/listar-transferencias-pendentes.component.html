@@ -1,13 +1,21 @@
 <div class="pendencias-container">
-  
-  <!-- Barra de Filtro Interna (Mantida simples, mas estilizada) -->
-  <div class="filter-bar">
-    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
-      <mat-label>Buscar nas pendências...</mat-label>
-      <input matInput [ngModel]="busca" (ngModelChange)="onSearchInput($event)" 
-             placeholder="Protocolo, título ou remetente">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
+
+  <!-- Barra de Ação Unificada -->
+  <div class="action-bar-container">
+    <div class="filters-container">
+      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+        <mat-label>Buscar nas pendências...</mat-label>
+        <input matInput [ngModel]="busca" (ngModelChange)="onSearchInput($event)"
+          placeholder="Protocolo, título ou remetente">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Contador -->
+    <div class="action-button">
+      <mat-icon class="icon-small">inbox</mat-icon>
+      {{ totalElementos }} pendências
+    </div>
   </div>
 
   <!-- Loading -->
@@ -17,21 +25,20 @@
 
   <!-- Empty State -->
   <div class="empty-state" *ngIf="!isLoading && transferencias.length === 0">
-    <mat-icon class="empty-icon">inbox</mat-icon>
+    <mat-icon class="empty-icon">check_circle_outline</mat-icon>
     <h3>Tudo limpo!</h3>
-    <p>Nenhuma transferência pendente para você.</p>
+    <p>Nenhuma transferência pendente para você no momento.</p>
   </div>
 
-  <!-- Lista de Cards (Estrutura IDÊNTICA à Lista de Atendimentos) -->
+  <!-- Lista de Cards -->
   <div class="chamado-list-container" *ngIf="!isLoading && transferencias.length > 0">
-    
-    <div class="chamado-row priority-border-{{ t.chamado.prioridade | lowercase }}" 
-         *ngFor="let t of transferencias">
-      
+
+    <div class="chamado-row priority-border-{{ t.chamado.prioridade | lowercase }}" *ngFor="let t of transferencias">
+
       <!-- Conteúdo Principal -->
       <div class="row-main-content">
-        
-        <!-- Meta Dados (Protocolo, Data, Prioridade) -->
+
+        <!-- Meta Dados -->
         <div class="row-header-meta">
           <div class="protocolo-display" matTooltip="{{ t.chamado.protocolo }}">
             <mat-icon class="icon-small">tag</mat-icon>
@@ -50,11 +57,11 @@
         </div>
 
         <!-- Título -->
-        <h3 class="row-title" (click)="verChamado(t.chamado.id)" matTooltip="Ver detalhes em nova aba">
-          {{ t.chamado.titulo }} <mat-icon class="tiny-icon-link">open_in_new</mat-icon>
+        <h3 class="row-title">
+          {{ t.chamado.titulo }}
         </h3>
 
-        <!-- Motivo (No lugar da descrição) -->
+        <!-- Destaque: Motivo da Transferência -->
         <div class="row-reason-box">
           <span class="reason-label">Motivo:</span> "{{ t.motivo }}"
         </div>
@@ -62,14 +69,19 @@
         <!-- Quem enviou -->
         <div class="row-tech-info" matTooltip="Técnico de Origem">
           <mat-icon class="icon-small">person_outline</mat-icon>
-          <span>Enviado por <strong>{{ t.chamado.tecnicoResponsavel.nome }}</strong></span>
+          <span>Enviado por <strong>{{ t.chamado.tecnicoResponsavel.nome || 'Sistema' }}</strong></span>
         </div>
       </div>
 
       <!-- Ações Laterais -->
       <div class="row-actions-side">
         <div class="button-group">
-          
+
+          <button class="btn-custom btn-details" (click)="verChamado(t)">
+            <mat-icon>visibility</mat-icon>
+            Detalhes
+          </button>
+
           <button class="btn-custom btn-accept" (click)="aceitar(t)">
             <mat-icon>check_circle</mat-icon>
             Aceitar

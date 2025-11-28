@@ -1,13 +1,15 @@
 :host {
   display: block;
-  --primary-color: #007bff;
+  /* Variáveis Globais */
   --bg-card: #ffffff;
   --border-color: #e0e0e0;
   --text-main: #333;
   --text-muted: #666;
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --primary-color: #007bff;
+  --primary-light: #e3f2fd;
 
-  /* Cores específicas para ações */
+  /* Cores de Ação */
   --green-text: #2e7d32;
   --green-border: #a5d6a7;
   --green-bg-hover: #e8f5e9;
@@ -18,24 +20,59 @@
 }
 
 .pendencias-container {
-  padding: 20px 0;
-  max-width: 1150px; /* Alinhado com a largura da tela principal */
+  /* Adicionado padding lateral para não colar na borda da tela em monitores grandes */
+  padding: 20px;
+  max-width: 1150px;
   margin: 0 auto;
+  box-sizing: border-box; /* Garante que o padding não estoure a largura */
 }
 
-/* Filtro */
-.filter-bar {
+/* --- BARRA DE AÇÃO --- */
+.action-bar-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
   margin-bottom: 24px;
+  background-color: var(--bg-card);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  justify-content: space-between;
+
+  /* CORREÇÃO PRINCIPAL DO SCROLL HORIZONTAL */
+  width: 100%;
+  box-sizing: border-box; /* Faz o padding ficar DENTRO dos 100% */
 }
+
+.filters-container {
+  flex: 1;
+  min-width: 280px; /* Mantém em desktop */
+}
+
 .search-field {
   width: 100%;
 }
 
-/* --- CARD PADRONIZADO (Igual ao Listar Atendimentos) --- */
+.action-button {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* --- CARD DO CHAMADO --- */
 .chamado-list-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%; /* Garante largura */
+  box-sizing: border-box;
 }
 
 .chamado-row {
@@ -49,6 +86,8 @@
   padding: 20px 24px;
   border-left: 6px solid var(--border-color);
   transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box; /* Garante responsividade do card */
 }
 
 .chamado-row:hover {
@@ -62,10 +101,10 @@
   flex-direction: column;
   flex: 1;
   margin-right: 24px;
-  min-width: 0;
+  min-width: 0; /* Permite encolher o texto (flexbox trick) */
 }
 
-/* Meta Header */
+/* Header do Card (Meta Dados) */
 .row-header-meta {
   display: flex;
   align-items: center;
@@ -130,7 +169,7 @@
   background-color: #fbeced;
 }
 
-/* Bordas Laterais */
+/* Bordas de Prioridade */
 .priority-border-baixa {
   border-left-color: #27ae60;
 }
@@ -144,33 +183,16 @@
   border-left-color: #c0392b;
 }
 
-/* Título e Ícones */
-.icon-small {
-  font-size: 16px;
-  height: 16px;
-  width: 16px;
-}
-.tiny-icon-link {
-  font-size: 14px;
-  width: 14px;
-  height: 14px;
-  color: #999;
-  vertical-align: middle;
-}
-
+/* Título */
 .row-title {
   font-size: 1.35rem;
   font-weight: 700;
   color: var(--text-main);
   margin: 0 0 10px 0;
-  cursor: pointer;
-}
-.row-title:hover {
-  color: var(--primary-color);
-  text-decoration: underline;
+  word-wrap: break-word; /* Evita quebra de layout */
 }
 
-/* Motivo (Destaque desta tela) */
+/* Destaque do Motivo (Amarelo) */
 .row-reason-box {
   font-size: 0.95rem;
   color: #555;
@@ -182,12 +204,14 @@
   border-left: 3px solid #ffb74d;
   display: inline-block;
   width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .reason-label {
   font-weight: 700;
   color: #e65100;
-  font-style: normal;
   margin-right: 4px;
+  font-style: normal;
 }
 
 /* Info Técnico */
@@ -202,6 +226,8 @@
   border-radius: 6px;
   width: fit-content;
   border: 1px solid #eee;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* --- AÇÕES LATERAIS --- */
@@ -240,15 +266,18 @@
 }
 .btn-custom:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-}
-.btn-custom mat-icon {
-  font-size: 18px;
-  height: 18px;
-  width: 18px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Botão Aceitar (Verde) */
+.btn-details {
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  margin-bottom: 4px;
+}
+.btn-details:hover {
+  background-color: var(--primary-light);
+}
+
 .btn-accept {
   color: var(--green-text);
   border: 1px solid var(--green-border);
@@ -257,7 +286,6 @@
   background-color: var(--green-bg-hover);
 }
 
-/* Botão Recusar (Vermelho) */
 .btn-reject {
   color: var(--red-text);
   border: 1px solid var(--red-border);
@@ -266,7 +294,19 @@
   background-color: var(--red-bg-hover);
 }
 
-/* Estados */
+.icon-small {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+  margin-right: 4px;
+}
+.tiny-icon-link {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #999;
+}
+
 .loading-state,
 .empty-state {
   text-align: center;
@@ -281,18 +321,43 @@
   opacity: 0.5;
 }
 
-/* Responsividade */
+/* --- RESPONSIVIDADE --- */
 @media (max-width: 768px) {
+  /* Remove padding externo para ganhar espaço */
+  .pendencias-container {
+    padding: 16px;
+  }
+
+  .action-bar-container {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px; /* Reduz padding interno */
+  }
+
+  /* CORREÇÃO DO FILTRO NO MOBILE */
+  .filters-container {
+    min-width: 0; /* Permite encolher abaixo de 280px */
+    width: 100%;
+  }
+
+  .action-button {
+    justify-content: flex-start;
+    margin-top: 10px;
+  }
+
   .chamado-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
     border-left-width: 5px;
+    padding: 16px; /* Padding menor no card mobile */
   }
+
   .row-main-content {
     margin-right: 0;
     width: 100%;
   }
+
   .row-actions-side {
     width: 100%;
     border-left: none;
@@ -300,9 +365,17 @@
     padding-left: 0;
     padding-top: 16px;
   }
+
   .button-group {
-    flex-direction: row;
+    flex-direction: row; /* Botões lado a lado no mobile para economizar altura */
+    flex-wrap: wrap; /* Se não couber, quebra linha */
   }
+
+  .btn-custom {
+    flex: 1; /* Distribui espaço igual */
+    min-width: 120px; /* Garante tamanho clicável */
+  }
+
   .row-reason-box {
     width: 100%;
     box-sizing: border-box;

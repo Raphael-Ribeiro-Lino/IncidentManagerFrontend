@@ -90,10 +90,6 @@ export const routes: Routes = [
       { path: '', redirectTo: 'listar', pathMatch: 'full' },
       { path: 'listar', component: ListarMeusAtendimentosComponent },
       { path: ':id/detalhes', component: ExibirDetalhesAtendimentoComponent },
-      {
-        path: 'transferencias-pendentes',
-        component: ListarTransferenciasPendentesComponent,
-      },
     ],
   },
 

@@ -92,17 +92,17 @@
 .action-button {
   flex-shrink: 0;
   /* --- ADICIONE ISTO PARA ALINHAR --- */
-  display: flex;           /* Habilita o Flexbox */
-  align-items: center;     /* Centraliza verticalmente o ícone com o texto */
-  gap: 8px;                /* Espaço entre o ícone e o número */
-  
+  display: flex; /* Habilita o Flexbox */
+  align-items: center; /* Centraliza verticalmente o ícone com o texto */
+  gap: 8px; /* Espaço entre o ícone e o número */
+
   /* Opcional: Garante que fique à direita se houver espaço sobrando */
-  justify-content: flex-end; 
-  
+  justify-content: flex-end;
+
   /* Seus estilos de cor/fonte (já estavam no HTML, mas é melhor aqui) */
   color: var(--text-muted);
   font-weight: 500;
-  font-size: 0.95rem;      /* Tamanho confortável */
+  font-size: 0.95rem; /* Tamanho confortável */
 }
 
 .action-button mat-icon {
@@ -443,7 +443,7 @@
     width: 100%;
   }
 
-  .action-button{
+  .action-button {
     justify-content: center;
   }
 
@@ -467,5 +467,233 @@
   }
   .button-group {
     flex-direction: row;
+  }
+}
+
+/* ... SEU CSS EXISTENTE ... */
+
+/* --- AJUSTES DO NOVO LAYOUT COM ABAS --- */
+
+.page-header {
+  margin-bottom: 10px; /* Reduzido para aproximar das abas */
+}
+
+/* Tab Group Customization */
+::ng-deep .custom-tabs .mat-mdc-tab-labels {
+  background-color: transparent;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Espaço entre as abas e o conteúdo */
+::ng-deep .custom-tabs .mat-mdc-tab-body-wrapper {
+  padding-top: 24px;
+}
+
+/* Ícones nas abas */
+.tab-icon {
+  margin-right: 8px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+.inbox-icon {
+  color: #673ab7; /* Roxo destaque */
+}
+
+/* Badge Cinza (Contador normal) */
+.tab-badge-grey {
+  background-color: #f0f0f0;
+  color: #666;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+  border: 1px solid #ddd;
+}
+
+/* Badge Vermelho (Alerta de Pendências) */
+.tab-badge-alert {
+  background-color: #e53935; /* Vermelho */
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+  box-shadow: 0 2px 4px rgba(229, 57, 53, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Ajuste de altura mínima para evitar pulo de tela */
+.tab-content {
+  min-height: 400px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- ACTION BAR (Contador Restaurado) --- */
+.action-bar-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 24px;
+  background-color: var(--bg-card);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  justify-content: space-between;
+}
+
+/* Estilo do contador "X em atendimento" */
+.action-button {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+
+/* --- ESTILOS DAS ABAS --- */
+.page-header {
+  margin-bottom: 10px;
+}
+
+::ng-deep .custom-tabs .mat-mdc-tab-labels {
+  background-color: transparent;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+::ng-deep .custom-tabs .mat-mdc-tab-body-wrapper {
+  padding-top: 24px;
+}
+
+.tab-icon {
+  margin-right: 8px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+/* Cores dos Ícones das Abas */
+.inbox-icon {
+  color: #673ab7;
+} /* Roxo */
+.outbox-icon {
+  color: #009688;
+} /* Verde Água */
+
+/* Badges */
+.tab-badge-grey {
+  background-color: #f0f0f0;
+  color: #666;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+  border: 1px solid #ddd;
+}
+
+.tab-badge-alert {
+  background-color: #e53935;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+  box-shadow: 0 2px 4px rgba(229, 57, 53, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.tab-content {
+  min-height: 400px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Estilo temporário para a aba vazia de Enviados */
+.empty-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: #999;
+  text-align: center;
+}
+.state-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+  .action-bar-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .action-button {
+    justify-content: center;
+    margin-top: 10px;
+    width: 100%;
   }
 }
