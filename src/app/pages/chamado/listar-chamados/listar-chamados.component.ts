@@ -15,6 +15,8 @@ import { ModalAvaliacaoComponent } from '../../../components/modal-avaliacao/mod
 import { AvaliacaoInput } from '../../../models/chamado/avaliacaoInput';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ReabrirChamadoInput } from '../../../models/chamado/reabrirChamadoInput';
+import { ModalReabrirComponent } from '../../../components/modal-reabrir/modal-reabrir.component';
 
 @Component({
   selector: 'app-listar-chamados',
@@ -196,10 +198,6 @@ export class ListarChamadosComponent implements OnInit {
     this.router.navigate([`/chamado/${id}/editar`]);
   }
 
-  reabrir(id: number): void {
-    this.router.navigate([`/chamado/${id}/reabrir`]);
-  }
-
   avaliarChamado(chamado: ChamadoOutput): void {
     const dialogRef = this.dialog.open(ModalAvaliacaoComponent, {
       width: '500px',
@@ -223,6 +221,44 @@ export class ListarChamadosComponent implements OnInit {
             error: (err) => {
               this.isLoading = false;
               this.snackBar.open('Erro ao avaliar.', 'Fechar', {
+                duration: 4000,
+                panelClass: ['snack-error'],
+              });
+            },
+          });
+      }
+    });
+  }
+
+  reabrirChamado(chamado: ChamadoOutput): void {
+    const dialogRef = this.dialog.open(ModalReabrirComponent, {
+      width: '500px',
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((dados: ReabrirChamadoInput) => {
+      if (dados) {
+        this.isLoading = true;
+
+        this.chamadoService
+          .reabrirChamado(this.token, chamado.id, dados)
+          .subscribe({
+            next: (chamadoAtualizado) => {
+              this.snackBar.open(
+                'Chamado reaberto e enviado ao técnico.',
+                'OK',
+                {
+                  duration: 5000,
+                  panelClass: ['snack-success'],
+                }
+              );
+              this.buscarChamados(); // Recarrega a lista (Status muda para REABERTO)
+            },
+            error: (err) => {
+              this.isLoading = false;
+              console.error(err);
+              const msg = err.error?.message || 'Erro ao reabrir chamado.';
+              this.snackBar.open(msg, 'Fechar', {
                 duration: 4000,
                 panelClass: ['snack-error'],
               });

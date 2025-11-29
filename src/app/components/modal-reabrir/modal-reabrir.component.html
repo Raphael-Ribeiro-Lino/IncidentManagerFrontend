@@ -1,0 +1,39 @@
+<div class="modal-container">
+
+    <!-- Título com ícone de alerta -->
+    <h2 mat-dialog-title class="title-warn">
+        <mat-icon class="icon-warn">report_problem</mat-icon>
+        O problema persiste?
+    </h2>
+
+    <mat-dialog-content>
+        <p class="modal-description">
+            Ao reabrir, o chamado voltará para a fila do técnico com status <strong>Reaberto</strong> e alta prioridade
+            de atenção.
+        </p>
+
+        <form [formGroup]="form">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Motivo da Reabertura</mat-label>
+                <textarea matInput formControlName="motivo" rows="5"
+                    placeholder="Descreva o que ainda não está funcionando ou o que voltou a dar erro..."></textarea>
+
+                <mat-hint align="end">{{ form.get('motivo')?.value?.length || 0 }}/1000</mat-hint>
+
+                <mat-error *ngIf="form.get('motivo')?.hasError('required')">
+                    O motivo é obrigatório.
+                </mat-error>
+                <mat-error *ngIf="form.get('motivo')?.hasError('minlength')">
+                    Descreva com mais detalhes (mínimo 10 caracteres).
+                </mat-error>
+            </mat-form-field>
+        </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-button (click)="cancelar()" class="btn-cancel">Cancelar</button>
+        <button mat-raised-button (click)="confirmar()" [disabled]="form.invalid" class="btn-confirm">
+            Reabrir Chamado
+        </button>
+    </mat-dialog-actions>
+</div>

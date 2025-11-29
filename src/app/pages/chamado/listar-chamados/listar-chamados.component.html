@@ -9,34 +9,18 @@
   <div class="action-bar-container">
     <div class="filters-container">
       <div class="filter-inputs">
-        <mat-form-field
-          appearance="outline"
-          class="search-field"
-          subscriptSizing="dynamic"
-        >
+        <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
           <mat-label>Buscar Protocolo ou Título</mat-label>
-          <input
-            matInput
-            [(ngModel)]="searchTerm"
-            (ngModelChange)="onFilterChange()"
-            placeholder="Ex: INC-979c..."
-            matTooltip="Digite o protocolo ou título para filtrar"
-          />
+          <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onFilterChange()" placeholder="Ex: INC-979c..."
+            matTooltip="Digite o protocolo ou título para filtrar" />
           <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
 
         <!-- FILTRO DE STATUS (Substituiu Prioridade) -->
-        <mat-form-field
-          appearance="outline"
-          class="priority-field"
-          subscriptSizing="dynamic"
-        >
+        <mat-form-field appearance="outline" class="priority-field" subscriptSizing="dynamic">
           <mat-label>Status</mat-label>
-          <mat-select
-            [(ngModel)]="selectedStatus"
-            (selectionChange)="onFilterChange()"
-            matTooltip="Filtrar pelo status atual"
-          >
+          <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onFilterChange()"
+            matTooltip="Filtrar pelo status atual">
             <mat-option value="">Todos</mat-option>
             <mat-option *ngFor="let status of statusKeys" [value]="status">
               {{ statusLabels[status] }}
@@ -47,11 +31,7 @@
     </div>
 
     <div class="action-button">
-      <button
-        class="btn-primary-action"
-        (click)="novoChamado()"
-        matTooltip="Abrir novo chamado"
-      >
+      <button class="btn-primary-action" (click)="novoChamado()" matTooltip="Abrir novo chamado">
         <mat-icon>add_circle_outline</mat-icon>
         <span>Novo Chamado</span>
       </button>
@@ -74,10 +54,7 @@
 
   <div class="chamado-list-container" *ngIf="!isLoading && !loadingFailed">
     <!-- BORDA BASEADA NO STATUS -->
-    <div
-      class="chamado-row status-border-{{ chamado.status | lowercase }}"
-      *ngFor="let chamado of chamadosExibidos"
-    >
+    <div class="chamado-row status-border-{{ chamado.status | lowercase }}" *ngFor="let chamado of chamadosExibidos">
       <div class="row-main-content">
         <div class="row-header-meta">
           <div class="protocolo-display" matTooltip="{{ chamado.protocolo }}">
@@ -88,26 +65,18 @@
           <div class="date-time-display" matTooltip="Data de Criação">
             <mat-icon class="icon-small">calendar_today</mat-icon>
             <span>{{ chamado.dataCriacao | date : "dd/MM/yyyy" : "UTC" }}</span>
-            <span class="time-part"
-              >às {{ chamado.dataCriacao | date : "HH:mm" : "UTC" }}</span
-            >
+            <span class="time-part">às {{ chamado.dataCriacao | date : "HH:mm" : "UTC" }}</span>
           </div>
 
-          <div
-            class="mini-priority priority-text-{{
+          <div class="mini-priority priority-text-{{
               chamado.prioridade | lowercase
-            }}"
-            matTooltip="Prioridade definida"
-          >
+            }}" matTooltip="Prioridade definida">
             {{ chamado.prioridade | titlecase }}
           </div>
 
-          <div
-            class="status-badge-inline status-{{ chamado.status | lowercase }}"
-            [matTooltip]="
+          <div class="status-badge-inline status-{{ chamado.status | lowercase }}" [matTooltip]="
               'Status: ' + (statusLabels[chamado.status] || chamado.status)
-            "
-          >
+            ">
             {{ statusLabels[chamado.status] || chamado.status }}
           </div>
         </div>
@@ -117,22 +86,12 @@
         </h3>
         <p class="row-description">{{ chamado.descricao }}</p>
 
-        <div
-          class="row-tech-info"
-          *ngIf="chamado.tecnicoResponsavel"
-          matTooltip="Técnico responsável"
-        >
+        <div class="row-tech-info" *ngIf="chamado.tecnicoResponsavel" matTooltip="Técnico responsável">
           <mat-icon class="icon-small">support_agent</mat-icon>
-          <span
-            >Atendido por
-            <strong>{{ chamado.tecnicoResponsavel.nome }}</strong></span
-          >
+          <span>Atendido por
+            <strong>{{ chamado.tecnicoResponsavel.nome }}</strong></span>
         </div>
-        <div
-          class="row-tech-info waiting"
-          *ngIf="!chamado.tecnicoResponsavel"
-          matTooltip="Aguardando técnico"
-        >
+        <div class="row-tech-info waiting" *ngIf="!chamado.tecnicoResponsavel" matTooltip="Aguardando técnico">
           <mat-icon class="icon-small">hourglass_empty</mat-icon>
           <span>Aguardando atribuição de técnico</span>
         </div>
@@ -140,41 +99,31 @@
 
       <div class="row-actions-side">
         <div class="button-group">
-          <button
-            class="btn-custom btn-yellow"
-            (click)="editar(chamado.id); $event.stopPropagation()"
-            matTooltip="Editar informações"
-            *ngIf="chamado.status !== 'CONCLUIDO'"
-          >
+          <button class="btn-custom btn-yellow" (click)="editar(chamado.id); $event.stopPropagation()"
+            matTooltip="Editar informações" *ngIf="chamado.status !== 'CONCLUIDO'">
             <mat-icon>edit</mat-icon>
             Editar
           </button>
 
-          <button
-            class="btn-custom btn-reopen"
-            matTooltip="Reabrir este chamado"
-            (click)="reabrir(chamado.id); $event.stopPropagation()"
-            *ngIf="chamado.status === 'CONCLUIDO'"
-          >
-            <mat-icon>replay</mat-icon>
-            Reabrir
-          </button>
+          <div class="button-group" *ngIf="chamado.status === 'RESOLVIDO'">
 
-          <button
-            class="btn-custom btn-details"
-            (click)="visualizar(chamado.id); $event.stopPropagation()"
-            matTooltip="Ver detalhes completos"
-          >
+            <!-- Botão REABRIR (Vermelho/Alerta) -->
+            <button class="btn-custom btn-reopen" (click)="reabrirChamado(chamado)"
+              matTooltip="O problema persiste? Clique aqui.">
+              <mat-icon>replay</mat-icon> Não Resolveu
+            </button>
+
+            <!-- Botão AVALIAR (Verde/Sucesso - Já implementado) -->
+            <button class="btn-custom btn-evaluate" (click)="avaliarChamado(chamado)">
+              <mat-icon>thumb_up</mat-icon> Resolveu
+            </button>
+
+          </div>
+
+          <button class="btn-custom btn-details" (click)="visualizar(chamado.id); $event.stopPropagation()"
+            matTooltip="Ver detalhes completos">
             <mat-icon>visibility</mat-icon>
             Detalhes
-          </button>
-
-          <button
-            class="btn-custom btn-avaliar"
-            *ngIf="chamado.status === 'RESOLVIDO'"
-            (click)="avaliarChamado(chamado)"
-          >
-            <mat-icon>stars</mat-icon> Avaliar e Concluir
           </button>
         </div>
       </div>
@@ -194,15 +143,8 @@
     <p>Carregando lista de chamados...</p>
   </div>
 
-  <div
-    class="pagination-container"
-    *ngIf="chamadosExibidos.length > 0 && !isLoading"
-  >
-    <app-pagination
-      [pageNumber]="currentPage"
-      [totalPages]="totalPages"
-      [maxPagesToShow]="maxPagesToShow"
-      (pageChange)="onPageChange($event)"
-    ></app-pagination>
+  <div class="pagination-container" *ngIf="chamadosExibidos.length > 0 && !isLoading">
+    <app-pagination [pageNumber]="currentPage" [totalPages]="totalPages" [maxPagesToShow]="maxPagesToShow"
+      (pageChange)="onPageChange($event)"></app-pagination>
   </div>
 </div>

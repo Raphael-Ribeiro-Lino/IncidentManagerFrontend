@@ -478,6 +478,16 @@
   margin-bottom: 10px;
 }
 
+.btn-reopen {
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+  background-color: #ffebee;
+}
+.btn-reopen:hover {
+  background-color: #ffcdd2;
+  box-shadow: 0 2px 4px rgba(198, 40, 40, 0.2);
+}
+
 @media (max-width: 768px) {
   .chamado-list-page {
     padding: 16px;

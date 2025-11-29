@@ -11,6 +11,7 @@ import { NotaInternaInput } from '../../models/chamado/notaInternaInput';
 import { AlteraStatusChamadoInput } from '../../models/chamado/alteraStatusChamadoInput';
 import { SolicitarTransferenciaInput } from '../../models/chamado/solicitarTransferenciaInput';
 import { AvaliacaoInput } from '../../models/chamado/avaliacaoInput';
+import { ReabrirChamadoInput } from '../../models/chamado/reabrirChamadoInput';
 
 const API_URL = environment.URL_API + '/chamado';
 
@@ -216,9 +217,25 @@ export class ChamadoService {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     });
-      return this.httpClient.post<ChamadoOutput>(
+    return this.httpClient.post<ChamadoOutput>(
       `${API_URL}/${id}/avaliar`,
       avaliacao,
+      { headers }
+    );
+  }
+
+  reabrirChamado(
+    token: string,
+    id: number,
+    reabrirChamadoInput: ReabrirChamadoInput
+  ): Observable<ChamadoOutput> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+    return this.httpClient.post<ChamadoOutput>(
+      `${API_URL}/${id}/reabrir`,
+      reabrirChamadoInput,
       { headers }
     );
   }

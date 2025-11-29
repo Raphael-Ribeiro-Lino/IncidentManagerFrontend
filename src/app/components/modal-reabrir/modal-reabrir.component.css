@@ -1,0 +1,123 @@
+:host {
+  display: block;
+  /* Garante que padding não some ao tamanho total */
+  box-sizing: border-box;
+}
+
+/* Regra de segurança para todos os filhos */
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+.modal-container {
+  padding: 10px;
+  width: 100%;
+  max-width: 500px;
+  /* Mínimo para desktop, mas será resetado no mobile */
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  /* Impede vazamento visual */
+  overflow: hidden;
+}
+
+/* Cabeçalho de Alerta */
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #c62828;
+  font-size: 1.4rem;
+  margin: 0 0 15px 0;
+  padding: 0;
+  font-weight: 700;
+
+  /* Responsividade do texto do título */
+  white-space: normal;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.icon-warn {
+  color: #d32f2f;
+  /* Impede que o ícone seja esmagado */
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.modal-description {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+  line-height: 1.5;
+  word-wrap: break-word; /* Quebra palavras longas */
+}
+
+.modal-description strong {
+  color: #c62828;
+}
+
+/* Form */
+.full-width {
+  width: 100%;
+  display: block;
+  margin-bottom: 5px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+/* Botões */
+mat-dialog-actions {
+  flex-wrap: wrap; /* Permite quebrar linha se necessário */
+  gap: 10px;
+  padding-bottom: 0;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  color: #666;
+}
+
+.btn-confirm {
+  background-color: #d32f2f !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.btn-confirm:disabled {
+  background-color: #ccc !important;
+  color: #fff !important;
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 600px) {
+  .modal-container {
+    padding: 0; /* Remove padding extra do wrapper */
+    width: 100%;
+
+    /* CRUCIAL: Remove a largura mínima fixa para caber em telas < 320px */
+    min-width: auto;
+  }
+
+  h2[mat-dialog-title] {
+    font-size: 1.2rem; /* Reduz fonte no mobile */
+    gap: 8px;
+  }
+
+  /* Opcional: Botões empilhados para facilitar o toque */
+  mat-dialog-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    width: 100%;
+    margin: 0 !important;
+  }
+}
