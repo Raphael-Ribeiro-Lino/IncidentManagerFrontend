@@ -52,7 +52,14 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
   // Subscription para monitorar mudanças no form (Igual ao Cadastro)
   private formSubscription?: Subscription;
 
-  private readonly allowedExtensions = ['PDF', 'DOCX', 'PNG', 'JPG', 'JPEG', 'ZIP'];
+  private readonly allowedExtensions = [
+    'PDF',
+    'DOCX',
+    'PNG',
+    'JPG',
+    'JPEG',
+    'ZIP',
+  ];
   private readonly maxFileSizeMB = 50;
   private readonly maxFileSizeInBytes = this.maxFileSizeMB * 1024 * 1024;
   private readonly maxTotalSizeMB = 500;
@@ -60,6 +67,12 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
   private readonly maxFileCount = 20;
 
   prioridades = Object.values(Prioridades);
+  prioridadeLabels: Record<string, string> = {
+    BAIXA: 'Baixa',
+    MEDIA: 'Média',
+    ALTA: 'Alta',
+    CRITICA: 'Crítica',
+  };
 
   novosAnexosSelecionados: AnexoInput[] = [];
   anexosExistentes: any[] = []; // Mantive any ou sua interface de Output
@@ -76,7 +89,7 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initForm();
-    
+
     // Lógica igual ao Cadastro: Limpa erros (exceto de anexo) ao digitar
     this.formSubscription = this.formChamado.valueChanges.subscribe(() => {
       if (this.errorMessages.length > 0) {
@@ -104,19 +117,43 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
   private initForm(): void {
     // Mesmas validações do Cadastro
     this.formChamado = this.fb.group({
-      titulo: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
-      descricao: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(2000)]],
+      titulo: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(5),
+          Validators.maxLength(100),
+        ],
+      ],
+      descricao: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(10),
+          Validators.maxLength(2000),
+        ],
+      ],
       prioridade: ['', [Validators.required]],
     });
   }
 
-  get f() { return this.formChamado.controls; }
+  get f() {
+    return this.formChamado.controls;
+  }
 
-  get maxTotalMB(): number { return this.maxTotalSizeMB; }
+  get maxTotalMB(): number {
+    return this.maxTotalSizeMB;
+  }
 
   get totalSizeUsed(): number {
-    const sizeExisting = this.anexosExistentes.reduce((acc, anexo) => acc + (anexo.tamanhoBytes || 0), 0);
-    const sizeNew = this.novosAnexosSelecionados.reduce((acc, anexo) => acc + anexo.tamanhoBytes, 0);
+    const sizeExisting = this.anexosExistentes.reduce(
+      (acc, anexo) => acc + (anexo.tamanhoBytes || 0),
+      0
+    );
+    const sizeNew = this.novosAnexosSelecionados.reduce(
+      (acc, anexo) => acc + anexo.tamanhoBytes,
+      0
+    );
     return sizeExisting + sizeNew;
   }
 
@@ -162,7 +199,7 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
       next: (chamado) => {
         this.chamadoAtual = chamado;
         const statusPermitidos = ['ABERTO', 'TRIAGEM', 'REABERTO'];
-        
+
         if (!statusPermitidos.includes(chamado.status)) {
           this.isStatusInvalid = true;
           this.isLoading = false;
@@ -188,11 +225,19 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
 
   getFileIcon(tipo: string): string {
     switch (tipo?.toLowerCase()) {
-      case 'pdf': return 'picture_as_pdf';
-      case 'doc': case 'docx': return 'description';
-      case 'png': case 'jpg': case 'jpeg': return 'image';
-      case 'zip': return 'folder_zip';
-      default: return 'attach_file';
+      case 'pdf':
+        return 'picture_as_pdf';
+      case 'doc':
+      case 'docx':
+        return 'description';
+      case 'png':
+      case 'jpg':
+      case 'jpeg':
+        return 'image';
+      case 'zip':
+        return 'folder_zip';
+      default:
+        return 'attach_file';
     }
   }
 
@@ -204,13 +249,18 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
 
   onFileSelected(event: any): void {
     // Filtra erros de anexo anteriores
-    this.errorMessages = this.errorMessages.filter((msg) => !msg.startsWith('Erro de Anexo:'));
+    this.errorMessages = this.errorMessages.filter(
+      (msg) => !msg.startsWith('Erro de Anexo:')
+    );
 
     const files: FileList = event.target.files;
     if (files.length === 0) return;
 
     // Validação de Quantidade Total
-    const totalCount = this.anexosExistentes.length + this.novosAnexosSelecionados.length + files.length;
+    const totalCount =
+      this.anexosExistentes.length +
+      this.novosAnexosSelecionados.length +
+      files.length;
 
     if (totalCount > this.maxFileCount) {
       this.addErrorMessage(
@@ -240,7 +290,7 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
         );
         isValid = false;
       }
-      
+
       // Validação Extensão
       if (!this.allowedExtensions.includes(fileExtension)) {
         this.addErrorMessage(
@@ -249,7 +299,7 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
         );
         isValid = false;
       }
-      
+
       // Validação Tamanho Total
       if (isValid && tamanhoSimulado + file.size > this.maxTotalSizeInBytes) {
         this.addErrorMessage(
@@ -270,7 +320,10 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.novosAnexosSelecionados = [...this.novosAnexosSelecionados, ...novosAnexos];
+    this.novosAnexosSelecionados = [
+      ...this.novosAnexosSelecionados,
+      ...novosAnexos,
+    ];
     event.target.value = null;
   }
 
@@ -327,13 +380,17 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
 
   submitForm(): void {
     // 1. Limpa erros antigos (que não sejam de anexo, pois a lógica abaixo pode gerar novos)
-    this.errorMessages = this.errorMessages.filter(msg => msg.startsWith('Erro de Anexo:'));
+    this.errorMessages = this.errorMessages.filter((msg) =>
+      msg.startsWith('Erro de Anexo:')
+    );
     this.successfullyUpdatedMessage = null;
 
     // 2. Validação Campos Obrigatórios
     if (this.formChamado.invalid) {
       this.formChamado.markAllAsTouched();
-      this.addErrorMessage('Por favor, preencha todos os campos obrigatórios corretamente.');
+      this.addErrorMessage(
+        'Por favor, preencha todos os campos obrigatórios corretamente.'
+      );
       return;
     }
 
@@ -346,7 +403,8 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     // Preparar lista de existentes (enviando ID para o backend reconhecer)
-    const anexosExistentesParaEnvio: AnexoInput[] = this.anexosExistentes.map((anexo) => {
+    const anexosExistentesParaEnvio: AnexoInput[] = this.anexosExistentes.map(
+      (anexo) => {
         return {
           id: anexo.id, // IMPORTANTE: O ID deve ir aqui
           nomeArquivo: anexo.nomeArquivo,
@@ -354,7 +412,8 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
           tipo: anexo.tipo,
           arquivo: null as any,
         };
-    });
+      }
+    );
 
     // Unir com os novos uploads
     const listaFinalAnexos: AnexoInput[] = [
@@ -380,13 +439,17 @@ export class AlterarChamadoComponent implements OnInit, OnDestroy {
           window.scrollTo({ top: 0, behavior: 'smooth' });
 
           setTimeout(
-            () => this.router.navigate(['/chamado', this.chamadoId, 'detalhes']),
+            () =>
+              this.router.navigate(['/chamado', this.chamadoId, 'detalhes']),
             1500
           );
         },
         error: (erro) => {
           this.isLoading = false;
-          const msgBackend = erro.error?.message || erro.error?.error || 'Ocorreu um erro ao atualizar.';
+          const msgBackend =
+            erro.error?.message ||
+            erro.error?.error ||
+            'Ocorreu um erro ao atualizar.';
           this.addErrorMessage(msgBackend, 10000); // Timeout maior para erro de backend
         },
       });

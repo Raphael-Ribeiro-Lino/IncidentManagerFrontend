@@ -52,6 +52,12 @@ export class CadastrarChamadoComponent implements OnInit, OnDestroy {
 
   prioridades = Object.values(Prioridades);
   anexosSelecionados: AnexoInput[] = [];
+  prioridadeLabels: Record<string, string> = {
+    BAIXA: 'Baixa',
+    MEDIA: 'Média',
+    ALTA: 'Alta',
+    CRITICA: 'Crítica',
+  };
 
   constructor(
     private fb: FormBuilder,

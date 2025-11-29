@@ -39,7 +39,7 @@
                                 [ngClass]="'prioridade-chip-' + p.toLowerCase()">
                                 <span class="prioridade-option-label">
                                     <span [ngClass]="'prioridade-dot-' + p.toLowerCase()"></span>
-                                    {{ p | lowercase | titlecase }}
+                                    {{ prioridadeLabels[p] | lowercase | titlecase }}
                                 </span>
                             </mat-option>
                         </mat-select>
