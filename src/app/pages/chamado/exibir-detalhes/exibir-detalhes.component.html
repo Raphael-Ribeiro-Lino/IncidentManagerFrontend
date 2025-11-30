@@ -1,9 +1,11 @@
 <div class="page-container">
   
+  <!-- Loading State -->
   <div class="loading-state" *ngIf="isLoading">
     <p>Carregando detalhes do chamado...</p>
   </div>
 
+  <!-- Error State -->
   <div class="error-card" *ngIf="!isLoading && errorMessages.length > 0">
     <mat-icon class="error-icon">sentiment_dissatisfied</mat-icon>
     <div class="error-content">
@@ -20,12 +22,14 @@
     </div>
   </div>
 
-  <div class="chamado-detalhes-page" *ngIf="!isLoading && chamadoCarregado && errorMessages.length === 0 && chamado">
+  <!-- Conteúdo Principal -->
+  <div class="chamado-detalhes-page" *ngIf="!isLoading && chamadoCarregado && chamado">
 
+    <!-- Header da Página -->
     <div class="page-header-row">
       <div class="page-header-content">
         <h1 class="page-title">Detalhes do Chamado</h1>
-        <p class="page-subtitle">Visualize todas as informações, anexos e interações deste chamado</p>
+        <p class="page-subtitle">Acompanhe o andamento e interaja com o suporte</p>
       </div>
 
       <div class="header-actions">
@@ -33,16 +37,12 @@
           <mat-icon>arrow_back</mat-icon>
           Voltar
         </button>
-        
-        <button class="btn-action btn-chat" (click)="acessarChat()" matTooltip="Falar com o técnico">
-          <mat-icon>forum</mat-icon>
-          Acessar Chat
-        </button>
       </div>
     </div>
 
     <div class="cards-stack">
 
+      <!-- CARD 1: RESUMO UNIFICADO -->
       <div class="card-detalhes unified-card status-border-{{ chamado.status | lowercase }}">
         
         <div class="card-header-line">
@@ -59,6 +59,7 @@
 
         <div class="unified-content-wrapper">
           
+          <!-- Coluna Esquerda: Dados do Chamado -->
           <div class="info-section">
               <h3 class="chamado-titulo-principal">{{ chamado.titulo }}</h3>
               
@@ -73,7 +74,7 @@
                   <div class="info-item">
                       <span class="label">Prioridade</span>
                       <div class="mini-priority priority-text-{{ chamado.prioridade | lowercase }}">
-                          {{ chamado.prioridade | titlecase }}
+                          {{ prioridadeLabels[chamado.prioridade] | titlecase }}
                       </div>
                   </div>
 
@@ -81,8 +82,8 @@
                       <span class="label">Abertura</span>
                       <div class="date-display">
                           <mat-icon class="icon-tiny">calendar_today</mat-icon>
-                          <span>{{ getLocalDateTimeString(chamado.dataCriacao) | date : "dd/MM/yyyy" }}</span>
-                          <span class="time">{{ getLocalDateTimeString(chamado.dataCriacao) | date : "HH:mm" }}</span>
+                          <span>{{ chamado.dataCriacao | date : "dd/MM/yyyy" }}</span>
+                          <span class="time">{{ chamado.dataCriacao | date : "HH:mm" }}</span>
                       </div>
                   </div>
 
@@ -90,8 +91,8 @@
                       <span class="label">Atualização</span>
                       <div class="date-display">
                           <mat-icon class="icon-tiny">update</mat-icon>
-                          <span>{{ getLocalDateTimeString(chamado.dataUltimaAtualizacao) | date : "dd/MM/yyyy" }}</span>
-                          <span class="time">{{ getLocalDateTimeString(chamado.dataUltimaAtualizacao) | date : "HH:mm" }}</span>
+                          <span>{{ chamado.dataUltimaAtualizacao | date : "dd/MM/yyyy" }}</span>
+                          <span class="time">{{ chamado.dataUltimaAtualizacao | date : "HH:mm" }}</span>
                       </div>
                   </div>
               </div>
@@ -99,26 +100,37 @@
 
           <div class="vertical-divider"></div>
 
+          <!-- Coluna Direita: Técnico Responsável -->
           <div class="tech-section">
               <h3 class="card-internal-title">
                   <mat-icon class="title-icon">support_agent</mat-icon> 
-                  Responsável Técnico
+                  Atendido por
               </h3>
               
-              <div *ngIf="chamado.tecnicoResponsavel; else noTech" class="tech-profile">
-                  <div class="tech-avatar">
-                      {{ chamado.tecnicoResponsavel.nome | slice : 0 : 1 }}
+              <div *ngIf="chamado.tecnicoResponsavel; else noTech">
+                  <div class="tech-profile">
+                      <div class="tech-avatar">
+                          {{ chamado.tecnicoResponsavel.nome | slice : 0 : 1 }}
+                      </div>
+                      <div class="tech-info">
+                          <strong class="tech-name">{{ chamado.tecnicoResponsavel.nome }}</strong>
+                          <span class="tech-email">{{ chamado.tecnicoResponsavel.email }}</span>
+                      </div>
                   </div>
-                  <div class="tech-info">
-                      <strong class="tech-name">{{ chamado.tecnicoResponsavel.nome }}</strong>
-                      <span class="tech-email">{{ chamado.tecnicoResponsavel.email }}</span>
-                  </div>
+
+                  <!-- Botão de Chat na lateral -->
+                  <button class="btn-chat-sidebar" 
+                          *ngIf="podeAcessarChat(chamado.status)" 
+                          (click)="acessarChat()">
+                    <mat-icon>forum</mat-icon>
+                    Acessar chat
+                  </button>
               </div>
 
               <ng-template #noTech>
                   <div class="waiting-tech-box">
                       <mat-icon>hourglass_empty</mat-icon>
-                      <span>Aguardando atribuição...</span>
+                      <span>Aguardando técnico...</span>
                   </div>
               </ng-template>
           </div>
@@ -126,6 +138,7 @@
         </div>
       </div>
 
+      <!-- CARD 2: DESCRIÇÃO -->
       <div class="card-detalhes description-card status-border-{{ chamado.status | lowercase }}">
         <h2 class="card-title">
           <mat-icon class="title-icon">subject</mat-icon> 
@@ -144,12 +157,9 @@
 
           <div class="anexos-grid" *ngIf="chamado.anexos.length > 0; else noAnexos">
               <div *ngFor="let anexo of chamado.anexos" class="anexo-item-card">
-                <mat-icon class="anexo-icon">{{ getFileIcon(anexo.tipo) }}</mat-icon>
+                <mat-icon class="anexo-icon">{{ getFileIcon(anexo.nomeArquivo) }}</mat-icon>
                 <div class="anexo-meta">
                   <span class="file-name" title="{{ anexo.nomeArquivo }}">{{ anexo.nomeArquivo }}</span>
-                  <span class="file-date">
-                    {{ getLocalDateTimeString(anexo.uploadedAt) | date : "dd/MM/yyyy HH:mm" }}
-                  </span>
                 </div>
                 <button class="btn-download-icon" (click)="baixarAnexo(anexo.storagePath)" matTooltip="Baixar">
                   <mat-icon>download</mat-icon>
@@ -160,6 +170,52 @@
           <ng-template #noAnexos>
             <p class="text-muted">Nenhum anexo disponível.</p>
           </ng-template>
+        </div>
+      </div>
+
+      <!-- CARD 3: TIMELINE -->
+      <div class="card-detalhes timeline-card status-border-{{ chamado.status | lowercase }}">
+        <div class="card-header-line">
+            <h2 class="card-title">
+              <mat-icon class="title-icon">history</mat-icon> 
+              Linha do Tempo
+            </h2>
+        </div>
+
+        <div class="timeline-container">
+            <div class="timeline-item" *ngFor="let evento of chamado.historicoEventos">
+                
+                <div class="timeline-marker">
+                    <div class="marker-icon" [ngClass]="evento.tipo">
+                        <mat-icon>{{ getTimelineIcon(evento.tipo) }}</mat-icon>
+                    </div>
+                    <div class="marker-line"></div>
+                </div>
+
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <div class="author-box">
+                            <span class="author-name">{{ evento.autorNome }}</span>
+                            <span class="role-badge" *ngIf="evento.autorPerfil === 'TECNICO_TI' || evento.autorPerfil === 'ADMIN'">
+                                Suporte
+                            </span>
+                        </div>
+                        
+                        <div class="meta-box">
+                            <span class="event-date">{{ evento.dataHora | date : "dd/MM/yyyy 'às' HH:mm" }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-body">
+                        <p>{{ evento.descricao }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-end">
+                <span class="dot"></span>
+                <span>Abertura do Chamado</span>
+            </div>
         </div>
       </div>
 

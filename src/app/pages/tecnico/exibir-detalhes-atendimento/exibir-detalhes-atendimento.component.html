@@ -73,7 +73,7 @@
                   <div class="info-item">
                       <span class="label">Prioridade</span>
                       <div class="mini-priority priority-text-{{ chamado.prioridade | lowercase }}">
-                          {{ chamado.prioridade | titlecase }}
+                          {{ prioridadeLabels[chamado.prioridade] | titlecase }}
                       </div>
                   </div>
 

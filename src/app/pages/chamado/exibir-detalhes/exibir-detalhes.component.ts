@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChamadoService } from '../../../services/chamado/chamado.service';
-import { ChamadoOutput } from '../../../models/chamado/chamadoOutput';
+import { ChamadoDetalhadoOutput } from '../../../models/chamado/chamadoDetalhadoOutput'; // Use o DTO detalhado
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-exibir-detalhes',
@@ -13,14 +14,15 @@ import { MatButtonModule } from '@angular/material/button';
     CommonModule,
     DatePipe,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTooltipModule,
   ],
   templateUrl: './exibir-detalhes.component.html',
   styleUrl: './exibir-detalhes.component.css',
 })
 export class ExibirDetalhesComponent implements OnInit {
-  chamado!: ChamadoOutput;
-  
+  chamado!: ChamadoDetalhadoOutput;
+
   chamadoCarregado = false;
   isLoading = false;
   errorMessages: string[] = [];
@@ -40,12 +42,19 @@ export class ExibirDetalhesComponent implements OnInit {
     AGUARDANDO_PECA: 'Aguardando Peça',
     CONCLUIDO: 'Concluído',
     REABERTO: 'Reaberto',
+    RESOLVIDO: 'Resolvido',
+  };
+  prioridadeLabels: Record<string, string> = {
+    BAIXA: 'Baixa',
+    MEDIA: 'Média',
+    ALTA: 'Alta',
+    CRITICA: 'Crítica',
   };
 
   constructor(
     private chamadoService: ChamadoService,
     private router: Router,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -59,7 +68,8 @@ export class ExibirDetalhesComponent implements OnInit {
 
     this.paginaDeRetorno = this.route.snapshot.queryParamMap.get('page');
     this.termoBuscaDeRetorno = this.route.snapshot.queryParamMap.get('search');
-    this.prioridadeDeRetorno = this.route.snapshot.queryParamMap.get('priority');
+    this.prioridadeDeRetorno =
+      this.route.snapshot.queryParamMap.get('priority');
 
     this.carregarChamado();
   }
@@ -70,16 +80,25 @@ export class ExibirDetalhesComponent implements OnInit {
     this.errorMessages = [];
 
     this.chamadoService.buscarPorId(this.token, this.chamadoId).subscribe({
-      next: (chamado) => {
+      next: (chamado: any) => {
         this.chamado = chamado;
+
+        if (this.chamado.historicoEventos) {
+          this.chamado.historicoEventos.sort(
+            (a, b) =>
+              new Date(b.dataHora).getTime() - new Date(a.dataHora).getTime()
+          );
+        }
+
         this.chamadoCarregado = true;
         this.isLoading = false;
         this.errorMessages = [];
       },
       error: (err) => {
         console.error(err);
-        this.errorMessages.push('Não foi possível carregar os dados do chamado.');
-        this.errorMessages.push('Verifique sua conexão ou tente novamente.');
+        this.errorMessages.push(
+          'Não foi possível carregar os dados do chamado.'
+        );
         this.isLoading = false;
         this.chamadoCarregado = false;
       },
@@ -87,42 +106,72 @@ export class ExibirDetalhesComponent implements OnInit {
   }
 
   getLocalDateTimeString(isoDateString: string): string {
-    return isoDateString?.endsWith('Z')
-      ? isoDateString.slice(0, -1)
-      : isoDateString;
+    return isoDateString;
   }
 
-  getFileIcon(tipo: string): string {
-    const ext = tipo.toLowerCase();
+  getFileIcon(nomeArquivo: string): string {
+    const ext = nomeArquivo.split('.').pop()?.toLowerCase() || '';
     switch (ext) {
-      case 'pdf': return 'picture_as_pdf';
+      case 'pdf':
+        return 'picture_as_pdf';
       case 'doc':
-      case 'docx': return 'description';
+      case 'docx':
+        return 'description';
       case 'png':
       case 'jpg':
-      case 'jpeg': return 'image';
-      case 'zip': return 'folder_zip';
-      default: return 'attach_file';
+      case 'jpeg':
+        return 'image';
+      case 'zip':
+      case 'rar':
+        return 'folder_zip';
+      default:
+        return 'attach_file';
+    }
+  }
+
+  getTimelineIcon(tipo: string): string {
+    switch (tipo) {
+      case 'ABERTURA':
+        return 'flag';
+      case 'MUDANCA_STATUS':
+        return 'swap_horiz';
+      case 'INTERACAO':
+        return 'chat_bubble_outline';
+      case 'CONCLUSAO':
+        return 'check_circle';
+      case 'REABERTURA':
+        return 'replay';
+      default:
+        return 'info';
     }
   }
 
   voltarParaLista(): void {
     const queryParams: Record<string, string> = {};
-
     if (this.paginaDeRetorno) queryParams['page'] = this.paginaDeRetorno;
-    if (this.termoBuscaDeRetorno) queryParams['search'] = this.termoBuscaDeRetorno;
-    if (this.prioridadeDeRetorno) queryParams['priority'] = this.prioridadeDeRetorno;
-
+    if (this.termoBuscaDeRetorno)
+      queryParams['search'] = this.termoBuscaDeRetorno;
+    if (this.prioridadeDeRetorno)
+      queryParams['priority'] = this.prioridadeDeRetorno;
     this.router.navigate(['/chamado/listar'], { queryParams });
   }
 
+  podeAcessarChat(status: string): boolean {
+    const statusPermitidos = [
+      'EM_ATENDIMENTO',
+      'AGUARDANDO_CLIENTE',
+      'AGUARDANDO_PECA',
+      'REABERTO',
+    ];
+    return statusPermitidos.includes(status);
+  }
+
   acessarChat(): void {
-    alert('Funcionalidade de Atualizar Chamado será implementada.');
+    alert('Funcionalidade de Chat será implementada.');
   }
 
   baixarAnexo(storagePath: string): void {
     if (!storagePath) return;
-
     const link = document.createElement('a');
     link.href = storagePath;
     link.target = '_blank';

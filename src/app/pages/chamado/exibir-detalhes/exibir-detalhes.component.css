@@ -42,10 +42,10 @@
   --p-critica-color: #c0392b;
 }
 
-/* Container para Loading/Erro ficarem centralizados se necessário */
+/* Container */
 .page-container {
   width: 100%;
-  min-height: 60vh; /* Garante altura mínima para centralizar msgs */
+  min-height: 60vh;
   display: flex;
   flex-direction: column;
 }
@@ -58,15 +58,13 @@
   box-sizing: border-box;
 }
 
-/* --- ESTILOS DE LOADING E ERRO (NOVOS) --- */
-
+/* Loading e Erro */
 .loading-state {
   text-align: center;
   padding: 60px;
   color: var(--text-muted);
   font-size: 1.1rem;
 }
-
 .error-card {
   background-color: #ffebee;
   border: 1px solid #ffcdd2;
@@ -80,7 +78,6 @@
   max-width: 600px;
   box-shadow: var(--shadow-sm);
 }
-
 .error-icon {
   font-size: 40px;
   height: 40px;
@@ -88,29 +85,22 @@
   color: #d32f2f;
   flex-shrink: 0;
 }
-
-.error-content {
-  flex: 1;
-}
-
 .error-content h3 {
   margin: 0 0 10px 0;
   font-size: 1.2rem;
   font-weight: 700;
 }
-
 .error-content p {
   margin: 0 0 8px 0;
   font-size: 0.95rem;
 }
-
 .error-actions {
   display: flex;
   gap: 12px;
   margin-top: 15px;
 }
-
-.btn-error-retry, .btn-error-back {
+.btn-error-retry,
+.btn-error-back {
   background-color: white;
   border-radius: 6px;
   font-weight: 600;
@@ -119,10 +109,9 @@
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  transition: background-color 0.2s;
+  transition: 0.2s;
   font-size: 0.9rem;
 }
-
 .btn-error-retry {
   border: 1px solid #d32f2f;
   color: #d32f2f;
@@ -130,7 +119,6 @@
 .btn-error-retry:hover {
   background-color: #ffcdd2;
 }
-
 .btn-error-back {
   border: 1px solid #999;
   color: #666;
@@ -140,9 +128,7 @@
   color: #333;
 }
 
-/* --- FIM ESTILOS LOADING E ERRO --- */
-
-/* --- Cabeçalho --- */
+/* Header */
 .page-header-row {
   display: flex;
   justify-content: space-between;
@@ -151,22 +137,19 @@
   flex-wrap: wrap;
   gap: 16px;
 }
-
 .page-header-content {
   flex: 1;
   min-width: 280px;
 }
-
 .page-title {
   font-size: 1.8rem;
   font-weight: 700;
   color: var(--text-main);
-  margin: 0 0 10px 0; 
+  margin: 0 0 10px 0;
   position: relative;
   display: inline-block;
   word-wrap: break-word;
 }
-
 .page-title::after {
   content: "";
   position: absolute;
@@ -177,19 +160,16 @@
   background-color: var(--primary-color);
   border-radius: 2px;
 }
-
 .page-subtitle {
   color: var(--text-muted);
   margin: 0;
   font-size: 0.95rem;
 }
-
 .header-actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
 }
-
 .btn-action {
   height: 44px;
   padding: 0 20px;
@@ -200,16 +180,7 @@
   gap: 8px;
   cursor: pointer;
   border: none;
-  transition: all 0.2s ease-in-out;
-}
-.btn-chat {
-  background: var(--primary-color);
-  color: white;
-}
-.btn-chat:hover {
-  background: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+  transition: 0.2s;
 }
 .btn-back {
   background: white;
@@ -219,18 +190,16 @@
 .btn-back:hover {
   background: #f5f5f5;
   color: var(--text-main);
-  border-color: #ccc;
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
 }
 
-/* --- Estrutura de Cards --- */
+/* Cards */
 .cards-stack {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
-
 .card-detalhes {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -245,16 +214,30 @@
   box-shadow: var(--shadow-hover);
 }
 
-/* --- Cores de Borda do Card (Baseado no Status) --- */
-.status-border-aberto { border-left-color: var(--s-aberto-color); }
-.status-border-triagem { border-left-color: var(--s-triagem-color); }
-.status-border-em_atendimento { border-left-color: var(--s-em_atendimento-color); }
-.status-border-aguardando_cliente { border-left-color: var(--s-aguardando_cliente-color); }
-.status-border-aguardando_peca { border-left-color: var(--s-aguardando_peca-color); }
-.status-border-concluido { border-left-color: var(--s-concluido-color); }
-.status-border-reaberto { border-left-color: var(--s-reaberto-color); }
+/* Bordas */
+.status-border-aberto {
+  border-left-color: var(--s-aberto-color);
+}
+.status-border-triagem {
+  border-left-color: var(--s-triagem-color);
+}
+.status-border-em_atendimento {
+  border-left-color: var(--s-em_atendimento-color);
+}
+.status-border-aguardando_cliente {
+  border-left-color: var(--s-aguardando_cliente-color);
+}
+.status-border-aguardando_peca {
+  border-left-color: var(--s-aguardando_peca-color);
+}
+.status-border-concluido {
+  border-left-color: var(--s-concluido-color);
+}
+.status-border-reaberto {
+  border-left-color: var(--s-reaberto-color);
+}
 
-/* --- Tipografia Interna Padronizada --- */
+/* Títulos */
 .card-title {
   font-size: 1.2rem;
   font-weight: 700;
@@ -264,7 +247,6 @@
   align-items: center;
   gap: 8px;
 }
-
 .card-internal-title {
   font-size: 0.95rem;
   font-weight: 700;
@@ -276,12 +258,9 @@
   align-items: center;
   gap: 8px;
 }
-
 .title-icon {
   color: var(--primary-color);
 }
-
-/* --- Card Unificado --- */
 .card-header-line {
   display: flex;
   justify-content: space-between;
@@ -292,7 +271,6 @@
   flex-wrap: wrap;
   gap: 10px;
 }
-
 .protocolo-badge {
   background: #e6f0ff;
   color: var(--primary-color);
@@ -303,22 +281,17 @@
   align-items: center;
   gap: 5px;
 }
-.protocolo-badge strong {
-  font-family: "Roboto Mono", monospace;
-}
 
+/* Layout Unificado */
 .unified-content-wrapper {
   display: flex;
   gap: 30px;
   align-items: flex-start;
 }
-
-/* --- Seção Esquerda (Dados) --- */
 .info-section {
   flex: 1;
   min-width: 0;
 }
-
 .chamado-titulo-principal {
   font-size: 1.5rem;
   color: var(--text-main);
@@ -326,13 +299,11 @@
   line-height: 1.3;
   font-weight: 600;
 }
-
 .info-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 20px 40px;
 }
-
 .info-item {
   display: flex;
   flex-direction: column;
@@ -345,7 +316,6 @@
   text-transform: uppercase;
 }
 
-/* --- Badges --- */
 .status-badge-inline {
   padding: 6px 14px;
   border-radius: 6px;
@@ -355,13 +325,41 @@
   width: fit-content;
   border: 1px solid transparent;
 }
-.status-aberto { background-color: var(--s-aberto-bg); color: var(--s-aberto-color); border-color: #bbdefb; }
-.status-triagem { background-color: var(--s-triagem-bg); color: var(--s-triagem-color); border-color: #d1c4e9; }
-.status-em_atendimento { background-color: var(--s-em_atendimento-bg); color: var(--s-em_atendimento-color); border-color: #ffe0b2; }
-.status-aguardando_cliente { background-color: var(--s-aguardando_cliente-bg); color: var(--s-aguardando_cliente-color); border-color: #f8bbd0; }
-.status-aguardando_peca { background-color: var(--s-aguardando_peca-bg); color: var(--s-aguardando_peca-color); border-color: #cfd8dc; }
-.status-concluido { background-color: var(--s-concluido-bg); color: var(--s-concluido-color); border-color: #c8e6c9; }
-.status-reaberto { background-color: var(--s-reaberto-bg); color: var(--s-reaberto-color); border-color: #ffcdd2; }
+.status-aberto {
+  background-color: var(--s-aberto-bg);
+  color: var(--s-aberto-color);
+  border-color: #bbdefb;
+}
+.status-triagem {
+  background-color: var(--s-triagem-bg);
+  color: var(--s-triagem-color);
+  border-color: #d1c4e9;
+}
+.status-em_atendimento {
+  background-color: var(--s-em_atendimento-bg);
+  color: var(--s-em_atendimento-color);
+  border-color: #ffe0b2;
+}
+.status-aguardando_cliente {
+  background-color: var(--s-aguardando_cliente-bg);
+  color: var(--s-aguardando_cliente-color);
+  border-color: #f8bbd0;
+}
+.status-aguardando_peca {
+  background-color: var(--s-aguardando_peca-bg);
+  color: var(--s-aguardando_peca-color);
+  border-color: #cfd8dc;
+}
+.status-concluido {
+  background-color: var(--s-concluido-bg);
+  color: var(--s-concluido-color);
+  border-color: #c8e6c9;
+}
+.status-reaberto {
+  background-color: var(--s-reaberto-bg);
+  color: var(--s-reaberto-color);
+  border-color: #ffcdd2;
+}
 
 .mini-priority {
   font-size: 0.85rem;
@@ -374,10 +372,22 @@
   align-items: center;
   gap: 6px;
 }
-.priority-text-baixa { background-color: var(--p-baixa-bg); color: var(--p-baixa-color); }
-.priority-text-media { background-color: var(--p-media-bg); color: var(--p-media-color); }
-.priority-text-alta { background-color: var(--p-alta-bg); color: var(--p-alta-color); }
-.priority-text-critica { background-color: var(--p-critica-bg); color: var(--p-critica-color); }
+.priority-text-baixa {
+  background-color: var(--p-baixa-bg);
+  color: var(--p-baixa-color);
+}
+.priority-text-media {
+  background-color: var(--p-media-bg);
+  color: var(--p-media-color);
+}
+.priority-text-alta {
+  background-color: var(--p-alta-bg);
+  color: var(--p-alta-color);
+}
+.priority-text-critica {
+  background-color: var(--p-critica-bg);
+  color: var(--p-critica-color);
+}
 
 .date-display {
   display: flex;
@@ -399,21 +409,19 @@
   color: var(--text-light);
 }
 
-/* --- Seção Direita (Técnico) --- */
+/* Técnico (Direita) */
 .vertical-divider {
   width: 1px;
   background-color: #eee;
   align-self: stretch;
   min-height: 100px;
 }
-
 .tech-section {
   flex: 0 0 280px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 12px;
 }
-
 .tech-profile {
   display: flex;
   align-items: center;
@@ -423,7 +431,6 @@
   border-radius: 8px;
   border: 1px solid #eee;
 }
-
 .tech-avatar {
   width: 45px;
   height: 45px;
@@ -437,7 +444,6 @@
   font-size: 1.2rem;
   flex-shrink: 0;
 }
-
 .tech-info {
   display: flex;
   flex-direction: column;
@@ -457,7 +463,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .waiting-tech-box {
   background: #fff8e1;
   color: #f57c00;
@@ -470,7 +475,37 @@
   border: 1px dashed #ffe0b2;
 }
 
-/* --- Descrição e Anexos --- */
+/* BOTÃO DE CHAT LATERAL */
+.btn-chat-sidebar {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+  margin-top: 16px; /* ESPAÇAMENTO PARA DESCOLAR */
+}
+.btn-chat-sidebar:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+.btn-chat-sidebar mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Descrição e Anexos */
 .description-content {
   font-size: 1rem;
   line-height: 1.6;
@@ -479,20 +514,19 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
-
 .attachments-container {
   background: #fafafa;
   padding: 20px;
   border-radius: 8px;
   border: 1px dashed #ddd;
 }
-
 .anexos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
-
 .anexo-item-card {
   background: white;
   border: 1px solid #eee;
@@ -501,6 +535,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  max-width: 100%; /* Garante não estourar */
+  box-sizing: border-box;
 }
 .anexo-meta {
   flex: 1;
@@ -523,14 +559,14 @@
   background: none;
   color: #666;
   cursor: pointer;
-  width: 36px; 
+  width: 36px;
   height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid transparent;
-  transition: all 0.2s ease-in-out;
+  transition: 0.2s;
 }
 .btn-download-icon:hover {
   color: var(--primary-color);
@@ -539,7 +575,128 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* --- Responsividade --- */
+/* --- TIMELINE --- */
+.timeline-container {
+  padding-left: 10px;
+  margin-top: 10px;
+}
+.timeline-item {
+  display: flex;
+  gap: 16px;
+  position: relative;
+  padding-bottom: 30px;
+}
+.timeline-item:last-child {
+  padding-bottom: 10px;
+}
+.timeline-item:last-child .marker-line {
+  display: none;
+}
+
+.timeline-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40px;
+  flex-shrink: 0;
+}
+.marker-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  color: #666;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  border: 3px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.marker-icon.ABERTURA {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+.marker-icon.MUDANCA_STATUS {
+  background: #ede7f6;
+  color: #5e35b1;
+}
+.marker-icon.INTERACAO {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.marker-icon.CONCLUSAO {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.marker-icon.REABERTURA {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.marker-line {
+  width: 2px;
+  background: #e0e0e0;
+  flex: 1;
+  margin-top: 4px;
+}
+
+.timeline-content {
+  flex: 1;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+  top: -4px;
+}
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.author-name {
+  font-weight: 700;
+  color: #333;
+  margin-right: 8px;
+}
+.role-badge {
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #555;
+}
+.event-date {
+  color: #888;
+}
+.timeline-body p {
+  margin: 0;
+  color: #444;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.timeline-end {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+  color: #999;
+  font-size: 0.9rem;
+}
+.timeline-end .dot {
+  width: 10px;
+  height: 10px;
+  background: #ddd;
+  border-radius: 50%;
+  margin-left: 15px;
+}
+
+/* Responsividade */
 @media (max-width: 900px) {
   .unified-content-wrapper {
     flex-direction: column;
@@ -548,7 +705,6 @@
   .vertical-divider {
     display: none;
   }
-
   .tech-section {
     width: 100%;
     border-top: 1px dashed #eee;
@@ -574,10 +730,15 @@
     flex-direction: column;
     gap: 16px;
   }
+
+  /* Correção Anexos Mobile */
   .anexos-grid {
     grid-template-columns: 1fr;
   }
-  .tech-name, .tech-email, .file-name {
+
+  .tech-name,
+  .tech-email,
+  .file-name {
     white-space: normal;
     word-break: break-word;
   }
@@ -587,5 +748,10 @@
   .btn-action {
     flex: 1;
     justify-content: center;
+  }
+  .timeline-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 }
