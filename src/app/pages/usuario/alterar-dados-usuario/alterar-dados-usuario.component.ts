@@ -6,25 +6,27 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router, RouterModule, ActivatedRoute, NavigationExtras } from '@angular/router';
-
-// --- Imports Material ---
+import {
+  Router,
+  RouterModule,
+  ActivatedRoute,
+  NavigationExtras,
+} from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-// ------------------------
-
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
-import { EmpresaService } from '../../../services/empresa/empresa.service';
 import { PerfilEnum } from '../../../models/usuario/perfilEnum';
 import { AuthService } from '../../../services/auth/auth.service';
 import { EmpresaOutput } from '../../../models/empresa/empresaOutput';
 import { UsuarioTokenOutput } from '../../../models/usuario/usuarioTokenOutput';
 import { UsuarioOutput } from '../../../models/usuario/usuarioOutput';
 import { UsuarioInput } from '../../../models/usuario/usuarioInput';
+import { ConfirmationDialogComponent } from '../../../components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-alterar-dados-usuario',
@@ -37,18 +39,17 @@ import { UsuarioInput } from '../../../models/usuario/usuarioInput';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatSelectModule, // Necessário para o dropdown de perfil
-    MatCheckboxModule, // Necessário para o campo Ativo
+    MatSelectModule,
+    MatCheckboxModule,
+    MatDialogModule,
   ],
   templateUrl: './alterar-dados-usuario.component.html',
-  styleUrls: ['./alterar-dados-usuario.component.css'], // Arquivo vazio
+  styleUrls: ['./alterar-dados-usuario.component.css'],
 })
 export class AlterarDadosUsuarioComponent implements OnInit {
   formUsuario!: FormGroup;
   errorMessages: string[] = [];
   successfullyUpdatedUsuario = '';
-
-  // Controle de Loading
   isLoading = false;
 
   token = localStorage.getItem('token')!;
@@ -66,10 +67,10 @@ export class AlterarDadosUsuarioComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private usuarioService: UsuarioService,
-    private empresaService: EmpresaService,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -92,13 +93,9 @@ export class AlterarDadosUsuarioComponent implements OnInit {
         }
         if (erro.error && erro.error.message) {
           this.errorMessages.push(erro.error.message);
-
-          // Redireciona para o LOGIN após 3 segundos para o usuário ler a mensagem
           setTimeout(() => {
             const navigationExtras: NavigationExtras = {
-              state: {
-                errorData: erro.error.message,
-              },
+              state: { errorData: erro.error.message },
             };
             this.router.navigate(['empresa/listar'], navigationExtras);
           }, 3000);
@@ -142,7 +139,6 @@ export class AlterarDadosUsuarioComponent implements OnInit {
       ],
       ativo: [usuario.ativo, Validators.required],
       perfil: [usuario.perfil, Validators.required],
-      // O campo empresa existe no form para validação, mas é readonly no HTML
       empresa: [usuario.empresa?.id ?? '', Validators.required],
     });
   }
@@ -158,20 +154,18 @@ export class AlterarDadosUsuarioComponent implements OnInit {
 
   private formatarTelefone(telefone: string): string {
     const numeros = telefone.replace(/\D/g, '');
-
     if (numeros.length === 11)
       return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(
         7
       )}`;
-
     if (numeros.length === 10)
       return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(
         6
       )}`;
-
     return numeros;
   }
 
+  // Método principal do botão salvar
   submitForm() {
     this.errorMessages = [];
 
@@ -184,9 +178,8 @@ export class AlterarDadosUsuarioComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true; // Inicia loading
-
-    let payload: UsuarioInput = {
+    // Prepara o payload
+    const payload: UsuarioInput = {
       ...this.formUsuario.value,
       nome: this.formUsuario.value.nome
         ?.trim()
@@ -199,17 +192,46 @@ export class AlterarDadosUsuarioComponent implements OnInit {
       telefone: this.formatarTelefone(this.formUsuario.value.telefone),
     };
 
+    const estaInativando = this.formUsuario.get('ativo')?.value === false;
+
+    if (estaInativando) {
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        width: '400px',
+        disableClose: true,
+        data: {
+          titulo: 'Inativar Usuário?',
+          mensagem: `Tem certeza que deseja inativar o usuário ${payload.nome}?\n\n⚠️ IMPACTOS IMEDIATOS:\n1. O usuário perderá o acesso ao sistema.\n2. Todos os chamados abertos por ele serão cancelados automaticamente.`,
+          icone: 'person_off',
+          corBotao: 'warn',
+          textoConfirmar: 'Sim, Inativar',
+          textoCancelar: 'Cancelar',
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((confirmado) => {
+        if (confirmado) {
+          this.enviarDadosAoBackend(payload);
+        }
+      });
+    } else {
+      this.enviarDadosAoBackend(payload);
+    }
+  }
+  private enviarDadosAoBackend(payload: UsuarioInput) {
+    this.isLoading = true;
+
     this.usuarioService
       .alterarDados(this.token, this.usuarioId, payload)
       .subscribe({
         next: () => {
-          this.isLoading = false; // Para loading
+          this.isLoading = false;
           this.successfullyUpdatedUsuario = 'Dados atualizados com sucesso!';
+          this.formUsuario.disable();
           window.scrollTo({ top: 0, behavior: 'smooth' });
           setTimeout(() => this.router.navigate(['/usuario/listar']), 2000);
         },
         error: (erro) => {
-          this.isLoading = false; // Para loading
+          this.isLoading = false;
           this.errorMessages.push(
             erro.error?.message ||
               'Ocorreu um erro inesperado. Tente mais tarde.'
