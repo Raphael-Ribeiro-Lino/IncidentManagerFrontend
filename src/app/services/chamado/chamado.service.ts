@@ -73,7 +73,7 @@ export class ChamadoService {
     token: string,
     numPage: number,
     searchTerm: string = '',
-    selectedPriority: string = ''
+    selectedStatus: string = ''
   ): Observable<PaginationOutput<ChamadoOutput>> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
@@ -84,6 +84,9 @@ export class ChamadoService {
 
     if (searchTerm) {
       params = params.set('search', searchTerm);
+    }
+    if (selectedStatus) {
+      params = params.set('status', selectedStatus);
     }
 
     return this.httpClient.get<PaginationOutput<ChamadoOutput>>(
