@@ -1,0 +1,344 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">Relatórios Gerenciais</h1>
+    <p class="page-subtitle">
+      Extraia métricas, analise o desempenho e exporte dados.
+    </p>
+  </div>
+
+  <div class="filter-card">
+    <form [formGroup]="formFiltro" (ngSubmit)="buscarDados()">
+      <div class="filters-top-row">
+        <!-- Data Início -->
+        <mat-form-field
+          appearance="outline"
+          class="compact-field"
+          subscriptSizing="dynamic"
+        >
+          <mat-label>Data Início</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker1"
+            formControlName="dataInicio"
+            placeholder="dd/mm/aaaa"
+            appDataMask
+            maxlength="10"
+            [max]="formFiltro.get('dataFim')?.value || maxDate"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker1"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+          <mat-error
+            *ngIf="formFiltro.get('dataInicio')?.hasError('matDatepickerMax')"
+          >
+            Data maior que a final
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Data Fim -->
+        <mat-form-field
+          appearance="outline"
+          class="compact-field"
+          subscriptSizing="dynamic"
+        >
+          <mat-label>Data Fim</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker2"
+            formControlName="dataFim"
+            placeholder="dd/mm/aaaa"
+            appDataMask
+            maxlength="10"
+            [min]="formFiltro.get('dataInicio')?.value"
+            [max]="maxDate"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker2"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+          <mat-error
+            *ngIf="formFiltro.get('dataFim')?.hasError('matDatepickerMin')"
+          >
+            Data menor que a inicial
+          </mat-error>
+          <mat-error
+            *ngIf="formFiltro.get('dataFim')?.hasError('matDatepickerMax')"
+          >
+            Data futura inválida
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Status -->
+        <mat-form-field
+          appearance="outline"
+          class="compact-field"
+          subscriptSizing="dynamic"
+        >
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let key of statusKeys" [value]="key">
+              {{ statusLabels[key] }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Prioridade -->
+        <mat-form-field
+          appearance="outline"
+          class="compact-field"
+          subscriptSizing="dynamic"
+        >
+          <mat-label>Prioridade</mat-label>
+          <mat-select formControlName="prioridade">
+            <mat-option value="">Todas</mat-option>
+            <mat-option *ngFor="let key of prioridadeKeys" [value]="key">
+              {{ prioridadeLabels[key] }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- LINHA DE BAIXO -->
+      <div class="filters-bottom-row">
+        <!-- Técnico (SOMENTE SE NÃO FOR TÉCNICO) -->
+        <div class="technician-wrapper" *ngIf="!isTecnico">
+          <mat-form-field
+            appearance="outline"
+            class="compact-field"
+            subscriptSizing="dynamic"
+          >
+            <mat-label>Pesquisar Técnico</mat-label>
+
+            <input
+              type="text"
+              matInput
+              [formControl]="tecnicoSearchControl"
+              [matAutocomplete]="auto"
+              (blur)="verificarLimpezaTecnico()"
+              placeholder="Digite o nome..."
+            />
+
+            <div
+              matSuffix
+              *ngIf="isLoadingTecnicos"
+              class="spinner-input"
+            ></div>
+            <mat-icon matSuffix *ngIf="!isLoadingTecnicos"
+              >person_search</mat-icon
+            >
+
+            <mat-autocomplete
+              #auto="matAutocomplete"
+              [displayWith]="displayFn"
+              (optionSelected)="onTecnicoSelected($event)"
+            >
+              <mat-option
+                *ngFor="let tec of tecnicosFiltrados$ | async"
+                [value]="tec"
+              >
+                {{ tec.nome }}
+              </mat-option>
+              <mat-option
+                *ngIf="
+                  !isLoadingTecnicos &&
+                  (tecnicosFiltrados$ | async)?.length === 0
+                "
+                disabled
+              >
+                <small>Nenhum técnico encontrado</small>
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="filter-actions">
+          <button
+            type="button"
+            mat-stroked-button
+            color="warn"
+            (click)="limparFiltros()"
+            [disabled]="isLoading"
+          >
+            <mat-icon>cleaning_services</mat-icon> Limpar
+          </button>
+
+          <button
+            type="submit"
+            mat-raised-button
+            color="primary"
+            [disabled]="isLoading || formFiltro.invalid"
+          >
+            <span *ngIf="!isLoading" class="flex-center">
+              <mat-icon>search</mat-icon> Buscar Dados
+            </span>
+            <span *ngIf="isLoading">...</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- RESULTADOS -->
+  <div
+    class="results-section fade-in"
+    *ngIf="hasSearched || dataSource.length > 0"
+  >
+    <div class="results-header">
+      <div class="results-meta">
+        <h3>Pré-visualização</h3>
+        <span class="results-badge" *ngIf="totalElementos > 0"
+          >{{ totalElementos }} registros encontrados</span
+        >
+      </div>
+
+      <div class="export-group">
+        <button
+          mat-stroked-button
+          class="btn-export pdf"
+          [disabled]="totalElementos === 0 || isExporting"
+          (click)="baixarArquivo('pdf')"
+          matTooltip="Baixar PDF"
+        >
+          <mat-icon>picture_as_pdf</mat-icon> PDF
+        </button>
+
+        <button
+          mat-stroked-button
+          class="btn-export excel"
+          [disabled]="totalElementos === 0 || isExporting"
+          (click)="baixarArquivo('excel')"
+          matTooltip="Baixar Excel"
+        >
+          <mat-icon>table_view</mat-icon> Excel
+        </button>
+      </div>
+    </div>
+
+    <div class="table-loading-overlay" *ngIf="isExporting || isLoading">
+      <div class="loading-box">
+        <div class="spinner"></div>
+        <p>{{ isExporting ? "Gerando arquivo..." : "Carregando..." }}</p>
+      </div>
+    </div>
+
+    <div
+      class="table-card mat-elevation-z2"
+      *ngIf="!isLoading && dataSource.length > 0"
+    >
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" class="report-table">
+          <!-- Protocolo -->
+          <ng-container matColumnDef="protocolo">
+            <th mat-header-cell *matHeaderCellDef>Protocolo</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="protocolo-display" [matTooltip]="element.protocolo">
+                <mat-icon class="tiny-icon no-shrink">tag</mat-icon>
+                <strong
+                  >{{ element.protocolo | slice : 0 : 15
+                  }}{{ element.protocolo.length > 15 ? "..." : "" }}</strong
+                >
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="titulo">
+            <th mat-header-cell *matHeaderCellDef>Título</th>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              class="col-titulo"
+              [matTooltip]="element.titulo"
+            >
+              {{ element.titulo }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="solicitante">
+            <th mat-header-cell *matHeaderCellDef>Solicitante</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.solicitante?.nome || "Desconhecido" }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="tecnico">
+            <th mat-header-cell *matHeaderCellDef>Técnico</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.tecnicoResponsavel?.nome || "-" }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="data">
+            <th mat-header-cell *matHeaderCellDef>Abertura</th>
+            <td mat-cell *matCellDef="let element" class="col-data">
+              <div class="date-cell">
+                <mat-icon class="tiny-icon no-shrink">event</mat-icon>
+                {{ element.dataCriacao | date : "dd/MM/yyyy" }}
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let element">
+              <span
+                class="status-badge-inline status-{{
+                  element.status | lowercase
+                }}"
+              >
+                {{ statusLabels[element.status] || element.status }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="prioridade">
+            <th mat-header-cell *matHeaderCellDef>Prioridade</th>
+            <td mat-cell *matCellDef="let element">
+              <span
+                class="priority-badge priority-text-{{
+                  element.prioridade | lowercase
+                }}"
+              >
+                {{ prioridadeLabels[element.prioridade] || element.prioridade }}
+              </span>
+            </td>
+          </ng-container>
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="displayedColumns; sticky: true"
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="data-row"
+          ></tr>
+        </table>
+      </div>
+
+      <div class="pagination-wrapper">
+        <app-pagination
+          [pageNumber]="page"
+          [totalPages]="totalPages"
+          (pageChange)="paginar($event)"
+        >
+        </app-pagination>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div
+      class="empty-state-report"
+      *ngIf="!isLoading && dataSource.length === 0"
+    >
+      <div class="empty-content">
+        <mat-icon>search_off</mat-icon>
+        <h3>Nenhum registro encontrado</h3>
+        <p>Tente ajustar os filtros para ver resultados.</p>
+      </div>
+    </div>
+  </div>
+</div>

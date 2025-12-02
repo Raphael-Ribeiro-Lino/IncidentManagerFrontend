@@ -22,6 +22,7 @@ import { AlterarEmpresaComponent } from './pages/empresa/alterar-empresa/alterar
 import { ListarMeusAtendimentosComponent } from './pages/tecnico/listar-meus-atendimentos/listar-meus-atendimentos.component';
 import { ExibirDetalhesAtendimentoComponent } from './pages/tecnico/exibir-detalhes-atendimento/exibir-detalhes-atendimento.component';
 import { ListarTransferenciasPendentesComponent } from './pages/tecnico/listar-transferencias-pendentes/listar-transferencias-pendentes.component';
+import { RelatorioComponent } from './pages/relatorio/relatorio.component';
 
 export const routes: Routes = [
   // Public routes
@@ -91,6 +92,12 @@ export const routes: Routes = [
       { path: 'listar', component: ListarMeusAtendimentosComponent },
       { path: ':id/detalhes', component: ExibirDetalhesAtendimentoComponent },
     ],
+  },
+  {
+    path: 'relatorios',
+    component: RelatorioComponent,
+    canActivate: [authGuard],
+    data: { roles: ['ADMIN', 'ADMIN_EMPRESA', 'TECNICO_TI'] },
   },
 
   // 404 page

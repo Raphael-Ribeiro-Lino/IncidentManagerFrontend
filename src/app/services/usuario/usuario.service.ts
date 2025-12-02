@@ -7,6 +7,7 @@ import { UsuarioInput } from '../../models/usuario/usuarioInput';
 import { PaginationOutput } from '../../models/pagination/paginationOutput';
 import { AlteraMeusDadosInput } from '../../models/usuario/alteraMeusDadosInput';
 import { AlteraSenhaInput } from '../../models/usuario/alteraSenhaInput';
+import { TecnicoSelecaoOutput } from '../../models/usuario/tecnicoSelecaoOutput';
 
 const API_URL = environment.URL_API + '/usuario';
 
@@ -143,6 +144,20 @@ export class UsuarioService {
     }
     return this.httpClient.get<any>(
       `${API_URL}/tecnicos-disponiveis-transferencia`, 
+      { headers, params }
+    );
+  }
+
+  pesquisarTecnicos(token: string, termo: string = ''): Observable<PaginationOutput<TecnicoSelecaoOutput>> {
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    const params = new HttpParams()
+      .set('termo', termo)
+      .set('page', '0')
+      .set('size', '10')
+      .set('sort', 'nome,asc');
+
+    return this.httpClient.get<PaginationOutput<TecnicoSelecaoOutput>>(
+      `${API_URL}/tecnico/lista`,
       { headers, params }
     );
   }
