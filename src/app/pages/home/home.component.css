@@ -1,0 +1,135 @@
+:host {
+  display: block;
+  --primary-color: #333a56;
+  --accent-color: #3f72af;
+  --bg-hover: #f0f4f8;
+}
+
+.page-container {
+  padding: 40px 24px;
+  max-width: 1200px; /* Aumentei um pouco para caber mais cards */
+  margin: 0 auto;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Header de Boas Vindas */
+.welcome-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.welcome-header h1 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin: 0 0 8px 0;
+  font-weight: 700;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+}
+
+/* --- GRID DE CARDS (FLEXÍVEL) --- */
+.actions-grid {
+  display: flex;
+  flex-wrap: wrap; /* Permite quebrar linha se a tela for muito pequena */
+  justify-content: center; /* Centraliza os cards na tela */
+  gap: 24px;
+  width: 100%;
+}
+
+/* Estilo do Card */
+.action-card {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+
+  /* --- FLEXIBILIDADE --- */
+  /* Cresce (1), Encolhe (1), Base (220px) */
+  flex: 1 1 220px;
+
+  /* Limites para não ficar nem muito fino nem muito largo */
+  min-width: 220px;
+  max-width: 350px;
+}
+
+.action-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+  border-color: var(--accent-color);
+  background-color: #fff;
+}
+
+/* Ícone dentro do card */
+.icon-box {
+  width: 64px;
+  height: 64px;
+  background-color: #e3f2fd; /* Azul bem claro */
+  color: var(--accent-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  transition: background-color 0.2s;
+}
+
+.icon-box mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+/* Efeito hover no ícone */
+.action-card:hover .icon-box {
+  background-color: var(--accent-color);
+  color: #fff;
+}
+
+/* Tipografia do Card */
+.action-card h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.action-card p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 24px 16px;
+    justify-content: flex-start;
+  }
+
+  .welcome-header h1 {
+    font-size: 2rem;
+  }
+
+  /* No mobile, força um card por linha para leitura fácil */
+  .action-card {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+}

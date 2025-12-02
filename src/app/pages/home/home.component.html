@@ -1,1 +1,87 @@
-<p>home works!</p>
+<div class="page-container">
+  <!-- Seção de Boas-vindas -->
+  <div class="welcome-header">
+    <h1>Olá, {{ nomeUsuario }}!</h1>
+    <p class="subtitle">
+      Bem-vindo ao SmartDesk. O que você deseja fazer hoje?
+    </p>
+  </div>
+
+  <!-- Grid de Ações -->
+  <div class="actions-grid">
+    <!-- ================================= -->
+    <!-- AÇÕES ESPECÍFICAS -->
+    <!-- ================================= -->
+
+    <!-- 1. Apenas USUÁRIO (Cliente) -->
+    <!-- Botão de destaque para abrir chamado -->
+    <a
+      *ngIf="perfil === PerfilEnum.USUARIO"
+      routerLink="/chamado/cadastrar"
+      class="action-card"
+    >
+      <div class="icon-box"><mat-icon>add_circle</mat-icon></div>
+      <h3>Abrir Novo Chamado</h3>
+      <p>Relate um problema ou faça uma solicitação.</p>
+    </a>
+
+    <!-- 2. Apenas TÉCNICO DE TI -->
+    <ng-container *ngIf="perfil === PerfilEnum.TECNICO_TI">
+      <a routerLink="/tecnico/atendimento/listar" class="action-card">
+        <div class="icon-box"><mat-icon>assignment_ind</mat-icon></div>
+        <h3>Painel de Atendimentos</h3>
+        <p>Gerencie sua fila de trabalho e transferências.</p>
+      </a>
+
+      <a routerLink="/relatorios" class="action-card">
+        <div class="icon-box"><mat-icon>bar_chart</mat-icon></div>
+        <h3>Relatórios</h3>
+        <p>Visualize métricas de desempenho.</p>
+      </a>
+    </ng-container>
+
+    <!-- 3. Apenas ADMIN (Global ou Empresa) -->
+    <ng-container
+      *ngIf="perfil === PerfilEnum.ADMIN || perfil === PerfilEnum.ADMIN_EMPRESA"
+    >
+      <!-- Apenas Admin Global vê Empresas -->
+      <a
+        *ngIf="perfil === PerfilEnum.ADMIN"
+        routerLink="/empresa/listar"
+        class="action-card"
+      >
+        <div class="icon-box"><mat-icon>business</mat-icon></div>
+        <h3>Gerenciar Empresas</h3>
+        <p>Cadastre e edite empresas clientes.</p>
+      </a>
+
+      <a routerLink="/usuario/listar" class="action-card">
+        <div class="icon-box"><mat-icon>group</mat-icon></div>
+        <h3>Gerenciar Usuários</h3>
+        <p>Controle de acesso e cadastros.</p>
+      </a>
+
+      <a routerLink="/relatorios" class="action-card">
+        <div class="icon-box"><mat-icon>analytics</mat-icon></div>
+        <h3>Relatórios Gerenciais</h3>
+        <p>Visão geral do sistema.</p>
+      </a>
+    </ng-container>
+
+    <!-- ================================= -->
+    <!-- AÇÕES COMUNS (PARA TODOS) -->
+    <!-- ================================= -->
+
+    <a routerLink="/chamado/listar" class="action-card">
+      <div class="icon-box"><mat-icon>list_alt</mat-icon></div>
+      <h3>Meus Chamados</h3>
+      <p>Acompanhe o status das solicitações que você abriu.</p>
+    </a>
+
+    <a routerLink="/usuario/alterar-meus-dados" class="action-card">
+      <div class="icon-box"><mat-icon>person</mat-icon></div>
+      <h3>Meu Perfil</h3>
+      <p>Atualize seus dados cadastrais.</p>
+    </a>
+  </div>
+</div>
