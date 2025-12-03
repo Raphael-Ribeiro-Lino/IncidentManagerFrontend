@@ -1,0 +1,181 @@
+<div class="chat-wrapper">
+  <!-- HEADER (Mantido) -->
+  <div class="chat-header">
+    <div class="header-left">
+      <h3 class="chat-title">Chat de Atendimento</h3>
+      <div class="badges-row">
+        <div class="protocolo-badge">
+          <mat-icon class="tiny-icon">tag</mat-icon>
+          <span class="protocolo-text">{{ protocolo }}</span>
+        </div>
+        <div class="status-badge-inline status-{{ statusChamado | lowercase }}">
+          {{ statusLabels[statusChamado] || statusChamado }}
+        </div>
+      </div>
+    </div>
+    <button mat-icon-button (click)="fechar()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- BODY -->
+  <div class="chat-body" #scrollContainer>
+    <div class="loading-shade" *ngIf="isLoading">
+      <mat-spinner diameter="32"></mat-spinner>
+    </div>
+
+    <div class="empty-chat" *ngIf="!isLoading && mensagens.length === 0">
+      <mat-icon>forum</mat-icon>
+      <p>Inicie a conversa!</p>
+    </div>
+
+    <div
+      class="message-row"
+      *ngFor="let msg of mensagens; trackBy: trackByFn"
+      [ngClass]="{
+        sent: msg.souEu,
+        received: !msg.souEu,
+        'private-note': !msg.visivelParaCliente
+      }"
+    >
+      <!-- AVATAR ATUALIZADO -->
+      <div
+        class="avatar"
+        *ngIf="!msg.souEu"
+        matTooltip="{{ msg.remetenteNome }}"
+      >
+        {{ getIniciais(msg.remetenteNome) }}
+      </div>
+
+      <div class="bubble">
+        <!-- ... (Restante do conteúdo da mensagem mantido) ... -->
+        <div class="private-header" *ngIf="!msg.visivelParaCliente">
+          <mat-icon>lock</mat-icon> Nota Interna
+        </div>
+        <span class="sender-name" *ngIf="!msg.souEu">{{
+          msg.remetenteNome
+        }}</span>
+        <div class="msg-content" *ngIf="msg.conteudo">{{ msg.conteudo }}</div>
+
+        <!-- Anexos -->
+        <div
+          class="attachments-list"
+          *ngIf="msg.anexos && msg.anexos.length > 0"
+        >
+          <div
+            class="attachment-card"
+            *ngFor="let anexo of msg.anexos"
+            (click)="baixarAnexo(anexo.storagePath)"
+          >
+            <div class="att-icon-box">
+              <mat-icon>insert_drive_file</mat-icon>
+            </div>
+            <div class="att-info">
+              <span class="att-name">{{ anexo.nomeArquivo }}</span
+              ><span class="att-action">Baixar</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg-footer">
+          <span class="msg-time">{{ msg.enviadoEm | date : "HH:mm" }}</span>
+          <span
+            class="read-status"
+            *ngIf="msg.souEu && msg.visivelParaCliente !== false"
+          >
+            <mat-icon
+              [class.read-blue]="msg.lidoEm"
+              [class.read-gray]="!msg.lidoEm"
+              >done_all</mat-icon
+            >
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-footer" *ngIf="isChatAtivo(); else chatClosed">
+    <div class="files-preview" *ngIf="arquivosSelecionados.length > 0">
+      <div
+        class="file-chip"
+        *ngFor="let f of arquivosSelecionados; let i = index"
+      >
+        <mat-icon class="file-chip-icon">attach_file</mat-icon>
+        <span class="file-chip-name">{{ f.name }}</span>
+        <button class="btn-rm-file" (click)="removerArquivo(i)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <button
+        mat-icon-button
+        class="btn-attach"
+        (click)="triggerFileInput()"
+        [disabled]="isSending"
+      >
+        <mat-icon>attach_file</mat-icon>
+      </button>
+      <input
+        type="file"
+        #fileInput
+        multiple
+        style="display: none"
+        (change)="onFileSelected($event)"
+      />
+
+      <!-- Wrapper do Input (Fica vermelho se passar de 5000) -->
+      <div
+        class="text-input-wrapper"
+        [class.private-mode]="isPrivate"
+        [class.input-error]="textoMensagem.length > 5000"
+      >
+        <div class="private-toggle" *ngIf="podeEnviarPrivado">
+          <mat-checkbox [(ngModel)]="isPrivate" color="warn" class="small-check"
+            >Nota Interna 🔒</mat-checkbox
+          >
+        </div>
+
+        <!-- Textarea com Rolagem Automática -->
+        <textarea
+          cdkTextareaAutosize
+          cdkAutosizeMinRows="1"
+          cdkAutosizeMaxRows="5"
+          [(ngModel)]="textoMensagem"
+          placeholder="Digite sua mensagem..."
+          (keydown.enter)="$event.preventDefault(); enviar()"
+          [disabled]="isSending"
+        ></textarea>
+      </div>
+
+      <!-- Botão Desabilitado se > 5000 caracteres -->
+      <button
+        mat-mini-fab
+        color="primary"
+        class="btn-send"
+        (click)="enviar()"
+        [disabled]="
+          isSending ||
+          (!textoMensagem.trim() && arquivosSelecionados.length === 0) ||
+          textoMensagem.length > 5000
+        "
+      >
+        <mat-icon>send</mat-icon>
+      </button>
+    </div>
+
+    <!-- Contador de Caracteres (Feedback Visual) -->
+    <div
+      class="char-counter"
+      *ngIf="textoMensagem.length > 4000"
+      [class.limit-exceeded]="textoMensagem.length > 5000"
+    >
+      {{ textoMensagem.length }} / 5000
+    </div>
+  </div>
+
+  <ng-template #chatClosed>
+    <div class="chat-closed-msg"><mat-icon>lock</mat-icon> Chat encerrado.</div>
+  </ng-template>
+</div>

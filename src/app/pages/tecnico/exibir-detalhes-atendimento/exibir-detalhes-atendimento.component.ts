@@ -13,6 +13,7 @@ import { ModalNotaInternaComponent } from '../../../components/modal-nota-intern
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ModalAlterarStatusComponent } from '../../../components/modal-alterar-status/modal-alterar-status.component';
 import { AlteraStatusChamadoInput } from '../../../models/chamado/alteraStatusChamadoInput';
+import { ChatChamadoComponent } from '../../../components/chat-chamado/chat-chamado.component';
 
 @Component({
   selector: 'app-exibir-detalhes-atendimento',
@@ -182,7 +183,20 @@ export class ExibirDetalhesAtendimentoComponent implements OnInit {
   }
 
   acessarChat(): void {
-    console.log('Navegar para chat...');
+    this.dialog.open(ChatChamadoComponent, {
+      width: '800px', // Mais largo no desktop
+      height: '90vh', // Altura responsiva
+      maxWidth: '95vw', // Quase tela toda no mobile
+      maxHeight: '90vh',
+      hasBackdrop: true, // Com fundo escuro para focar
+      data: {
+        chamadoId: this.chamado.id,
+        protocolo: this.chamado.protocolo,
+        status: this.chamado.status,
+      },
+      // Remove padding padrão do material se tiver a classe global configurada
+      panelClass: 'chat-modal-panel',
+    });
   }
 
   podeMudarStatus(status: string): boolean {
@@ -195,34 +209,35 @@ export class ExibirDetalhesAtendimentoComponent implements OnInit {
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe((dadosFormulario: AlteraStatusChamadoInput) => {
-      
-      // Se tiver dados, o usuário confirmou
-      if (dadosFormulario) {
-        // Não ativa isLoading global para não piscar a tela
-        
-        this.chamadoService
-          .atualizarStatus(this.token, this.chamadoId, dadosFormulario)
-          .subscribe({
-            next: (chamadoAtualizado) => {
-              this.snackBar.open('Status atualizado com sucesso!', 'OK', {
-                duration: 4000,
-                panelClass: ['snack-success'],
-              });
+    dialogRef
+      .afterClosed()
+      .subscribe((dadosFormulario: AlteraStatusChamadoInput) => {
+        // Se tiver dados, o usuário confirmou
+        if (dadosFormulario) {
+          // Não ativa isLoading global para não piscar a tela
 
-              // Recarrega os dados (Timeline e Cabeçalho mudarão) e faz scroll
-              this.carregarChamado(() => this.scrollToTimeline(), false);
-            },
-            error: (err) => {
-              console.error(err);
-              this.snackBar.open('Erro ao atualizar status.', 'Fechar', {
-                duration: 4000,
-                panelClass: ['snack-error'],
-              });
-            }
-          });
-      }
-    });
+          this.chamadoService
+            .atualizarStatus(this.token, this.chamadoId, dadosFormulario)
+            .subscribe({
+              next: (chamadoAtualizado) => {
+                this.snackBar.open('Status atualizado com sucesso!', 'OK', {
+                  duration: 4000,
+                  panelClass: ['snack-success'],
+                });
+
+                // Recarrega os dados (Timeline e Cabeçalho mudarão) e faz scroll
+                this.carregarChamado(() => this.scrollToTimeline(), false);
+              },
+              error: (err) => {
+                console.error(err);
+                this.snackBar.open('Erro ao atualizar status.', 'Fechar', {
+                  duration: 4000,
+                  panelClass: ['snack-error'],
+                });
+              },
+            });
+        }
+      });
   }
 
   scrollToTimeline(): void {
@@ -254,7 +269,7 @@ export class ExibirDetalhesAtendimentoComponent implements OnInit {
               // 1. Mensagem de Sucesso (Sem posição forçada = Padrão Embaixo)
               this.snackBar.open('Nota interna adicionada com sucesso!', 'OK', {
                 duration: 4000,
-                panelClass: ['snack-success'], 
+                panelClass: ['snack-success'],
               });
 
               // 2. Atualiza dados silenciosamente e faz o scroll

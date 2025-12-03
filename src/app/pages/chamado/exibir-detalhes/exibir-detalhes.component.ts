@@ -6,6 +6,8 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ChatChamadoComponent } from '../../../components/chat-chamado/chat-chamado.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-exibir-detalhes',
@@ -54,7 +56,8 @@ export class ExibirDetalhesComponent implements OnInit {
   constructor(
     private chamadoService: ChamadoService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -167,7 +170,20 @@ export class ExibirDetalhesComponent implements OnInit {
   }
 
   acessarChat(): void {
-    alert('Funcionalidade de Chat será implementada.');
+    this.dialog.open(ChatChamadoComponent, {
+      width: '800px', // Mais largo no desktop
+      height: '90vh', // Altura responsiva
+      maxWidth: '95vw', // Quase tela toda no mobile
+      maxHeight: '90vh',
+      hasBackdrop: true, // Com fundo escuro para focar
+      data: {
+        chamadoId: this.chamado.id,
+        protocolo: this.chamado.protocolo,
+        status: this.chamado.status,
+      },
+      // Remove padding padrão do material se tiver a classe global configurada
+      panelClass: 'chat-modal-panel',
+    });
   }
 
   baixarAnexo(storagePath: string): void {
