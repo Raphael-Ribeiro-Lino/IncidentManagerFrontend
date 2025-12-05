@@ -1,41 +1,54 @@
 <header class="app-header">
   <div class="header-content">
-
     <!-- BRAND -->
     <div class="brand" routerLink="/home">
-      <img src="assets/logo.png" alt="Logo SmartDesk" class="brand-logo">
+      <img src="assets/logo.png" alt="Logo SmartDesk" class="brand-logo" />
     </div>
 
-    <!-- NAV LINKS -->
+    <!-- NAV LINKS (Mantido igual) -->
     <nav class="nav-links">
       <a routerLink="/home" routerLinkActive="active" class="nav-item">
         <mat-icon>home</mat-icon> Início
       </a>
 
       @if (perfilUsuario === HeaderPerfilEnum.ADMIN) {
-      <a routerLink="/empresa/listar" routerLinkActive="active" class="nav-item">
+      <a
+        routerLink="/empresa/listar"
+        routerLinkActive="active"
+        class="nav-item"
+      >
         <mat-icon>business</mat-icon> Empresas
       </a>
-      }
-
-      @if (perfilUsuario === HeaderPerfilEnum.ADMIN || perfilUsuario === HeaderPerfilEnum.ADMIN_EMPRESA) {
-      <a routerLink="/usuario/listar" routerLinkActive="active" class="nav-item">
+      } @if (perfilUsuario === HeaderPerfilEnum.ADMIN || perfilUsuario ===
+      HeaderPerfilEnum.ADMIN_EMPRESA) {
+      <a
+        routerLink="/usuario/listar"
+        routerLinkActive="active"
+        class="nav-item"
+      >
         <mat-icon>people</mat-icon> Usuários
       </a>
       }
 
-      <a routerLink="/chamado/listar" routerLinkActive="active" class="nav-item">
+      <a
+        routerLink="/chamado/listar"
+        routerLinkActive="active"
+        class="nav-item"
+      >
         <mat-icon>assignment</mat-icon> Meus Chamados
       </a>
 
       @if (perfilUsuario === HeaderPerfilEnum.TECNICO_TI) {
-      <a routerLink="/tecnico/atendimento/listar" routerLinkActive="active" class="nav-item">
+      <a
+        routerLink="/tecnico/atendimento/listar"
+        routerLinkActive="active"
+        class="nav-item"
+      >
         <mat-icon>assignment_turned_in</mat-icon> Atendimentos
       </a>
-      }
-
-      @if (perfilUsuario === HeaderPerfilEnum.ADMIN || perfilUsuario === HeaderPerfilEnum.ADMIN_EMPRESA ||
-      perfilUsuario === HeaderPerfilEnum.TECNICO_TI) {
+      } @if (perfilUsuario === HeaderPerfilEnum.ADMIN || perfilUsuario ===
+      HeaderPerfilEnum.ADMIN_EMPRESA || perfilUsuario ===
+      HeaderPerfilEnum.TECNICO_TI) {
       <a routerLink="/relatorios" routerLinkActive="active" class="nav-item">
         <mat-icon>bar_chart</mat-icon> Relatórios
       </a>
@@ -48,7 +61,7 @@
         <span class="user-name">Olá, {{ nomeUsuario }}</span>
       </div>
 
-      <!-- BOTÃO AVATAR -->
+      <!-- AVATAR -->
       <button mat-icon-button [matMenuTriggerFor]="menu" class="avatar-btn">
         <div class="avatar-circle">{{ iniciais }}</div>
       </button>
@@ -66,60 +79,82 @@
       </mat-menu>
 
       <!-- BOTÃO NOTIFICAÇÃO -->
-      <button mat-icon-button [matMenuTriggerFor]="notificacaoMenu" (menuOpened)="abrirMenuNotificacoes()"
-        class="notification-btn">
-        <mat-icon [matBadge]="unreadCount" matBadgeColor="warn" [matBadgeHidden]="unreadCount === 0"
-          aria-hidden="false">
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="notificacaoMenu"
+        (menuOpened)="abrirMenuNotificacoes()"
+        class="notification-btn"
+      >
+        <mat-icon
+          [matBadge]="unreadCount"
+          matBadgeColor="warn"
+          [matBadgeHidden]="unreadCount === 0"
+          aria-hidden="false"
+        >
           notifications
         </mat-icon>
       </button>
 
-      <!-- MENU DE NOTIFICAÇÕES ESTILIZADO -->
-      <mat-menu #notificacaoMenu="matMenu" xPosition="before" class="notification-menu-panel">
+      <!-- MENU DE NOTIFICAÇÕES -->
+      <mat-menu
+        #notificacaoMenu="matMenu"
+        xPosition="before"
+        class="notification-menu-panel"
+      >
         <div class="notification-header">
           <h3>Notificações</h3>
-          <button class="btn-mark-read" (click)="$event.stopPropagation(); marcarTodasComoLidas()"
-            *ngIf="unreadCount > 0">
+          <button
+            class="btn-mark-read"
+            (click)="$event.stopPropagation(); marcarTodasComoLidas()"
+            *ngIf="unreadCount > 0"
+          >
             Marcar todas como lidas
           </button>
         </div>
 
         <div class="notification-list">
-          <!-- Loop -->
-          <div *ngFor="let n of notificacoes" class="notification-item" [class.unread]="!n.lido"
-            (click)="clicarNotificacao(n)">
-
-            <!-- Ícone Redondo Colorido -->
-            <div class="notif-icon-box" [ngClass]="getClassByTipo(n.tipo)">
-              <mat-icon>{{ getIcone(n.tipo) }}</mat-icon>
+          <div
+            *ngFor="let n of notificacoes"
+            class="notification-item"
+            [class.unread]="!n.lido"
+            (click)="clicarNotificacao(n)"
+          >
+            <!-- Ícone Colorido -->
+            <div class="notif-icon-box" [ngClass]="getClassByTipo(n)">
+              <mat-icon>{{ getIcone(n) }}</mat-icon>
             </div>
 
             <div class="notif-content">
               <div class="notif-top-line">
-                <span class="notif-type">{{ tipoLabels[n.tipo] || 'Aviso' }}</span>
-                <span class="notif-time">{{ n.criadoEm | date:'dd/MM HH:mm' }}</span>
+                <span class="notif-type">{{ getTituloInteligente(n) }}</span>
+                <span class="notif-time">{{
+                  n.criadoEm | date : "HH:mm"
+                }}</span>
               </div>
 
-              <p class="notif-msg">{{ n.mensagem }}</p>
+              <!-- Mensagem Formatada -->
+              <p class="notif-msg">{{ formatarMensagem(n.mensagem) }}</p>
 
-              <!-- Protocolo Badge -->
-              <div class="notif-protocolo" *ngIf="n.chamadoProtocolo">
+              <!-- Protocolo Resumido -->
+              <div
+                class="notif-protocolo"
+                *ngIf="n.chamadoProtocolo"
+                [matTooltip]="n.chamadoProtocolo"
+              >
                 <mat-icon class="tiny-icon">tag</mat-icon>
-                <span>{{ n.chamadoProtocolo }}</span>
+                <span>{{ n.chamadoProtocolo | slice : 0 : 15 }}...</span>
               </div>
             </div>
 
             <div class="unread-dot" *ngIf="!n.lido"></div>
           </div>
 
-          <!-- Empty State -->
           <div *ngIf="notificacoes.length === 0" class="empty-state">
             <mat-icon>notifications_off</mat-icon>
             <p>Nenhuma notificação recente</p>
           </div>
         </div>
       </mat-menu>
-
     </div>
   </div>
 </header>

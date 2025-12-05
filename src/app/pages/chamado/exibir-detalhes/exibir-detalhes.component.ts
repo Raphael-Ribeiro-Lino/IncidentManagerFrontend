@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChamadoService } from '../../../services/chamado/chamado.service';
 import { ChamadoDetalhadoOutput } from '../../../models/chamado/chamadoDetalhadoOutput'; // Use o DTO detalhado
@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChatChamadoComponent } from '../../../components/chat-chamado/chat-chamado.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-exibir-detalhes',
@@ -22,7 +23,9 @@ import { MatDialog } from '@angular/material/dialog';
   templateUrl: './exibir-detalhes.component.html',
   styleUrl: './exibir-detalhes.component.css',
 })
-export class ExibirDetalhesComponent implements OnInit {
+export class ExibirDetalhesComponent implements OnInit, OnDestroy {
+  private routeSubscription!: Subscription;
+  private chatVerificado = false; // Nova flag
   chamado!: ChamadoDetalhadoOutput;
 
   chamadoCarregado = false;
@@ -61,20 +64,29 @@ export class ExibirDetalhesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    this.chamadoId = Number(idParam);
+    this.routeSubscription = this.route.paramMap.subscribe((params) => {
+      const idParam = params.get('id');
 
-    if (!this.chamadoId || isNaN(this.chamadoId)) {
-      this.errorMessages.push('ID do chamado inválido.');
-      return;
-    }
+      if (idParam) {
+        this.chamadoId = Number(idParam);
+
+        this.chamadoCarregado = false;
+        this.chatVerificado = false;
+
+        this.carregarChamado();
+      }
+    });
 
     this.paginaDeRetorno = this.route.snapshot.queryParamMap.get('page');
     this.termoBuscaDeRetorno = this.route.snapshot.queryParamMap.get('search');
     this.prioridadeDeRetorno =
       this.route.snapshot.queryParamMap.get('priority');
+  }
 
-    this.carregarChamado();
+  ngOnDestroy(): void {
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
   }
 
   carregarChamado(): void {
@@ -96,6 +108,22 @@ export class ExibirDetalhesComponent implements OnInit {
         this.chamadoCarregado = true;
         this.isLoading = false;
         this.errorMessages = [];
+        if (!this.chatVerificado) {
+          const deveAbrirChat =
+            this.route.snapshot.queryParamMap.get('openChat') === 'true';
+
+          if (deveAbrirChat) {
+            setTimeout(() => this.acessarChat(), 200);
+
+            this.router.navigate([], {
+              relativeTo: this.route,
+              queryParams: { openChat: null },
+              queryParamsHandling: 'merge',
+              replaceUrl: true,
+            });
+          }
+          this.chatVerificado = true;
+        }
       },
       error: (err) => {
         console.error(err);

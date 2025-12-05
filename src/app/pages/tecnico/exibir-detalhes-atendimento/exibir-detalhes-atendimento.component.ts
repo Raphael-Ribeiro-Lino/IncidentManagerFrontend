@@ -32,6 +32,7 @@ import { ChatChamadoComponent } from '../../../components/chat-chamado/chat-cham
   styleUrl: './exibir-detalhes-atendimento.component.css',
 })
 export class ExibirDetalhesAtendimentoComponent implements OnInit {
+  private chatVerificado = false;
   chamado!: ChamadoDetalhadoOutput; // Tipagem correta com histórico
 
   chamadoCarregado = false;
@@ -119,6 +120,25 @@ export class ExibirDetalhesAtendimentoComponent implements OnInit {
           if (callback) {
             // Pequeno delay para garantir que o Angular renderizou a nova nota na lista
             setTimeout(() => callback(), 100);
+          }
+          if (!this.chatVerificado) {
+            const deveAbrirChat =
+              this.route.snapshot.queryParamMap.get('openChat') === 'true';
+
+            if (deveAbrirChat) {
+              setTimeout(() => this.acessarChat(), 200);
+
+              // Limpa a URL
+              this.router.navigate([], {
+                relativeTo: this.route,
+                queryParams: { openChat: null },
+                queryParamsHandling: 'merge',
+                replaceUrl: true,
+              });
+            }
+
+            // Marca como verificado para não abrir de novo ao recarregar (ex: mudar status)
+            this.chatVerificado = true;
           }
         },
         error: (err) => {

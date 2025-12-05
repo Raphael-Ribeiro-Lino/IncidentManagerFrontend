@@ -8,10 +8,11 @@
 
   <!-- SISTEMA DE ABAS -->
   <mat-tab-group
-    animationDuration="0ms"
-    class="custom-tabs"
-    mat-stretch-tabs="false"
-    mat-align-tabs="start"
+    [(selectedIndex)]="selectedTabIndex"
+      animationDuration="0ms" 
+      class="custom-tabs" 
+      mat-stretch-tabs="false" 
+      mat-align-tabs="start">
   >
     <!-- ============================================= -->
     <!-- ABA 1: MEUS CHAMADOS -->

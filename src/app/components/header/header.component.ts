@@ -9,19 +9,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 // Services & Models
 import { AuthService } from '../../services/auth/auth.service';
 import { LoginService } from '../../services/login/login.service';
 import { NotificacaoService } from '../../services/notificacao/notificacao.service';
-import { ChamadoService } from '../../services/chamado/chamado.service';
 import { HeaderPerfilEnum } from '../../models/usuario/headerPerfilEnum';
 import { NotificacaoOutput } from '../../models/notificacao/notificacaoOutput';
 import { TipoNotificacaoEnum } from '../../models/notificacao/tipoNotificacaoEnum';
-import { ChatChamadoComponent } from '../chat-chamado/chat-chamado.component';
-
-// Import do Componente de Chat
 
 @Component({
   selector: 'app-header',
@@ -34,7 +30,7 @@ import { ChatChamadoComponent } from '../chat-chamado/chat-chamado.component';
     MatMenuModule,
     MatBadgeModule,
     MatDividerModule,
-    MatDialogModule,
+    MatTooltipModule,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
@@ -50,22 +46,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
   unreadCount: number = 0;
   private pollingSubscription!: Subscription;
 
-  // Labels amigáveis (Removido Avaliação)
-  tipoLabels: Record<string, string> = {
-    NOVA_MENSAGEM: 'Nova Mensagem',
-    MUDANCA_STATUS: 'Status Atualizado', // Cobre cancelamentos, mudanças gerais
-    TRANSFERENCIA: 'Transferência Recebida',
-    RESOLUCAO: 'Chamado Resolvido',
-    REABERTURA: 'Chamado Reaberto',
+  // Labels para tradução dos status na mensagem
+  statusLabels: Record<string, string> = {
+    ABERTO: 'ABERTO',
+    TRIAGEM: 'TRIAGEM',
+    EM_ATENDIMENTO: 'EM ATENDIMENTO',
+    AGUARDANDO_CLIENTE: 'AGUARDANDO CLIENTE',
+    AGUARDANDO_PECA: 'AGUARDANDO PEÇA',
+    RESOLVIDO: 'RESOLVIDO',
+    CONCLUIDO: 'CONCLUÍDO',
+    REABERTO: 'REABERTO',
   };
 
   constructor(
     private authService: AuthService,
     private loginService: LoginService,
     private notificacaoService: NotificacaoService,
-    private chamadoService: ChamadoService,
-    private router: Router,
-    private dialog: MatDialog
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -90,7 +87,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   iniciarPollingNotificacoes() {
     this.atualizarContador();
-    this.pollingSubscription = interval(15000).subscribe(() => {
+    this.pollingSubscription = interval(10000).subscribe(() => {
       this.atualizarContador();
     });
   }
@@ -109,7 +106,77 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
-  // --- LÓGICA DE NAVEGAÇÃO ---
+  // --- FORMATAÇÃO VISUAL ---
+
+  // Substitui códigos (EM_ATENDIMENTO) por texto bonito (Em Atendimento)
+  formatarMensagem(mensagem: string): string {
+    if (!mensagem) return '';
+    let msgFormatada = mensagem;
+
+    Object.keys(this.statusLabels).forEach((key) => {
+      // Regex para substituir apenas a palavra exata ou se estiver contida de forma clara
+      if (msgFormatada.includes(key)) {
+        msgFormatada = msgFormatada.replace(key, this.statusLabels[key]);
+      }
+    });
+    return msgFormatada;
+  }
+
+  getTituloInteligente(n: NotificacaoOutput): string {
+    const msg = n.mensagem.toLowerCase();
+    switch (n.tipo) {
+      case TipoNotificacaoEnum.NOVA_MENSAGEM:
+        return 'Nova Mensagem';
+      case TipoNotificacaoEnum.RESOLUCAO:
+        return 'Chamado Resolvido';
+      case TipoNotificacaoEnum.REABERTURA:
+        return 'Chamado Reaberto';
+      case TipoNotificacaoEnum.MUDANCA_STATUS:
+        return 'Status Atualizado';
+      case TipoNotificacaoEnum.TRANSFERENCIA:
+        if (msg.includes('cancelou')) return 'Transferência Cancelada';
+        if (msg.includes('aceitou')) return 'Transferência Aceita';
+        if (msg.includes('recusou')) return 'Transferência Recusada';
+        if (msg.includes('deseja transferir'))
+          return 'Solicitação de Transferência';
+        if (msg.includes('definido como responsável'))
+          return 'Chamado Atribuído';
+        return 'Transferência';
+      default:
+        return 'Notificação';
+    }
+  }
+
+  getIcone(n: NotificacaoOutput): string {
+    const titulo = this.getTituloInteligente(n);
+    if (titulo === 'Nova Mensagem') return 'chat';
+    if (titulo === 'Chamado Resolvido') return 'check_circle';
+    if (titulo === 'Chamado Reaberto') return 'replay';
+    if (titulo === 'Transferência Aceita') return 'handshake';
+    if (titulo === 'Transferência Recusada') return 'cancel';
+    if (titulo === 'Transferência Cancelada') return 'block';
+    if (titulo === 'Solicitação de Transferência') return 'move_to_inbox';
+    if (titulo === 'Chamado Atribuído') return 'assignment_ind';
+    return 'notifications';
+  }
+
+  getClassByTipo(n: NotificacaoOutput): string {
+    const titulo = this.getTituloInteligente(n);
+    if (titulo === 'Nova Mensagem') return 'bg-blue';
+    if (titulo === 'Chamado Resolvido' || titulo === 'Transferência Aceita')
+      return 'bg-green';
+    if (titulo === 'Chamado Reaberto' || titulo === 'Transferência Recusada')
+      return 'bg-red';
+    if (
+      titulo === 'Solicitação de Transferência' ||
+      titulo === 'Chamado Atribuído'
+    )
+      return 'bg-purple';
+    return 'bg-gray';
+  }
+
+  // --- NAVEGAÇÃO CENTRALIZADA ---
+
   clicarNotificacao(n: NotificacaoOutput) {
     // 1. Marca como lida
     if (!n.lido) {
@@ -118,89 +185,68 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.unreadCount = Math.max(0, this.unreadCount - 1);
     }
 
-    // 2. Redirecionamento baseado no Tipo
-    switch (n.tipo) {
-      // CHAT -> Abre Modal
-      case TipoNotificacaoEnum.NOVA_MENSAGEM:
-        this.abrirChatDireto(n.chamadoId);
-        break;
+    const titulo = this.getTituloInteligente(n);
+    const isTecnico = this.perfilUsuario === HeaderPerfilEnum.TECNICO_TI;
 
-      // TRANSFERENCIA -> Lista de Recebidos (Tab 1)
-      case TipoNotificacaoEnum.TRANSFERENCIA:
-        if (this.perfilUsuario === HeaderPerfilEnum.TECNICO_TI) {
-          this.router.navigate(['/tecnico/atendimento/listar'], {
-            queryParams: { tab: 1 },
-          });
-        }
-        break;
-
-      // MUDANÇA DE STATUS / CANCELAMENTO DE TRANSFERÊNCIA -> Lista Principal (Tab 0)
-      // O cancelamento geralmente gera uma MUDANCA_STATUS
-      case TipoNotificacaoEnum.MUDANCA_STATUS:
-        if (this.perfilUsuario === HeaderPerfilEnum.TECNICO_TI) {
-          // Volta para a lista de trabalho ("Meus Atendimentos")
-          this.router.navigate(['/tecnico/atendimento/listar'], {
-            queryParams: { tab: 0 },
-          });
-        } else {
-          this.navegarParaDetalhes(n.chamadoId);
-        }
-        break;
-
-      // RESOLUÇÃO -> Detalhes (para usuário avaliar ou técnico ver)
-      case TipoNotificacaoEnum.RESOLUCAO:
-        this.navegarParaDetalhes(n.chamadoId);
-        break;
-
-      // REABERTURA -> Lista Principal (Técnico precisa ver na fila)
-      case TipoNotificacaoEnum.REABERTURA:
-        if (this.perfilUsuario === HeaderPerfilEnum.TECNICO_TI) {
-          this.router.navigate(['/tecnico/atendimento/listar'], {
-            queryParams: { tab: 0 },
-          });
-        } else {
-          this.navegarParaDetalhes(n.chamadoId);
-        }
-        break;
-
-      default:
-        this.navegarParaDetalhes(n.chamadoId);
-        break;
-    }
-  }
-
-  private navegarParaDetalhes(id: number) {
-    if (this.perfilUsuario === HeaderPerfilEnum.TECNICO_TI) {
-      this.router.navigate(['/tecnico/atendimento', id, 'detalhes']);
+    // 2. Roteamento
+    if (titulo === 'Nova Mensagem') {
+      // Vai para a tela de detalhes (que abrirá o modal)
+      // Isso corrige o erro 404 pois usa a rota correta para cada perfil
+      this.navegarParaDetalhes(n.chamadoId, true);
+    } else if (titulo === 'Solicitação de Transferência') {
+      // Técnico recebe -> Vai para Aba 1 (Recebidos)
+      if (isTecnico)
+        this.router.navigate(['/tecnico/atendimento/listar'], {
+          queryParams: { tab: 1 },
+        });
+    } else if (
+      titulo === 'Transferência Cancelada' ||
+      titulo === 'Transferência Aceita' ||
+      titulo === 'Transferência Recusada' ||
+      titulo === 'Chamado Reaberto'
+    ) {
+      // Técnico recebe feedback -> Vai para Aba 0 (Meus Chamados/Fila)
+      if (isTecnico)
+        this.router.navigate(['/tecnico/atendimento/listar'], {
+          queryParams: { tab: 0 },
+        });
+      else this.navegarParaDetalhes(n.chamadoId);
+    } else if (titulo === 'Chamado Resolvido') {
+      // Usuário -> Vai para lista (avaliar)
+      // Técnico -> Vai para detalhes
+      if (!isTecnico) this.router.navigate(['/chamado/listar']);
+      else this.navegarParaDetalhes(n.chamadoId);
     } else {
-      this.router.navigate(['/chamado', id, 'detalhes']);
+      // Padrão -> Detalhes
+      this.navegarParaDetalhes(n.chamadoId);
     }
   }
 
-  private abrirChatDireto(chamadoId: number) {
-    this.chamadoService
-      .buscarAtendimentoPorId(this.token, chamadoId)
-      .subscribe({
-        next: (chamado) => {
-          this.dialog.open(ChatChamadoComponent, {
-            width: '600px',
-            height: '80vh',
-            maxWidth: '95vw',
-            maxHeight: '90vh',
-            panelClass: 'chat-modal-panel',
-            data: {
-              chamadoId: chamado.id,
-              protocolo: chamado.protocolo,
-              status: chamado.status,
-            },
-          });
-        },
-        error: () => {
-          this.navegarParaDetalhes(chamadoId);
-        },
-      });
-  }
+  private navegarParaDetalhes(id: number, abrirChat: boolean = false) {
+    const params = abrirChat ? { queryParams: { openChat: 'true' } } : {};
+    
+    // Define a URL base de destino
+    let urlDestino = '';
+    if (this.perfilUsuario === HeaderPerfilEnum.TECNICO_TI) {
+      urlDestino = `/tecnico/atendimento/${id}/detalhes`;
+    } else {
+      urlDestino = `/chamado/${id}/detalhes`;
+    }
 
+    // CORREÇÃO: Verifica se já estamos na URL de destino
+    // O split('?')[0] ignora query params para comparar apenas a rota
+    const urlAtual = this.router.url.split('?')[0];
+
+    if (urlAtual === urlDestino) {
+      // TRUQUE: Navega para uma rota vazia e volta imediatamente para recarregar o componente
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate([urlDestino], params);
+      });
+    } else {
+      // Navegação normal
+      this.router.navigate([urlDestino], params);
+    }
+  }
   marcarTodasComoLidas() {
     if (this.unreadCount === 0) return;
     this.notificacaoService.marcarTodasComoLidas(this.token).subscribe(() => {
@@ -211,38 +257,5 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   logout() {
     this.loginService.logout(this.token);
-  }
-
-  // Helpers Visuais
-  getIcone(tipo: string): string {
-    switch (tipo) {
-      case TipoNotificacaoEnum.NOVA_MENSAGEM:
-        return 'chat';
-      case TipoNotificacaoEnum.MUDANCA_STATUS:
-        return 'sync_alt';
-      case TipoNotificacaoEnum.RESOLUCAO:
-        return 'check_circle';
-      case TipoNotificacaoEnum.TRANSFERENCIA:
-        return 'move_to_inbox';
-      case TipoNotificacaoEnum.REABERTURA:
-        return 'replay';
-      default:
-        return 'notifications';
-    }
-  }
-
-  getClassByTipo(tipo: string): string {
-    switch (tipo) {
-      case TipoNotificacaoEnum.NOVA_MENSAGEM:
-        return 'bg-blue';
-      case TipoNotificacaoEnum.RESOLUCAO:
-        return 'bg-green';
-      case TipoNotificacaoEnum.TRANSFERENCIA:
-        return 'bg-purple';
-      case TipoNotificacaoEnum.REABERTURA:
-        return 'bg-red';
-      default:
-        return 'bg-gray'; // Mudança de status cai aqui
-    }
   }
 }

@@ -1,7 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, Subject } from 'rxjs';
 
 // Material Imports
@@ -52,6 +52,7 @@ import { ListarTransferenciasEnviadasComponent } from '../listar-transferencias-
 })
 export class ListarMeusAtendimentosComponent implements OnInit {
   // --- ABA 1: MEUS CHAMADOS (Variáveis existentes) ---
+  selectedTabIndex = 0; 
   chamados: ChamadoOutput[] = [];
   page: number = 0;
   totalPages: number = 0;
@@ -80,6 +81,7 @@ export class ListarMeusAtendimentosComponent implements OnInit {
     private chamadoService: ChamadoService,
     private transferenciaService: TransferenciaService, // Injetado para buscar contagem
     private router: Router,
+    private route: ActivatedRoute,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
@@ -91,6 +93,11 @@ export class ListarMeusAtendimentosComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      if (params['tab']) {
+        this.selectedTabIndex = Number(params['tab']);
+      }
+    });
     this.carregarChamados();
     this.atualizarCountPendencias();
     this.atualizarCountEnviadas(); // Busca o número da bolinha vermelha
