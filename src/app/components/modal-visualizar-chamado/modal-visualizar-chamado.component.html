@@ -39,7 +39,7 @@
         <div class="info-group">
           <span class="label">Prioridade</span>
           <div class="mini-priority priority-text-{{ data.chamado.prioridade | lowercase }}">
-            {{ data.chamado.prioridade | titlecase }}
+            {{prioridadeLabels[data.chamado.prioridade] | titlecase }}
           </div>
         </div>
       </div>

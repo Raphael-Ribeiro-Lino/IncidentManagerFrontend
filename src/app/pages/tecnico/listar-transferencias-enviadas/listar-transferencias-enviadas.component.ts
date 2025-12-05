@@ -103,6 +103,10 @@ export class ListarTransferenciasEnviadasComponent implements OnInit {
     this.carregarEnviadas();
   }
 
+  podeVerChamado(transferencia: TransferenciaDetalhadaOutput): boolean{
+    return transferencia.status === 'PENDENTE';
+  }
+
   verChamado(transferencia: TransferenciaDetalhadaOutput): void {
     const dadosParaModal = {
       id: transferencia.id,

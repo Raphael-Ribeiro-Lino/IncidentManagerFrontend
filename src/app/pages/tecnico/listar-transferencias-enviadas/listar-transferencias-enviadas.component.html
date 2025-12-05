@@ -173,6 +173,7 @@
           <button
             class="btn-custom btn-details"
             (click)="verChamado(t)"
+            *ngIf="podeVerChamado(t)"
             matTooltip="Dados do chamado"
           >
             <mat-icon>visibility</mat-icon> Detalhes
