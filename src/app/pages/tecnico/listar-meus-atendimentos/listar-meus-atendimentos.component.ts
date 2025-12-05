@@ -77,6 +77,17 @@ export class ListarMeusAtendimentosComponent implements OnInit {
     CRITICA: 'Crítica',
   };
 
+    statusLabels: Record<string, string> = {
+    ABERTO: 'Aberto',
+    TRIAGEM: 'Triagem',
+    EM_ATENDIMENTO: 'Em Atendimento',
+    AGUARDANDO_CLIENTE: 'Aguardando Cliente',
+    AGUARDANDO_PECA: 'Aguardando Peça',
+    RESOLVIDO: 'Resolvido',
+    CONCLUIDO: 'Concluído',
+    REABERTO: 'Reaberto',
+  };
+
   constructor(
     private chamadoService: ChamadoService,
     private transferenciaService: TransferenciaService, // Injetado para buscar contagem
