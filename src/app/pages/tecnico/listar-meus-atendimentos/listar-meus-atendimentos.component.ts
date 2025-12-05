@@ -147,7 +147,7 @@ export class ListarMeusAtendimentosComponent implements OnInit {
 
   // Regra do Backend: Só transfere se ABERTO
   podeTransferir(status: string): boolean {
-    return status === 'ABERTO';
+    return status === 'ABERTO' || status === 'REABERTO';
   }
 
   // --- LÓGICA DA ABA 2 (Atualização do Badge) ---
