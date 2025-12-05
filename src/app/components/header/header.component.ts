@@ -48,14 +48,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   // Labels para tradução dos status na mensagem
   statusLabels: Record<string, string> = {
-    ABERTO: 'ABERTO',
-    TRIAGEM: 'TRIAGEM',
-    EM_ATENDIMENTO: 'EM ATENDIMENTO',
-    AGUARDANDO_CLIENTE: 'AGUARDANDO CLIENTE',
-    AGUARDANDO_PECA: 'AGUARDANDO PEÇA',
-    RESOLVIDO: 'RESOLVIDO',
-    CONCLUIDO: 'CONCLUÍDO',
-    REABERTO: 'REABERTO',
+    ABERTO: 'Aberto',
+    TRIAGEM: 'Triagem',
+    EM_ATENDIMENTO: 'Em Atendimento',
+    AGUARDANDO_CLIENTE: 'Aguardando Cliente',
+    AGUARDANDO_PECA: 'Aguardando Peça',
+    RESOLVIDO: 'Resolvido',
+    CONCLUIDO: 'Concluído',
+    REABERTO: 'Reaberto',
   };
 
   constructor(
@@ -87,7 +87,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   iniciarPollingNotificacoes() {
     this.atualizarContador();
-    this.pollingSubscription = interval(10000).subscribe(() => {
+    this.pollingSubscription = interval(15000).subscribe(() => {
       this.atualizarContador();
     });
   }
@@ -106,15 +106,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
-  // --- FORMATAÇÃO VISUAL ---
+  // --- INTELIGÊNCIA DE TÍTULO E CONTEÚDO ---
 
-  // Substitui códigos (EM_ATENDIMENTO) por texto bonito (Em Atendimento)
+  // Formata o texto da mensagem substituindo códigos por nomes bonitos
   formatarMensagem(mensagem: string): string {
     if (!mensagem) return '';
     let msgFormatada = mensagem;
 
     Object.keys(this.statusLabels).forEach((key) => {
-      // Regex para substituir apenas a palavra exata ou se estiver contida de forma clara
       if (msgFormatada.includes(key)) {
         msgFormatada = msgFormatada.replace(key, this.statusLabels[key]);
       }
@@ -122,17 +121,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return msgFormatada;
   }
 
+  // Define o título baseado no conteúdo da mensagem
   getTituloInteligente(n: NotificacaoOutput): string {
     const msg = n.mensagem.toLowerCase();
+
     switch (n.tipo) {
       case TipoNotificacaoEnum.NOVA_MENSAGEM:
         return 'Nova Mensagem';
+
       case TipoNotificacaoEnum.RESOLUCAO:
         return 'Chamado Resolvido';
+
       case TipoNotificacaoEnum.REABERTURA:
         return 'Chamado Reaberto';
+
       case TipoNotificacaoEnum.MUDANCA_STATUS:
         return 'Status Atualizado';
+
       case TipoNotificacaoEnum.TRANSFERENCIA:
         if (msg.includes('cancelou')) return 'Transferência Cancelada';
         if (msg.includes('aceitou')) return 'Transferência Aceita';
@@ -140,28 +145,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
         if (msg.includes('deseja transferir'))
           return 'Solicitação de Transferência';
         if (msg.includes('definido como responsável'))
-          return 'Chamado Atribuído';
+          return 'Novo Chamado Atribuído';
         return 'Transferência';
+
       default:
         return 'Notificação';
     }
   }
 
-  getIcone(n: NotificacaoOutput): string {
-    const titulo = this.getTituloInteligente(n);
-    if (titulo === 'Nova Mensagem') return 'chat';
-    if (titulo === 'Chamado Resolvido') return 'check_circle';
-    if (titulo === 'Chamado Reaberto') return 'replay';
-    if (titulo === 'Transferência Aceita') return 'handshake';
-    if (titulo === 'Transferência Recusada') return 'cancel';
-    if (titulo === 'Transferência Cancelada') return 'block';
-    if (titulo === 'Solicitação de Transferência') return 'move_to_inbox';
-    if (titulo === 'Chamado Atribuído') return 'assignment_ind';
-    return 'notifications';
-  }
-
+  // Define a cor do ícone
   getClassByTipo(n: NotificacaoOutput): string {
     const titulo = this.getTituloInteligente(n);
+
     if (titulo === 'Nova Mensagem') return 'bg-blue';
     if (titulo === 'Chamado Resolvido' || titulo === 'Transferência Aceita')
       return 'bg-green';
@@ -169,16 +164,34 @@ export class HeaderComponent implements OnInit, OnDestroy {
       return 'bg-red';
     if (
       titulo === 'Solicitação de Transferência' ||
-      titulo === 'Chamado Atribuído'
+      titulo === 'Novo Chamado Atribuído'
     )
       return 'bg-purple';
+    if (titulo === 'Transferência Cancelada') return 'bg-gray';
+
     return 'bg-gray';
+  }
+
+  // Define o ícone Material
+  getIcone(n: NotificacaoOutput): string {
+    const titulo = this.getTituloInteligente(n);
+
+    if (titulo === 'Nova Mensagem') return 'chat';
+    if (titulo === 'Chamado Resolvido') return 'check_circle';
+    if (titulo === 'Chamado Reaberto') return 'replay';
+    if (titulo === 'Transferência Aceita') return 'handshake';
+    if (titulo === 'Transferência Recusada') return 'cancel';
+    if (titulo === 'Transferência Cancelada') return 'block';
+    if (titulo === 'Solicitação de Transferência') return 'move_to_inbox';
+    if (titulo === 'Novo Chamado Atribuído') return 'assignment_ind';
+
+    return 'notifications';
   }
 
   // --- NAVEGAÇÃO CENTRALIZADA ---
 
   clicarNotificacao(n: NotificacaoOutput) {
-    // 1. Marca como lida
+    // 1. Marca como lida visualmente e no backend
     if (!n.lido) {
       this.notificacaoService.marcarComoLida(this.token, n.id).subscribe();
       n.lido = true;
@@ -188,44 +201,35 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const titulo = this.getTituloInteligente(n);
     const isTecnico = this.perfilUsuario === HeaderPerfilEnum.TECNICO_TI;
 
-    // 2. Roteamento
+    // 2. Roteamento Inteligente
     if (titulo === 'Nova Mensagem') {
-      // Vai para a tela de detalhes (que abrirá o modal)
-      // Isso corrige o erro 404 pois usa a rota correta para cada perfil
       this.navegarParaDetalhes(n.chamadoId, true);
     } else if (titulo === 'Solicitação de Transferência') {
-      // Técnico recebe -> Vai para Aba 1 (Recebidos)
-      if (isTecnico)
-        this.router.navigate(['/tecnico/atendimento/listar'], {
-          queryParams: { tab: 1 },
-        });
+      // Técnico recebe pedido -> Aba Recebidos (Tab 1)
+      if (isTecnico) this.navegarParaListaTecnico(1);
     } else if (
       titulo === 'Transferência Cancelada' ||
       titulo === 'Transferência Aceita' ||
       titulo === 'Transferência Recusada' ||
       titulo === 'Chamado Reaberto'
     ) {
-      // Técnico recebe feedback -> Vai para Aba 0 (Meus Chamados/Fila)
-      if (isTecnico)
-        this.router.navigate(['/tecnico/atendimento/listar'], {
-          queryParams: { tab: 0 },
-        });
+      // Técnico recebe feedback -> Aba Meus Chamados (Tab 0)
+      if (isTecnico) this.navegarParaListaTecnico(0);
       else this.navegarParaDetalhes(n.chamadoId);
     } else if (titulo === 'Chamado Resolvido') {
-      // Usuário -> Vai para lista (avaliar)
-      // Técnico -> Vai para detalhes
+      // Usuário vai para lista (avaliar), Técnico vai para detalhes
       if (!isTecnico) this.router.navigate(['/chamado/listar']);
       else this.navegarParaDetalhes(n.chamadoId);
     } else {
-      // Padrão -> Detalhes
+      // Padrão: Detalhes
       this.navegarParaDetalhes(n.chamadoId);
     }
   }
 
+  // Navega para detalhes (Usuario ou Tecnico) e força reload se necessário
   private navegarParaDetalhes(id: number, abrirChat: boolean = false) {
     const params = abrirChat ? { queryParams: { openChat: 'true' } } : {};
-    
-    // Define a URL base de destino
+
     let urlDestino = '';
     if (this.perfilUsuario === HeaderPerfilEnum.TECNICO_TI) {
       urlDestino = `/tecnico/atendimento/${id}/detalhes`;
@@ -233,20 +237,30 @@ export class HeaderComponent implements OnInit, OnDestroy {
       urlDestino = `/chamado/${id}/detalhes`;
     }
 
-    // CORREÇÃO: Verifica se já estamos na URL de destino
-    // O split('?')[0] ignora query params para comparar apenas a rota
-    const urlAtual = this.router.url.split('?')[0];
+    this.forceNavigate(urlDestino, params);
+  }
 
-    if (urlAtual === urlDestino) {
-      // TRUQUE: Navega para uma rota vazia e volta imediatamente para recarregar o componente
+  // Navega para lista do técnico em uma aba específica
+  private navegarParaListaTecnico(tabIndex: number) {
+    const url = '/tecnico/atendimento/listar';
+    const params = { queryParams: { tab: tabIndex } };
+    this.forceNavigate(url, params);
+  }
+
+  // Lógica mágica para forçar recarregamento (Simula F5)
+  private forceNavigate(url: string, extras: any) {
+    const urlAtualSemParams = this.router.url.split('?')[0];
+
+    // Se a rota base for a mesma, usa o skipLocationChange para recarregar
+    if (urlAtualSemParams === url) {
       this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-        this.router.navigate([urlDestino], params);
+        this.router.navigate([url], extras);
       });
     } else {
-      // Navegação normal
-      this.router.navigate([urlDestino], params);
+      this.router.navigate([url], extras);
     }
   }
+
   marcarTodasComoLidas() {
     if (this.unreadCount === 0) return;
     this.notificacaoService.marcarTodasComoLidas(this.token).subscribe(() => {

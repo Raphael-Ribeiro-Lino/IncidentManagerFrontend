@@ -52,7 +52,7 @@ import { ListarTransferenciasEnviadasComponent } from '../listar-transferencias-
 })
 export class ListarMeusAtendimentosComponent implements OnInit {
   // --- ABA 1: MEUS CHAMADOS (Variáveis existentes) ---
-  selectedTabIndex = 0; 
+  selectedTabIndex = 0;
   chamados: ChamadoOutput[] = [];
   page: number = 0;
   totalPages: number = 0;
@@ -77,7 +77,7 @@ export class ListarMeusAtendimentosComponent implements OnInit {
     CRITICA: 'Crítica',
   };
 
-    statusLabels: Record<string, string> = {
+  statusLabels: Record<string, string> = {
     ABERTO: 'Aberto',
     TRIAGEM: 'Triagem',
     EM_ATENDIMENTO: 'Em Atendimento',
@@ -107,6 +107,15 @@ export class ListarMeusAtendimentosComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       if (params['tab']) {
         this.selectedTabIndex = Number(params['tab']);
+
+        // Força o recarregamento da aba específica
+        if (this.selectedTabIndex === 1) {
+          this.atualizarCountPendencias(); // Isso já recarrega a lista de pendências
+        } else if (this.selectedTabIndex === 2) {
+          this.atualizarCountEnviadas();
+        } else {
+          this.carregarChamados();
+        }
       }
     });
     this.carregarChamados();
@@ -221,7 +230,9 @@ export class ListarMeusAtendimentosComponent implements OnInit {
                 duration: 4000,
                 panelClass: ['snack-success'],
               });
-              this.carregarChamados(); // Remove da minha lista
+              this.carregarChamados();
+              this.atualizarCountEnviadas();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             },
             error: (err) => {
               this.isLoading = false;

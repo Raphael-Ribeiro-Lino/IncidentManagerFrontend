@@ -142,7 +142,7 @@ export class ListarTransferenciasPendentesComponent implements OnInit {
       disableClose: true, // Obriga a clicar em um botão
       data: {
         titulo: 'Aceitar Transferência',
-        mensagem: `Deseja assumir a responsabilidade pelo chamado ${t.chamado.protocolo}?\n\nEle será movido para sua lista de "Meus Atendimentos".`,
+        mensagem: `Deseja assumir a responsabilidade pelo chamado <b>${t.chamado.protocolo}</b>?\n\nEle será movido para sua lista de "Meus Atendimentos".`,
         icone: 'check_circle', // Ícone de sucesso
         corBotao: 'accent', // Usa a classe .accent (Verde) do seu CSS
         textoConfirmar: 'Sim, Aceitar',
