@@ -31,6 +31,7 @@ export class ExibirDetalhesComponent implements OnInit, OnDestroy {
   chamadoCarregado = false;
   isLoading = false;
   errorMessages: string[] = [];
+  isFatalError = false;
 
   chamadoId!: number;
   token = localStorage.getItem('token')!;
@@ -127,11 +128,23 @@ export class ExibirDetalhesComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error(err);
-        this.errorMessages.push(
-          'Não foi possível carregar os dados do chamado.'
-        );
         this.isLoading = false;
         this.chamadoCarregado = false;
+
+        // TRATAMENTO DE ERROS
+       if (err.status === 404) {
+             this.isFatalError = true;
+             this.errorMessages.push('Chamado não encontrado.');
+             this.errorMessages.push('Ele pode ter sido inativado ou o ID está incorreto.');
+          } else if (err.status === 403) {
+             this.isFatalError = true;
+             this.errorMessages.push('Acesso negado.');
+             this.errorMessages.push('Você não tem permissão para visualizar este chamado.');
+          } else {
+             this.isFatalError = false;
+             this.errorMessages.push('Não foi possível carregar os dados do chamado.');
+             this.errorMessages.push('Verifique sua conexão e tente novamente.');
+          }
       },
     });
   }

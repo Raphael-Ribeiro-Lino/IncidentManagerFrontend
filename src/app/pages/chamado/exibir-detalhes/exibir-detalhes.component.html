@@ -11,9 +11,24 @@
     <div class="error-content">
       <h3>Ops! Algo deu errado.</h3>
       <p *ngFor="let msg of errorMessages">{{ msg }}</p>
+
       <div class="error-actions">
-        <button class="btn-error-retry" (click)="carregarChamado()">
+        <!-- Botão TENTAR NOVAMENTE: Só aparece se o erro for recuperável (não fatal) -->
+        <button
+          class="btn-error-retry"
+          *ngIf="!isFatalError"
+          (click)="carregarChamado()"
+        >
           <mat-icon>refresh</mat-icon> Tentar Novamente
+        </button>
+
+        <!-- Botão VOLTAR: Sempre aparece. Se for Fatal, vira o botão principal (Primary) -->
+        <button
+          [class.btn-error-primary]="isFatalError"
+          [class.btn-error-back]="!isFatalError"
+          (click)="voltarParaLista()"
+        >
+          <mat-icon>arrow_back</mat-icon> Voltar para Lista
         </button>
       </div>
     </div>

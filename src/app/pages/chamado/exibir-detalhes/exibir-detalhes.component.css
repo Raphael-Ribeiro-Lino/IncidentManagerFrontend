@@ -30,8 +30,8 @@
   --s-concluido-color: #2e7d32;
   --s-reaberto-bg: #ffebee;
   --s-reaberto-color: #c62828;
-  --s-resolvido-bg:#e8eaf6;
-   --s-resolvido-color: #3f51b5;
+  --s-resolvido-bg: #e8eaf6;
+  --s-resolvido-color: #3f51b5;
 
   /* Cores de Prioridade */
   --p-baixa-bg: #eaf7ed;
@@ -87,6 +87,9 @@
   color: #d32f2f;
   flex-shrink: 0;
 }
+.error-content {
+  flex: 1;
+}
 .error-content h3 {
   margin: 0 0 10px 0;
   font-size: 1.2rem;
@@ -101,6 +104,7 @@
   gap: 12px;
   margin-top: 15px;
 }
+
 .btn-error-retry,
 .btn-error-back {
   background-color: white;
@@ -111,16 +115,18 @@
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  transition: 0.2s;
+  transition: background-color 0.2s;
   font-size: 0.9rem;
 }
+
 .btn-error-retry {
   border: 1px solid #d32f2f;
   color: #d32f2f;
 }
 .btn-error-retry:hover {
-  background-color: #FFEBEE;
+  background-color: #ffcdd2;
 }
+
 .btn-error-back {
   border: 1px solid #999;
   color: #666;
@@ -128,6 +134,25 @@
 .btn-error-back:hover {
   background-color: #f5f5f5;
   color: #333;
+}
+
+/* ESTILO NOVO: Botão Voltar quando é a única opção (Fatal) */
+.btn-error-primary {
+  background-color: var(--color-primary); /* Azul */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+.btn-error-primary:hover {
+  background-color: var(--color-cta-hover);
 }
 
 /* Header */
@@ -731,6 +756,26 @@
 }
 
 @media (max-width: 600px) {
+  .error-card {
+    flex-direction: column; /* Empilha ícone e texto */
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    padding: 20px;
+  }
+  .error-actions {
+    width: 100%;
+    flex-direction: column; /* Empilha botões */
+  }
+  .btn-error-retry,
+  .btn-error-back,
+  .btn-error-primary {
+    width: 100%;
+    justify-content: center;
+  }
+  .mat-icon {
+    overflow: visible;
+  }
   .chamado-detalhes-page {
     padding: 16px;
   }
