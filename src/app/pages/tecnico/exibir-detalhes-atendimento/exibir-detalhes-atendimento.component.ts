@@ -38,6 +38,7 @@ export class ExibirDetalhesAtendimentoComponent implements OnInit {
   chamadoCarregado = false;
   isLoading = false;
   errorMessages: string[] = [];
+  isFatalError = false;
 
   chamadoId!: number;
   token = localStorage.getItem('token')!;
@@ -143,8 +144,24 @@ export class ExibirDetalhesAtendimentoComponent implements OnInit {
         },
         error: (err) => {
           console.error(err);
-          this.errorMessages.push('Erro ao carregar dados.');
           this.isLoading = false;
+          this.chamadoCarregado = false;
+          
+          // LÓGICA DE ERRO FATAL
+          if (err.status === 404) {
+             this.isFatalError = true;
+             this.errorMessages.push('Chamado não encontrado.');
+             this.errorMessages.push('Ele pode ter sido inativado ou o ID está incorreto.');
+          } else if (err.status === 403) {
+             this.isFatalError = true;
+             this.errorMessages.push('Acesso negado.');
+             this.errorMessages.push('Este chamado não pertence à sua fila de atendimento.');
+          } else {
+             // Erros 500 ou de rede são recuperáveis (pode tentar de novo)
+             this.isFatalError = false;
+             this.errorMessages.push('Não foi possível carregar os dados do atendimento.');
+             this.errorMessages.push('Verifique sua conexão e tente novamente.');
+          }
         },
       });
   }
@@ -220,7 +237,7 @@ export class ExibirDetalhesAtendimentoComponent implements OnInit {
   }
 
   podeMudarStatus(status: string): boolean {
-    return status !== 'RESOLVIDO';
+    return status !== 'RESOLVIDO' && status !== 'CONCLUIDO';
   }
 
   mudarStatus(): void {

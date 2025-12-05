@@ -1,5 +1,4 @@
 <div class="page-container">
-  
   <div class="loading-state" *ngIf="isLoading">
     <p>Carregando detalhes do atendimento...</p>
   </div>
@@ -9,32 +8,57 @@
     <div class="error-content">
       <h3>Ops! Algo deu errado.</h3>
       <p *ngFor="let msg of errorMessages">{{ msg }}</p>
+
       <div class="error-actions">
-        <button class="btn-error-retry" (click)="carregarChamado()">
+        <!-- Botão TENTAR NOVAMENTE: Só aparece se o erro for recuperável (não fatal) -->
+        <button
+          class="btn-error-retry"
+          *ngIf="!isFatalError"
+          (click)="carregarChamado()"
+        >
           <mat-icon>refresh</mat-icon> Tentar Novamente
         </button>
-        <button class="btn-error-back" (click)="voltarParaLista()">
+
+        <!-- Botão VOLTAR: Sempre aparece. Se for Fatal, vira o botão principal (Primary) -->
+        <button
+          [class.btn-error-primary]="isFatalError"
+          [class.btn-error-back]="!isFatalError"
+          (click)="voltarParaLista()"
+        >
           <mat-icon>arrow_back</mat-icon> Voltar para Lista
         </button>
       </div>
     </div>
   </div>
 
-  <div class="chamado-detalhes-page" *ngIf="!isLoading && chamadoCarregado && chamado">
-
+  <div
+    class="chamado-detalhes-page"
+    *ngIf="!isLoading && chamadoCarregado && chamado"
+  >
     <div class="page-header-row">
       <div class="page-header-content">
         <h1 class="page-title">Detalhes do Atendimento</h1>
-        <p class="page-subtitle">Gerencie o chamado e interaja com o solicitante</p>
+        <p class="page-subtitle">
+          Gerencie o chamado e interaja com o solicitante
+        </p>
       </div>
 
       <div class="header-actions">
-        <button class="btn-action btn-back" (click)="voltarParaLista()" matTooltip="Voltar para a listagem">
+        <button
+          class="btn-action btn-back"
+          (click)="voltarParaLista()"
+          matTooltip="Voltar para a listagem"
+        >
           <mat-icon>arrow_back</mat-icon>
           Voltar
         </button>
-        
-        <button class="btn-action btn-status" (click)="mudarStatus()" matTooltip="Alterar status atual" *ngIf="podeMudarStatus(chamado.status)">
+
+        <button
+          class="btn-action btn-status"
+          (click)="mudarStatus()"
+          matTooltip="Alterar status atual"
+          *ngIf="podeMudarStatus(chamado.status)"
+        >
           <mat-icon>edit_note</mat-icon>
           Mudar Status
         </button>
@@ -42,115 +66,156 @@
     </div>
 
     <div class="cards-stack">
-
-      <div class="card-detalhes unified-card status-border-{{ chamado.status | lowercase }}">
-        
+      <div
+        class="card-detalhes unified-card status-border-{{
+          chamado.status | lowercase
+        }}"
+      >
         <div class="card-header-line">
           <h2 class="card-title">
-              <mat-icon class="title-icon">info</mat-icon> 
-              Resumo do Chamado
+            <mat-icon class="title-icon">info</mat-icon>
+            Resumo do Chamado
           </h2>
-          
+
           <div class="protocolo-badge">
-              <mat-icon class="icon-small">tag</mat-icon>
-              <strong>{{ chamado.protocolo }}</strong>
+            <mat-icon class="icon-small">tag</mat-icon>
+            <strong>{{ chamado.protocolo }}</strong>
           </div>
         </div>
 
         <div class="unified-content-wrapper">
-          
           <div class="info-section">
-              <h3 class="chamado-titulo-principal">{{ chamado.titulo }}</h3>
-              
-              <div class="info-grid">
-                  <div class="info-item">
-                      <span class="label">Status</span>
-                      <div class="status-badge-inline status-{{ chamado.status | lowercase }}">
-                          {{ statusLabels[chamado.status] || chamado.status }}
-                      </div>
-                  </div>
+            <h3 class="chamado-titulo-principal">{{ chamado.titulo }}</h3>
 
-                  <div class="info-item">
-                      <span class="label">Prioridade</span>
-                      <div class="mini-priority priority-text-{{ chamado.prioridade | lowercase }}">
-                          {{ prioridadeLabels[chamado.prioridade] | titlecase }}
-                      </div>
-                  </div>
-
-                  <div class="info-item date-item">
-                      <span class="label">Abertura</span>
-                      <div class="date-display">
-                          <mat-icon class="icon-tiny">calendar_today</mat-icon>
-                          <span>{{ chamado.dataCriacao | date : "dd/MM/yyyy" }}</span>
-                          <span class="time">{{ chamado.dataCriacao | date : "HH:mm" }}</span>
-                      </div>
-                  </div>
-
-                  <div class="info-item date-item">
-                      <span class="label">Atualização</span>
-                      <div class="date-display">
-                          <mat-icon class="icon-tiny">update</mat-icon>
-                          <span>{{ chamado.dataUltimaAtualizacao | date : "dd/MM/yyyy" }}</span>
-                          <span class="time">{{ chamado.dataUltimaAtualizacao | date : "HH:mm" }}</span>
-                      </div>
-                  </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Status</span>
+                <div
+                  class="status-badge-inline status-{{
+                    chamado.status | lowercase
+                  }}"
+                >
+                  {{ statusLabels[chamado.status] || chamado.status }}
+                </div>
               </div>
+
+              <div class="info-item">
+                <span class="label">Prioridade</span>
+                <div
+                  class="mini-priority priority-text-{{
+                    chamado.prioridade | lowercase
+                  }}"
+                >
+                  {{ prioridadeLabels[chamado.prioridade] | titlecase }}
+                </div>
+              </div>
+
+              <div class="info-item date-item">
+                <span class="label">Abertura</span>
+                <div class="date-display">
+                  <mat-icon class="icon-tiny">calendar_today</mat-icon>
+                  <span>{{ chamado.dataCriacao | date : "dd/MM/yyyy" }}</span>
+                  <span class="time">{{
+                    chamado.dataCriacao | date : "HH:mm"
+                  }}</span>
+                </div>
+              </div>
+
+              <div class="info-item date-item">
+                <span class="label">Atualização</span>
+                <div class="date-display">
+                  <mat-icon class="icon-tiny">update</mat-icon>
+                  <span>{{
+                    chamado.dataUltimaAtualizacao | date : "dd/MM/yyyy"
+                  }}</span>
+                  <span class="time">{{
+                    chamado.dataUltimaAtualizacao | date : "HH:mm"
+                  }}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="vertical-divider"></div>
 
           <div class="tech-section">
-              <h3 class="card-internal-title">
-                  <mat-icon class="title-icon">person</mat-icon> 
-                  Solicitante
-              </h3>
-              
-              <div class="tech-profile">
-                  <div class="tech-avatar">
-                      {{ chamado.solicitante.nome | slice : 0 : 1 }}
-                  </div>
-                  <div class="tech-info">
-                      <strong class="tech-name">{{ chamado.solicitante.nome }}</strong>
-                      <span class="tech-email">{{ chamado.solicitante.email }}</span>
-                  </div>
+            <h3 class="card-internal-title">
+              <mat-icon class="title-icon">person</mat-icon>
+              Solicitante
+            </h3>
+
+            <div class="tech-profile">
+              <div class="tech-avatar">
+                {{ chamado.solicitante.nome | slice : 0 : 1 }}
               </div>
+              <div class="tech-info">
+                <strong class="tech-name">{{
+                  chamado.solicitante.nome
+                }}</strong>
+                <span class="tech-email">{{ chamado.solicitante.email }}</span>
+              </div>
+            </div>
 
-              <button class="btn-chat-large" 
-                      (click)="acessarChat()" 
-                      *ngIf="['EM_ATENDIMENTO', 'AGUARDANDO_CLIENTE', 'AGUARDANDO_PECA', 'REABERTO', 'CONCLUIDO'].includes(chamado.status)">
-                <mat-icon>forum</mat-icon> Acessar chat
-              </button>
+            <button
+              class="btn-chat-large"
+              (click)="acessarChat()"
+              *ngIf="
+                [
+                  'EM_ATENDIMENTO',
+                  'AGUARDANDO_CLIENTE',
+                  'AGUARDANDO_PECA',
+                  'REABERTO',
+                  'CONCLUIDO'
+                ].includes(chamado.status)
+              "
+            >
+              <mat-icon>forum</mat-icon> Acessar chat
+            </button>
           </div>
-
         </div>
       </div>
 
-      <div class="card-detalhes description-card status-border-{{ chamado.status | lowercase }}">
+      <div
+        class="card-detalhes description-card status-border-{{
+          chamado.status | lowercase
+        }}"
+      >
         <h2 class="card-title">
-          <mat-icon class="title-icon">subject</mat-icon> 
+          <mat-icon class="title-icon">subject</mat-icon>
           Descrição do Problema
         </h2>
-        
+
         <div class="description-content">
           <p>{{ chamado.descricao }}</p>
         </div>
 
         <div class="attachments-container">
           <h3 class="attachments-header card-internal-title">
-            <mat-icon class="title-icon">attach_file</mat-icon> 
+            <mat-icon class="title-icon">attach_file</mat-icon>
             Anexos ({{ chamado.anexos.length }})
           </h3>
 
-          <div class="anexos-grid" *ngIf="chamado.anexos.length > 0; else noAnexos">
-              <div *ngFor="let anexo of chamado.anexos" class="anexo-item-card">
-                <mat-icon class="anexo-icon">{{ getFileIcon(anexo.nomeArquivo) }}</mat-icon>
-                <div class="anexo-meta">
-                  <span class="file-name" title="{{ anexo.nomeArquivo }}">{{ anexo.nomeArquivo }}</span>
-                </div>
-                <button class="btn-download-icon" (click)="baixarAnexo(anexo.storagePath)" matTooltip="Baixar">
-                  <mat-icon>download</mat-icon>
-                </button>
+          <div
+            class="anexos-grid"
+            *ngIf="chamado.anexos.length > 0; else noAnexos"
+          >
+            <div *ngFor="let anexo of chamado.anexos" class="anexo-item-card">
+              <mat-icon class="anexo-icon">{{
+                getFileIcon(anexo.nomeArquivo)
+              }}</mat-icon>
+              <div class="anexo-meta">
+                <span class="file-name" title="{{ anexo.nomeArquivo }}">{{
+                  anexo.nomeArquivo
+                }}</span>
               </div>
+              <button
+                class="btn-download-icon"
+                (click)="baixarAnexo(anexo.storagePath)"
+                matTooltip="Baixar"
+              >
+                <mat-icon>download</mat-icon>
+              </button>
+            </div>
           </div>
 
           <ng-template #noAnexos>
@@ -159,59 +224,77 @@
         </div>
       </div>
 
-      <div id="timeline-anchor" class="card-detalhes timeline-card status-border-{{ chamado.status | lowercase }}">
+      <div
+        id="timeline-anchor"
+        class="card-detalhes timeline-card status-border-{{
+          chamado.status | lowercase
+        }}"
+      >
         <div class="card-header-line">
-            <h2 class="card-title">
-              <mat-icon class="title-icon">history</mat-icon> 
-              Linha do Tempo
-            </h2>
-            
-            <button class="btn-note-action" (click)="adicionarNotaInterna()">
-                <mat-icon>sticky_note_2</mat-icon> Adicionar Nota Interna
-            </button>
+          <h2 class="card-title">
+            <mat-icon class="title-icon">history</mat-icon>
+            Linha do Tempo
+          </h2>
+
+          <button class="btn-note-action" (click)="adicionarNotaInterna()">
+            <mat-icon>sticky_note_2</mat-icon> Adicionar Nota Interna
+          </button>
         </div>
 
         <div class="timeline-container">
-            <div class="timeline-item" *ngFor="let evento of chamado.historicoEventos" 
-                 [class.internal-note]="!evento.visivelCliente">
-                
-                <div class="timeline-marker">
-                    <div class="marker-icon" [ngClass]="evento.tipo">
-                        <mat-icon>{{ getTimelineIcon(evento.tipo) }}</mat-icon>
-                    </div>
-                    <div class="marker-line"></div>
-                </div>
-
-                <div class="timeline-content">
-                    <div class="timeline-header">
-                        <div class="author-box">
-                            <span class="author-name">{{ evento.autorNome }}</span>
-                            <span class="role-badge" *ngIf="evento.autorPerfil === 'TECNICO_TI' || evento.autorPerfil === 'ADMIN'">
-                                Equipe TI
-                            </span>
-                        </div>
-                        
-                        <div class="meta-box">
-                            <span class="event-type-badge" *ngIf="!evento.visivelCliente" matTooltip="Visível apenas para a equipe">
-                                <mat-icon class="icon-tiny">lock</mat-icon> Interno
-                            </span>
-                            <span class="event-date">{{ evento.dataHora | date : "dd/MM/yyyy 'às' HH:mm" }}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="timeline-body">
-                        <p>{{ evento.descricao }}</p>
-                    </div>
-                </div>
+          <div
+            class="timeline-item"
+            *ngFor="let evento of chamado.historicoEventos"
+            [class.internal-note]="!evento.visivelCliente"
+          >
+            <div class="timeline-marker">
+              <div class="marker-icon" [ngClass]="evento.tipo">
+                <mat-icon>{{ getTimelineIcon(evento.tipo) }}</mat-icon>
+              </div>
+              <div class="marker-line"></div>
             </div>
 
-            <div class="timeline-end">
-                <span class="dot"></span>
-                <span>Início do Chamado</span>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <div class="author-box">
+                  <span class="author-name">{{ evento.autorNome }}</span>
+                  <span
+                    class="role-badge"
+                    *ngIf="
+                      evento.autorPerfil === 'TECNICO_TI' ||
+                      evento.autorPerfil === 'ADMIN'
+                    "
+                  >
+                    Equipe TI
+                  </span>
+                </div>
+
+                <div class="meta-box">
+                  <span
+                    class="event-type-badge"
+                    *ngIf="!evento.visivelCliente"
+                    matTooltip="Visível apenas para a equipe"
+                  >
+                    <mat-icon class="icon-tiny">lock</mat-icon> Interno
+                  </span>
+                  <span class="event-date">{{
+                    evento.dataHora | date : "dd/MM/yyyy 'às' HH:mm"
+                  }}</span>
+                </div>
+              </div>
+
+              <div class="timeline-body">
+                <p>{{ evento.descricao }}</p>
+              </div>
             </div>
+          </div>
+
+          <div class="timeline-end">
+            <span class="dot"></span>
+            <span>Início do Chamado</span>
+          </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>

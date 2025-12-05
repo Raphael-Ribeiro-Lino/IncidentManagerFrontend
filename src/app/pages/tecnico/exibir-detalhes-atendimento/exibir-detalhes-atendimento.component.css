@@ -109,6 +109,7 @@
   gap: 12px;
   margin-top: 15px;
 }
+
 .btn-error-retry,
 .btn-error-back {
   background-color: white;
@@ -122,6 +123,7 @@
   transition: background-color 0.2s;
   font-size: 0.9rem;
 }
+
 .btn-error-retry {
   border: 1px solid #d32f2f;
   color: #d32f2f;
@@ -129,6 +131,7 @@
 .btn-error-retry:hover {
   background-color: #ffcdd2;
 }
+
 .btn-error-back {
   border: 1px solid #999;
   color: #666;
@@ -136,6 +139,25 @@
 .btn-error-back:hover {
   background-color: #f5f5f5;
   color: #333;
+}
+
+/* ESTILO NOVO: Botão Voltar quando é a única opção (Fatal) */
+.btn-error-primary {
+  background-color: var(--color-primary); /* Azul */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+.btn-error-primary:hover {
+  background-color: var(--color-cta-hover);
 }
 
 /* --- Cabeçalho --- */
@@ -254,7 +276,8 @@
 .status-border-aguardando_peca {
   border-left-color: var(--s-aguardando_peca-color);
 }
-.status-border-resolvido {
+.status-border-resolvido,
+.status-border-concluido {
   border-left-color: var(--s-resolvido-color);
 }
 .status-border-reaberto {
@@ -378,7 +401,8 @@
   color: var(--s-aguardando_peca-color);
   border-color: #cfd8dc;
 }
-.status-resolvido {
+.status-resolvido,
+.status-concluido {
   background-color: var(--s-resolvido-bg);
   color: var(--s-resolvido-color);
   border-color: #c8e6c9;
@@ -770,6 +794,23 @@
 }
 
 @media (max-width: 600px) {
+  .error-card {
+    flex-direction: column; /* Empilha ícone e texto */
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    padding: 20px;
+  }
+  .error-actions {
+    width: 100%;
+    flex-direction: column; /* Empilha botões */
+  }
+  .btn-error-retry,
+  .btn-error-back,
+  .btn-error-primary {
+    width: 100%;
+    justify-content: center;
+  }
   .mat-icon {
     overflow: visible;
   }
