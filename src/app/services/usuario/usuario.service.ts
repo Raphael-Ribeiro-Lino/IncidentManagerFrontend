@@ -136,20 +136,29 @@ export class UsuarioService {
     );
   }
 
-  listarTecnicosParaTransferencia(token: string, search: string = ''): Observable<any> {
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-     let params = new HttpParams();
-     if (search) {
+  listarTecnicosParaTransferencia(
+    token: string,
+    search: string = ''
+  ): Observable<any> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'X-Skip-Loading': 'true',
+    });
+    let params = new HttpParams();
+    if (search) {
       params = params.set('search', search);
     }
     return this.httpClient.get<any>(
-      `${API_URL}/tecnicos-disponiveis-transferencia`, 
+      `${API_URL}/tecnicos-disponiveis-transferencia`,
       { headers, params }
     );
   }
 
-  pesquisarTecnicos(token: string, termo: string = ''): Observable<PaginationOutput<TecnicoSelecaoOutput>> {
-    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+  pesquisarTecnicos(
+    token: string,
+    termo: string = ''
+  ): Observable<PaginationOutput<TecnicoSelecaoOutput>> {
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     const params = new HttpParams()
       .set('termo', termo)
       .set('page', '0')
