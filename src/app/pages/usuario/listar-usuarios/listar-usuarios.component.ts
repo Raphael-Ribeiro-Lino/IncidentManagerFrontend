@@ -164,13 +164,14 @@ export class ListarUsuariosComponent implements OnInit {
     this.usuarioService.reenviarEmailDefinicaoSenha(this.token, id).subscribe({
       next: () => {
         this.isLoading = false;
-        this.successMessage = `Convite reenviado com sucesso para ${email}!`;
+        this.successMessage = `Convite reenviado com sucesso para <b>${email}</b>!`;
+        this.carregarUsuarios();
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => (this.successMessage = ''), 4000);
+        setTimeout(() => (this.successMessage = ''), 5000);
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessages = [err.error?.message || 'Erro ao reenviar e-mail.'];
+        this.errorMessages = [err.error?.message || 'Erro ao reenviar e-mail. Verifique sua conexão ou tente novamente mais tarde.'];
         window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => (this.errorMessages = []), 4000);
       },

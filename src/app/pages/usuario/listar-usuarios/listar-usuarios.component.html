@@ -9,7 +9,7 @@
   <div *ngIf="successMessage" class="alert-box success">
     <div class="alert-item">
       <mat-icon class="alert-icon">check_circle</mat-icon>
-      <span class="alert-msg">{{ successMessage }}</span>
+      <span class="alert-msg" [innerHTML]="successMessage"></span>
     </div>
   </div>
 
