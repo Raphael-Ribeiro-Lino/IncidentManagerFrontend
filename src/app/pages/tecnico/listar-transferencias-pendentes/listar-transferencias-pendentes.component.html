@@ -93,7 +93,7 @@
             }}"
             matTooltip="Prioridade"
           >
-            {{ t.chamado.prioridade | titlecase }}
+            {{ prioridadeLabels[t.chamado.prioridade] | titlecase }}
           </div>
         </div>
 
@@ -102,7 +102,7 @@
         </h3>
 
         <div class="row-reason-box" matTooltip="Motivo da Solicitação">
-          <span class="reason-label">Motivo:</span> "{{ t.motivo }}"
+          <span class="reason-label">Motivo:</span> {{ t.motivo }}
         </div>
 
         <div class="row-tech-info" matTooltip="Técnico de Origem">

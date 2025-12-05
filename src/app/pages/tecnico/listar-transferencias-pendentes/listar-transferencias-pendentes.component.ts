@@ -61,6 +61,13 @@ export class ListarTransferenciasPendentesComponent implements OnInit {
   loadingFailed = false;
   errorMessages: string[] = [];
 
+  prioridadeLabels: Record<string, string> = {
+    BAIXA: 'Baixa',
+    MEDIA: 'Média',
+    ALTA: 'Alta',
+    CRITICA: 'Crítica',
+  };
+
   constructor(
     private transferenciaService: TransferenciaService,
     private router: Router,
