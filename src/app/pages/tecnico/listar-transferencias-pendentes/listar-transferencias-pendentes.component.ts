@@ -168,7 +168,10 @@ export class ListarTransferenciasPendentesComponent implements OnInit {
                 duration: 5000,
                 panelClass: ['snack-success'],
               });
-              this.carregarPendencias();
+              this.listaAtualizada.emit();
+              this.router.navigate(['/tecnico/atendimento/listar'], {
+                queryParams: { tab: 0 },
+              });
             },
             error: (err) => {
               this.isLoading = false;
