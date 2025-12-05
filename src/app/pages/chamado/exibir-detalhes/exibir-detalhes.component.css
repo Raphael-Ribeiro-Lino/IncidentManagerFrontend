@@ -30,6 +30,8 @@
   --s-concluido-color: #2e7d32;
   --s-reaberto-bg: #ffebee;
   --s-reaberto-color: #c62828;
+  --s-resolvido-bg:#e8eaf6;
+   --s-resolvido-color: #3f51b5;
 
   /* Cores de Prioridade */
   --p-baixa-bg: #eaf7ed;
@@ -117,7 +119,7 @@
   color: #d32f2f;
 }
 .btn-error-retry:hover {
-  background-color: #ffcdd2;
+  background-color: #FFEBEE;
 }
 .btn-error-back {
   border: 1px solid #999;
@@ -235,6 +237,9 @@
 }
 .status-border-reaberto {
   border-left-color: var(--s-reaberto-color);
+}
+.status-border-resolvido {
+  border-left-color: var(--s-resolvido-color);
 }
 
 /* Títulos */
@@ -361,6 +366,12 @@
   border-color: #ffcdd2;
 }
 
+.status-resolvido {
+  background-color: var(--s-resolvido-bg);
+  color: var(--s-resolvido-color);
+  border-color: #c5cae9;
+}
+
 .mini-priority {
   font-size: 0.85rem;
   font-weight: 700;
@@ -375,18 +386,22 @@
 .priority-text-baixa {
   background-color: var(--p-baixa-bg);
   color: var(--p-baixa-color);
+  border: 1px solid #c3e6cb;
 }
 .priority-text-media {
   background-color: var(--p-media-bg);
   color: var(--p-media-color);
+  border: 1px solid #ffe0b2;
 }
 .priority-text-alta {
   background-color: var(--p-alta-bg);
   color: var(--p-alta-color);
+  border: 1px solid #fae5d3;
 }
 .priority-text-critica {
   background-color: var(--p-critica-bg);
   color: var(--p-critica-color);
+  border-color: #fadbd8;
 }
 
 .date-display {
